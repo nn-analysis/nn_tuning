@@ -15,7 +15,7 @@ class NDInputManager(InputManager):
             input_generator.generate(shape)
 
     def valid(self, batch: int, batch_size: int) -> bool:
-        return batch * batch_size + 1 < self._table.nrows
+        return batch * batch_size < self._table.nrows
 
     def get(self, batch: int, batch_size: int, verbose: bool) -> np.array:
         start = batch * batch_size

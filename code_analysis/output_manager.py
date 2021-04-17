@@ -1,3 +1,5 @@
+import numpy as np
+
 from .input_manager import InputManager
 from .network import Network
 from .storage_manager import StorageManager
@@ -25,7 +27,7 @@ class OutputManager:
         if resume:
             tbl = self.storage_manager.open_table(table)
             if tbl.initialised:
-                batch = int(tbl.nrows/batch_size)
+                batch = int(np.ceil(tbl.nrows/batch_size))
             else:
                 batch = 0
         while self.input_manager.valid(batch, batch_size):
