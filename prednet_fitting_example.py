@@ -22,8 +22,7 @@ storage_manager = StorageManager("/path/to/data/folder")
 
 # The input generator generates input, the input manager makes sure that the network gets the correct input
 prf_input_generator = PRFInputGenerator(1, 'prf_input', storage_manager, verbose=verbose)
-prf_nd_input_manager = NDInputManager('prf_input', network_input_shape, storage_manager, prf_input_generator,
-                                      verbose=verbose)
+prf_nd_input_manager = NDInputManager('prf_input', network_input_shape, storage_manager, prf_input_generator)
 
 # Initialise the network with the weight files
 network = Prednet(json_file, weights_file)
@@ -38,7 +37,7 @@ network.feedforward_only = False
 # The resume parameter was build in to allow you to go on where it left in case it crashes
 # PredNet has a memory leak somewhere that causes it to crash after a while
 # This allows you to have it pick up where it left off when it does
-output_manager.run(table, batch_size=100, resume=True)
+# output_manager.run(table, batch_size=100, resume=True, verbose=True)
 
 # The data should now be ready to be fitted
 
@@ -77,7 +76,7 @@ fitting_results_table = f"{table}_estimates_step{step}_sigma-step{sigma_step}"
 i = 0
 for _slice in slices:
     if verbose:
-        print(f'{i}/{len(slices)}, {int(i/len(slices)*100)}%')
+        print(f'Fitting slice {i+1}/{len(slices)}')
     i += 1
     responses = tbl[:, _slice].T
     fitting_manager.fit_response_function(responses, stim_x, stim_y, (*shape, max_sigma),
@@ -90,7 +89,6 @@ for _slice in slices:
                                           ncols=tbl.shape[1],
                                           columns=tbl.column_index,
                                           dtype=np.dtype("float16"))
-print()
 
 # After the fitting is done you can open the table with the fitting results
 results_tbl = storage_manager.open_table(fitting_results_table)
