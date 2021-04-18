@@ -4,6 +4,8 @@ import os.path
 import glob
 import shutil
 
+from tqdm import tqdm
+
 
 class NoSuchTableError(Exception):
     pass
@@ -99,9 +101,7 @@ class Table:
         rows, cols = keys
         results = []
         i = 0
-        for row in rows:
-            if self.verbose:
-                print(f"{i}/{len(rows)}, {int(i/len(rows)*100)}%\r", end="")
+        for row in tqdm(rows, disable=(not self.verbose), leave=False):
             try:
                 if cols is None:
                     results.append(self.__readfile__(row))
@@ -110,8 +110,6 @@ class Table:
             except OSError:
                 raise IndexError(f"index {row} is out of bounds for axis 0 with size {self.nrows}")
             i += 1
-        if self.verbose:
-            print()
         results = np.array(results)
         if results.shape[0] is 1:
             return results[0]
@@ -253,9 +251,7 @@ class Table:
         if items.dtype is not self.dtype:
             items = items.astype(self.dtype)
         j = self.nrows
-        for i in range(0, items.shape[0]):
-            if self.verbose:
-                print(f"{i}/{items.shape[0]}, {int(i/items.shape[0]*100)}%\r", end="")
+        for i in tqdm(range(0, items.shape[0]), disable=(not self.verbose), leave=False):
             self.__writefile__(str(j), items[i])
             self.__nrows += 1
             j += 1
@@ -265,20 +261,13 @@ class Table:
     def change_dtype(self, dtype: np.dtype, as_new_table: str = None):
         tmp_tbl = Table(self.name, self.database_folder, False)
         if as_new_table is None:
-            for row in range(self.nrows):
-                if self.verbose:
-                    print(f"{row}/{self.nrows}, {int(row/self.nrows*100)}%\r", end="")
+            for row in tqdm(range(self.nrows), disable=(not self.verbose), leave=False):
                 tmp_tbl[row] = tmp_tbl[row].astype(dtype)
         else:
             new_table = Table(as_new_table, self.database_folder, False)
             new_table.create(tmp_tbl[0][np.newaxis, ...], self.row_index[0], self.column_index, dtype)
-            if self.verbose:
-                print(f"{0}/{self.nrows}, {int(0/self.nrows*100)}%\r", end="")
-            for row in range(1, self.nrows):
-                if self.verbose:
-                    print(f"{row}/{self.nrows}, {int(row/self.nrows*100)}%\r", end="")
+            for row in tqdm(range(1, self.nrows), disable=(not self.verbose), leave=False):
                 new_table.extend(tmp_tbl[row], self.row_index[row])
-        print()
 
     def create(self, array: np.array, row_index: list = None, column_index: list = None,
                shape: (int, int) = None, indices: (slice, slice) = None, dtype: np.dtype = None):
@@ -308,9 +297,7 @@ class Table:
         self.__updateproperties__()
         custom_columns = len(indices_x) == array.shape[1]
         i = 0
-        for row in range(0, self.nrows):
-            if self.verbose:
-                print(f'{row}/{self.nrows}, {int(row/self.nrows*100)}%\r', end="")
+        for row in tqdm(range(0, self.nrows), disable=(not self.verbose), leave=False):
             if custom_columns and row in indices_y:
                 row_array = np.zeros(self.ncols)
                 row_array[indices_x] = array[i]
@@ -323,7 +310,6 @@ class Table:
             if dtype is not None:
                 row_array = row_array.astype(dtype)
             self.__writefile__(row, row_array)
-        print()
 
     @property
     def initialised(self) -> bool:
@@ -333,7 +319,6 @@ class Table:
         return self.transpose()
 
     def transpose(self, new_table: str = None, batch_size: int = 1, row_batch_size: int = None, override: bool = True):
-        verbose = self.verbose
         if not self.initialised:
             raise NoSuchTableError
         if row_batch_size is None:
@@ -344,9 +329,7 @@ class Table:
         if new_table.initialised and not override:
             return new_table
         initialised = False
-        for col in range(0, int(self.ncols), batch_size):
-            if verbose:
-                print(f"{col}/{self.ncols}, {int(col/self.ncols*100)}%")
+        for col in tqdm(range(0, int(self.ncols), batch_size), disable=(not self.verbose), leave=False):
             col_result = []
             end = col+batch_size if col+batch_size < self.ncols else self.ncols
             if row_batch_size == self.nrows:
@@ -355,8 +338,6 @@ class Table:
                 row_batches = range(0, self.nrows, row_batch_size)
                 for row in row_batches:
                     row_batch_end = row + row_batch_size if row + row_batch_size < self.nrows else self.nrows
-                    if verbose:
-                        print(f'{int(row/self.nrows*100)}%, {row}/{self.nrows}\r', end="")
                     if row_batch_end - row == 1:
                         col_result.append(np.array(self[row:row_batch_end, col:end][np.newaxis, :]))
                     else:
@@ -364,8 +345,6 @@ class Table:
                     if len(col_result) > 1 and col_result[-1].shape[0] != col_result[-2].shape[0]:
                         col_result[-1] = col_result[-1].T
                 col_result = np.concatenate(col_result, axis=1)
-                if verbose:
-                    print()
             if col_result.ndim == 1:
                 col_result = col_result[np.newaxis, ...]
             if not initialised:
@@ -405,7 +384,7 @@ class Table:
         best_fits = np.zeros(self.ncols, dtype=self.dtype)
         p_rows = np.zeros(self.ncols, dtype=np.int)
         row_index = ['best_fit']
-        for row in range(0, self.nrows):
+        for row in tqdm(range(0, self.nrows), disable=(not self.verbose), leave=False):
             row_values = self.__readfile__(row)
             better_fits = np.where(row_values > best_fits)
             best_fits[better_fits] = row_values[better_fits]

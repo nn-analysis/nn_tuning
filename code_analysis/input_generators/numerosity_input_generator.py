@@ -6,6 +6,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 from typing import List
 
+from tqdm import tqdm
+
 from code_analysis import StorageManager, Table, math, Plot
 from code_analysis.input_generator import InputGenerator
 
@@ -31,16 +33,12 @@ class NumerosityInputGenerator(InputGenerator):
     def generate(self, shape: tuple):
         tbl = None
         col_index = Table.shape_to_indices(shape)
-        for n in range(self.nrange[0], self.nrange[1]):
+        for n in tqdm(range(self.nrange[0], self.nrange[1]), leave=False, disable=(not self.__verbose)):
             for q in range(len(self.__calc_functions)):
                 self.__q = q
                 for j in range(0, self.nvars):
-                    if self.__verbose:
-                        print(f'{int((n*self.nvars+j) / ((self.nrange[1]-self.nrange[0])*self.nvars) * 100)}%\r', end='')
                     tbl = self.__storage_manager.save_results(self.__table, self._generate_row(shape, n)[np.newaxis, ...],
                                                               [n], col_index)
-        if self.__verbose:
-            print()
         return tbl
 
     @staticmethod

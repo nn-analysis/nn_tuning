@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm import tqdm
 
 from code_analysis import StorageManager, Table, InputGenerator
 
@@ -22,11 +23,7 @@ class PositionalInputGenerator(InputGenerator):
     def generate(self, shape: tuple):
         tbl = None
         col_index = Table.shape_to_indices(shape)
-        for i in range(0, self.__size, self.__stride):
-            if self.__verbose:
-                print(f'{int(i / self.__size * 100)}%', end='')
+        for i in tqdm(range(0, self.__size, self.__stride), leave=False, disable=(not self.__verbose)):
             tbl = self.__storage_manager.save_results(self.__table, self._generate_row(shape, i)[np.newaxis, ...],
                                                       [i], col_index)
-        if self.__verbose:
-            print()
         return tbl

@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm import tqdm
 
 from .input_manager import InputManager
 from .network import Network
@@ -30,9 +31,12 @@ class OutputManager:
                 batch = int(np.ceil(tbl.nrows/batch_size))
             else:
                 batch = 0
-        while self.input_manager.valid(batch, batch_size):
+        batch_end = batch
+        while self.input_manager.valid(batch_end, batch_size):
+            batch_end += 1
+        for _ in tqdm(range(batch, batch_end), disable=(not verbose)):
             self.network.current_batch = batch
-            network_input = self.input_manager.get(batch, batch_size, verbose)
+            network_input = self.input_manager.get(batch, batch_size)
             network_output = self.network.run(network_input)
             row, column = self.network.get_indexes()
             self.storage_manager.save_results(table, network_output, row, column)

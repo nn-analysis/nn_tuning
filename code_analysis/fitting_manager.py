@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 from scipy.stats import norm
+from tqdm import tqdm
 
 from .numba_functions import __two_d_var__, __calculate_prediction__, __transpose2d__, __multiply__, __matmultiply__
 from .storage_manager import StorageManager
@@ -55,13 +56,8 @@ class FittingManager:
         responses_T = responses.T
 
         r2_result = np.zeros((p.shape[0], responses.shape[0]), dtype=dtype)
-        for row in range(0, p.shape[0]):
+        for row in tqdm(range(0, p.shape[0]), disable=(not verbose)):
             x, y, s = p[row]
-            percentage = np.ceil(row/p.shape[0]*100)
-            if verbose and y is not None:
-                print(f"{row}, {x}, {y}, {s}, {percentage}%\r", end="")
-            if verbose and y is None:
-                print(f"{row}, {x}, {s}, {percentage}%\r", end="")
             g = np.exp(((stim_x - x) ** 2 + (stim_y - y) ** 2) / (-2 * s ** 2))  # 20480,
             pred = (stimulus @ g)[..., np.newaxis]  # 20480,
             if parallel:
@@ -78,8 +74,6 @@ class FittingManager:
                 for response in range(0, responses.shape[0]):
                     r2 = np.corrcoef(pred.reshape(-1), responses[response])[0, 1]
                     r2_result[row, response] = r2
-        if verbose:
-            print("")
         best_predicted = np.zeros((r2_result.shape[1], 4))
         for i in range(r2_result.shape[1]):
             best_r2 = np.nanmax(r2_result, axis=0)[i]

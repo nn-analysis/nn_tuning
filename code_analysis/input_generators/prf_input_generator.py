@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm import tqdm
 
 from code_analysis import StorageManager, Table, InputGenerator, plt, Plot
 
@@ -60,13 +61,9 @@ class PRFInputGenerator(InputGenerator):
         col_index = Table.shape_to_indices(shape)
         size_x = shape[-1]
         size_y = shape[-2]
-        for i in range(0, size_x + size_y + 2, self.__stride):
-            if self.__verbose:
-                print(f'{int(i / (size_x + size_y + 2) * 100)}%', end='')
+        for i in tqdm(range(0, size_x + size_y + 2, self.__stride), leave=False, disable=(not self.__verbose)):
             tbl = self.__storage_manager.save_results(self.__table, self._generate_row(shape, i)[np.newaxis, ...],
                                                       [i], col_index)
-        if self.__verbose:
-            print()
         return tbl
 
     @staticmethod
