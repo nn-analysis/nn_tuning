@@ -1,10 +1,11 @@
 import numpy as np
 from tqdm import tqdm
 
-from code_analysis import StorageManager, Table, InputGenerator
+from code_analysis import StorageManager, Table
+from .two_d_input_generator import TwoDInputGenerator
 
 
-class PositionalInputGenerator(InputGenerator):
+class PositionalInputGenerator(TwoDInputGenerator):
 
     def __init__(self, amount_of_pixels: int, stride: int, table: str, size: int,
                  storage_manager: StorageManager, verbose: bool = False):

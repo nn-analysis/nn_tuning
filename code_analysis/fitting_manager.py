@@ -111,14 +111,14 @@ class FittingManager:
             nd_list.append(pred)
         return np.array(nd_list)
 
-    def test_response_fitting(self, variables_to_discover, shape, stimulus, stim_x, stim_y, step, parallel=False, gpu=False) -> (
+    def test_response_fitting(self, variables_to_discover, shape, stimulus, stim_x, stim_y, step, parallel=False, gpu=False, verbose=False) -> (
             bool, np.array, np.array):
 
         generated_responses = self.generate_fake_responses(variables_to_discover, stim_x, stim_y, stimulus)
         if gpu and not parallel:
             raise AssertionError("The GPU fit function only supports parallel computing")
         p, result, predicted = self.fit_response_function(generated_responses, stim_x, stim_y, shape, step,
-                                                          parallel=parallel, gpu=gpu)
+                                                          parallel=parallel, gpu=gpu, verbose=verbose)
         return predicted[:, 1:]
 
     @staticmethod

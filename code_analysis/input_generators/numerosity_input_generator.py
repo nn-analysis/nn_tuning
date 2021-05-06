@@ -4,15 +4,14 @@ from enum import Enum
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image, ImageDraw
-from typing import List
 
 from tqdm import tqdm
 
 from code_analysis import StorageManager, Table, math, Plot
-from code_analysis.input_generator import InputGenerator
+from .two_d_input_generator import TwoDInputGenerator
 
 
-class NumerosityInputGenerator(InputGenerator):
+class NumerosityInputGenerator(TwoDInputGenerator):
 
     def __init__(self, nvars: int, nrange: (int, int), table: str, storage_manager: StorageManager,
                  verbose: bool = False, calc_functions=None):

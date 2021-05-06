@@ -1,12 +1,14 @@
 import numpy as np
 from tqdm import tqdm
 
-from code_analysis import StorageManager, Table, InputGenerator, plt, Plot
+from code_analysis import StorageManager, Table, plt, Plot
+from .two_d_input_generator import TwoDInputGenerator
 
 
-class PRFInputGenerator(InputGenerator):
+class PRFInputGenerator(TwoDInputGenerator):
 
-    def __init__(self, stride: int, table: str, storage_manager: StorageManager, block_size: int = 5, verbose: bool = False):
+    def __init__(self, stride: int, table: str, storage_manager: StorageManager, block_size: int = 5,
+                 verbose: bool = False):
         self.__stride = stride
         self.__table = table
         self.__storage_manager = storage_manager
@@ -22,10 +24,10 @@ class PRFInputGenerator(InputGenerator):
 
         for j in range(5):
             for i in range(5):
-                checkerboard[j::block_size*2, i::block_size*2] = 1
-                checkerboard[j+block_size::block_size*2, i+block_size::block_size*2] = 1
+                checkerboard[j::block_size * 2, i::block_size * 2] = 1
+                checkerboard[j + block_size::block_size * 2, i + block_size::block_size * 2] = 1
 
-        if index < size_x+1:
+        if index < size_x + 1:
             usable_index = index
             if usable_index < block_size:
                 start = 0
@@ -90,7 +92,7 @@ class PRFInputGenerator(InputGenerator):
                 end = size_x + 1
             else:
                 end = i + 5
-            results[i+size_x+1, start:end, :] = 1
+            results[i + size_x + 1, start:end, :] = 1
         return results.reshape(results.shape[0], -1)
 
     def plot_image(self, shape: (int, int), index: int, title: str):
