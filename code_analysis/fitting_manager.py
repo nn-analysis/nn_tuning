@@ -12,6 +12,8 @@ try:
     import skcuda.magma as magma
 except OSError:
     magma_supported = False
+except ModuleNotFoundError:
+    magma_supported = False
 
 
 class FittingManager:

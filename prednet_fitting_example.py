@@ -15,10 +15,10 @@ json_file = os.path.join(WEIGHTS_DIR, 'prednet_kitti_model.json')
 verbose = True
 network_input_shape = (1, 3, 128, 160)  # The first dimension in PredNet is the time dimension,
                                         # the second are the colour channels, the others are y anc x
-table = 'example'   # This is table the output manager will store the results in
+table = 'PredNet_PRF'   # This is table the output manager will store the results in
 
 # Initialise managers
-storage_manager = StorageManager("/path/to/data/folder")
+storage_manager = StorageManager("/Users/jescahoogendijk/Documents/University/Thesis/Code/data/")
 
 # The input generator generates input, the input manager makes sure that the network gets the correct input
 prf_input_generator = PRFInputGenerator(1, 'prf_input', storage_manager, verbose=verbose)
@@ -37,7 +37,7 @@ network.feedforward_only = False
 # The resume parameter was build in to allow you to go on where it left in case it crashes
 # PredNet has a memory leak somewhere that causes it to crash after a while
 # This allows you to have it pick up where it left off when it does
-# output_manager.run(table, batch_size=100, resume=True, verbose=True)
+output_manager.run(table, batch_size=100, resume=True, verbose=True)
 
 # The data should now be ready to be fitted
 
@@ -51,7 +51,7 @@ fitting_manager = FittingManager(storage_manager)
 
 # Since PredNet is too large to go through all at once memory wise we need to go through PredNet in steps
 # The slices are to select a part of the output to analyse, the fitting manager ties all the results together automatically later
-slices, layers_to_slice = Prednet.get_network_layer_indices(tbl, feedforward_only=network.feedforward_only)
+slices, layers_to_slice = Prednet.get_network_layer_indices(tbl, feedforward_only=False)#network.feedforward_only)
 
 # The stim_x, stim_y, and stimulus variables are used in the fitting procedure to generate a prediction from the function parameters it is testing
 # stim_x and stim_y both contain representation of the thing you were trying to present
