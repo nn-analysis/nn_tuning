@@ -1,7 +1,6 @@
 import math
 
 import numpy as np
-from scipy.stats import norm
 from tqdm import tqdm
 
 from .numba_functions import __two_d_var__, __calculate_prediction__, __transpose2d__, __multiply__, __matmultiply__
@@ -32,7 +31,9 @@ class FittingManager:
         return np.array(stim_x), np.array(stim_y)
 
     def fit_response_function(self, responses: np.ndarray, stim_x: np.array, stim_y: np.array, shape: (int, int, int),
-                              step: (float, float, float), stimulus: np.ndarray = None,
+                              step: (float, float, float),
+                              prediction_function: str = "np.exp(((stim_x - x) ** 2 + (stim_y - y) ** 2) / (-2 * s ** 2))",
+                              stimulus: np.ndarray = None,
                               parallel: bool = None, gpu: bool = False, verbose: bool = False, table: str = None,
                               override: bool = False, indices_slice: slice = None, ncols: int = None, log: bool = False,
                               columns: list = None, dtype: np.dtype = None) -> (np.array, np.array):
@@ -60,7 +61,7 @@ class FittingManager:
         r2_result = np.zeros((p.shape[0], responses.shape[0]), dtype=dtype)
         for row in tqdm(range(0, p.shape[0]), disable=(not verbose)):
             x, y, s = p[row]
-            g = np.exp(((stim_x - x) ** 2 + (stim_y - y) ** 2) / (-2 * s ** 2))  # 20480,
+            g = eval(prediction_function)  # 20480,
             pred = (stimulus @ g)[..., np.newaxis]  # 20480,
             if parallel:
                 # noinspection PyUnboundLocalVariable
