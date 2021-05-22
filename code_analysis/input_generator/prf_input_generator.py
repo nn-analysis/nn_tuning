@@ -1,11 +1,21 @@
 import numpy as np
 from tqdm import tqdm
 
-from code_analysis import StorageManager, Table, plt, Plot
+from code_analysis import StorageManager, plt, Plot
 from .two_d_input_generator import TwoDInputGenerator
 
 
 class PRFInputGenerator(TwoDInputGenerator):
+    """
+    Class that generates pRF stimuli for visual field position in a moving bar.
+
+    Args:
+        stride: The stride of the moving bar.
+        table: The name of the table to save the stimuli to.
+        storage_manager: The StorageManager to use to save the results.
+        block_size: The size of the blocks in the stimulus.
+        verbose (optional): Whether the class should print its progress to the console.
+    """
 
     def __init__(self, stride: int, table: str, storage_manager: StorageManager, block_size: int = 5,
                  verbose: bool = False):
@@ -16,6 +26,15 @@ class PRFInputGenerator(TwoDInputGenerator):
         self.__block_size = block_size
 
     def _get_2d(self, shape: (int, int), index: int) -> np.array:
+        """Generates the 2d stimulus to be appended with other dimensions to a complete stimulus.
+
+        Args:
+            shape (:obj:`(int, int)`) : The shape of the 2d stimulus to generate.
+            index (int) : The index of the stimulus. The index allows the function to differentiate which variation to generate in a generalisable way.
+
+        Returns:
+            object (:obj:`np.array`) : The generated stimulus as a 2d image.
+        """
         size_x = shape[1]
         size_y = shape[0]
         block_size = self.__block_size
@@ -59,17 +78,36 @@ class PRFInputGenerator(TwoDInputGenerator):
         return result
 
     def generate(self, shape: tuple):
+        """
+        Generates all input and saves the input to a table
+
+        Args:
+            shape: The expected shape of the input
+
+        Returns:
+            Table or TableSet containing the stimuli
+        """
         tbl = None
-        col_index = Table.shape_to_indices(shape)
         size_x = shape[-1]
         size_y = shape[-2]
         for i in tqdm(range(0, size_x + size_y + 2, self.__stride), leave=False, disable=(not self.__verbose)):
-            tbl = self.__storage_manager.save_results(self.__table, self._generate_row(shape, i)[np.newaxis, ...],
-                                                      [i], col_index)
+            tbl = self.__storage_manager.save_result_table_set((self._generate_row(shape, i)[np.newaxis, ...]),
+                                                               self.__table, {self.__table: self.__table},
+                                                               append_rows=True)
         return tbl
 
     @staticmethod
     def get_stimulus(shape: (int, int)):
+        """
+        Generates the stimulus for the pRF data to be used by the FittingManager.
+        The shape indicates the shape of the 2d images.
+
+        Args:
+            shape: Shape of the 2d images.
+
+        Returns:
+            np.array containing the stimulus variable to be used by the FittingManager.
+        """
         results = np.zeros((shape[0] + shape[1] + 2, *shape))
         size_x = shape[1]
         size_y = shape[0]
@@ -96,6 +134,16 @@ class PRFInputGenerator(TwoDInputGenerator):
         return results.reshape(results.shape[0], -1)
 
     def plot_image(self, shape: (int, int), index: int, title: str):
+        """
+        Generates and plots a stimulus with a certain shape at a certain index.
+        The title will either be displayed in the plot (when the plot is shown), or used as a filename (when the plot is saved).
+        This function uses the Plot class to save or store plots. To save the plot as an image set `Plot.save_fig` to `True`.
+
+        Args:
+            shape: Shape of the image
+            index: Index of the stimulus
+            title: Title of the plot or the filename of the plot
+        """
         result = self._get_2d(shape, index).reshape(shape)
         plt.imshow(result, cmap='gray', vmin=0, vmax=1, origin='lower')
         if Plot.save_fig:

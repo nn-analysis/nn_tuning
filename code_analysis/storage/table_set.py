@@ -1,0 +1,388 @@
+import os
+import pickle
+from typing import Union
+
+import numpy as np
+from tqdm import tqdm
+
+from .database import Database
+from .error import NoSuchTableError, TableNotInitialisedError
+from .helpers import __keytolist__, __slicetolist__, __verify_data_types_are_correct__
+from .table import Table
+
+
+class TableSet:
+    """
+    A set of Tables and or other TableSets.
+    The get, set, and delete functions work on the aggregated table data.
+    To get a specific subtable you can use `get_subtable(key)`
+
+    Attributes:
+        name (str) : Name of the TableSet.
+        database (`Database`) : The database the TableSet is in.
+        table_set (`TableSet`, optional) : The TableSet this TableSet is a part of.
+        verbose (bool) : If true progress bars are shown during some operations
+
+    Args:
+        name (str) : Name of the TableSet.
+        database (`Database`) : The database the TableSet is in.
+        table_set (`TableSet`, optional) : The TableSet this TableSet is a part of.
+        verbose (bool) : If true progress bars are shown during some operations
+    """
+
+    name: str
+    database: Database
+    __subtables: list
+    __properties_file: str
+    __dtype: np.dtype
+    __ncols: int
+    __recurrent_subtables: dict
+    __ncols_tuple: tuple
+    verbose: bool
+
+    def __init__(self, name: str, database: Database, table_set=None, verbose=False):
+        self.name = name
+        self.database = database
+        self.table_set = table_set
+        self.__properties_file = 'properties'
+        self.verbose = verbose
+
+    def __repr__(self):
+        return f"Table('{self.name}', ({self.nrows}, {self.ncols}), '{self.__folder}')"
+
+    def __getitem__(self, key):
+        rows, cols = __keytolist__(key, self.nrows)
+        results = []
+        for row in tqdm(rows, disable=(not self.verbose), leave=False):
+            try:
+                subtable_total = np.array([])
+                for subtables in self.subtables:
+                    np.concatenate((subtable_total, self.get_subtable(subtables)[row]))
+                if cols is None:
+                    results.append(subtable_total)
+                else:
+                    results.append(subtable_total[cols])
+            except OSError:
+                raise IndexError(f"index {row} is out of bounds for axis 0 with size {self.nrows}")
+
+    def __setitem__(self, key, value):
+        rows, cols = __keytolist__(key, self.nrows)
+        single_value = False
+        if type(cols) is slice and cols.start is None and cols.step is None and cols.stop is None and type(
+                value) is np.array:
+            cols = None
+            if type(value) is list:
+                expected_shape = (len(rows), self.ncols)
+                if len(value) != self.ncols:
+                    raise ValueError(f'Expected shape {expected_shape}, found ({key}, {value})')
+            else:
+                single_value = True
+        elif type(cols) is slice:
+            cols_len = len(__slicetolist__(cols, self.ncols))
+            expected_shape = (len(rows), cols_len)
+            if len(value) != cols_len:
+                raise ValueError(f'Expected shape {expected_shape}, found ({key}, {value})')
+        else:
+            single_value = True
+
+        min_col = 0
+        for subtable in self.subtables:
+            subtable_instance = self.get_subtable(subtable)
+            max_col = min_col + subtable_instance.ncols
+            if single_value:
+                subtable_instance[rows, cols] = key
+            else:
+                cols_array = np.array(__slicetolist__(cols, self.ncols))
+                cols_array = cols_array[np.where(cols_array >= min_col)]
+                cols_array = cols_array[np.where(cols_array <= max_col)]
+                value_array = np.array(value)
+                value_array = value_array[np.where(cols_array >= min_col)]
+                value_array = value_array[np.where(cols_array <= max_col)]
+                cols_list = cols_array.tolist()
+                subtable_instance[rows, cols_list] = value_array
+            min_col += subtable_instance.ncols
+
+    def __delitem__(self, key):
+        for subtable in self.subtables:
+            del self.get_subtable(subtable)[key]
+
+    def __verify_data_and_names_have_matching_shapes(self, data: tuple, names: dict) -> bool:
+        """
+        Checks whether the data and names have the same size
+
+        Args:
+            data: The data of the subtables
+            names: The names of the subtables and subtablesets
+
+        Returns:
+            object (bool) : True if they share the same size, False otherwise
+        """
+        if len(data) != len(names):
+            return False
+        i = 0
+        for subdata in data:
+            name = list(names.items())[i]
+            if type(subdata) is tuple:
+                if type(name[1]) is dict:
+                    if not self.__verify_data_and_names_have_matching_shapes(subdata, name[1]):
+                        return False
+            i += 1
+        return True
+
+    def __verify_coherent_data_rows(self, data: tuple) -> bool:
+        """
+        Checks whether the data has a coherent amount of rows everywhere
+
+        Args:
+            data: The data of the subtables
+
+        Returns:
+            object (bool) : True if it does, False otherwise
+        """
+        nrows = None
+        for subdata in data:
+            if type(subdata) is tuple:
+                if not self.__verify_coherent_data_rows(subdata):
+                    return False
+            elif nrows is None:
+                nrows = subdata.shape[0]
+            elif nrows != subdata.shape[0]:
+                return False
+        return True
+
+    def __verify_name_types_are_correct(self, names: dict) -> bool:
+        """
+        Checks whether the names is a dict of dicts or strings everywhere
+
+        Args:
+            names: The names of the subtables and subtablesets
+
+        Returns:
+            object (bool) : True if it does, False otherwise
+        """
+        for name in names.items():
+            if type(name[1]) is dict:
+                if not self.__verify_name_types_are_correct(name[1]):
+                    return False
+            elif type(name[0]) is not str:
+                return False
+        return True
+
+    def initialise(self, data: tuple, names: dict, dtype: np.dtype = None):
+        """
+        Initialise the TableSet with the structure set in the data parameter.
+        Names and data need to be of the same shape.
+        The program will use the key of the names dict as the name of the Table or TableSet.
+        It is possible to create sub TableSets by making nested dicts in the names variable and nested tuples in the
+        data variable.
+
+        Args:
+            data: The data of the subtables
+            names: The names of the subtables and subtablesets
+            dtype: Data type of the array
+        """
+        if not __verify_data_types_are_correct__(data):
+            raise ValueError('data is not a tuple of nested tuples of np.arrays or a tuple of np.arrays!')
+        if not self.__verify_name_types_are_correct(names):
+            raise ValueError('names is not a dict of nested dicts of strings or a dict of strings!')
+        if not self.__verify_data_and_names_have_matching_shapes(data, names):
+            raise ValueError('data and names do not have the same shape!')
+        if not self.__verify_coherent_data_rows(data):
+            raise ValueError('expected the rows of all np.arrays in the data variable to be of the same length!')
+        if not os.path.isdir(self.__folder):
+            os.mkdir(self.__folder, 0o755)
+        i = 0
+        self.__subtables = []
+        for item in data:
+            name = list(names.items())[i][0]
+            self.__subtables.append(name)
+            if item is tuple:
+                TableSet(name, self.database, self, self.verbose).initialise(item, list(names.items())[i][1], dtype)
+            elif item is np.array:
+                Table(name, self.database, self).initialise(data, dtype)
+            else:
+                raise ValueError('Expected type')
+            i += 1
+        self.__update_properties__()
+
+    def __verify_ncols(self, data: tuple):
+        i = 0
+        for subdata in data:
+            subtable = self.get_subtable(i)
+            if type(subdata) is tuple:
+                if not subtable.__verify_ncols(subdata):
+                    return False
+            else:
+                if subtable.ncols != subdata.shape[1]:
+                    return False
+            i += 1
+        return True
+
+    def append_rows(self, data: tuple):
+        """
+        Add a new rows to the existing TableSet
+
+        Args:
+            data: The new rows as a (nested) tuple of np.arrays
+        """
+        # Verify the data
+        if not __verify_data_types_are_correct__(data):
+            raise ValueError('data is not a tuple of nested tuples of np.arrays or a tuple of np.arrays!')
+        if not self.__verify_coherent_data_rows(data):
+            raise ValueError('expected the rows of all np.arrays in the data variable to be of the same length!')
+        if not self.__verify_ncols(data):
+            raise ValueError('make sure data.ncols is the same as the existing ncols')
+        i = 0
+        for subtable_key in self.subtables:
+            subtable = self.get_subtable(subtable_key)
+            subtable.append_rows(data[i])
+            i += 1
+
+    @property
+    def shape(self):
+        """Shape of the TableSet"""
+        return self.nrows, self.ncols
+
+    @property
+    def nrows(self):
+        """Amount of rows in this subtable"""
+        return self.get_subtable(0).nrows
+
+    @property
+    def ncols(self):
+        """Total amount of columns in this subtable"""
+        if self.__ncols is not None:
+            return self.__ncols
+        total = 0
+        for subtable in self.subtables:
+            total += self.get_subtable(subtable).ncols
+        self.__ncols = total
+        return total
+
+    @property
+    def __folder(self):
+        table_set_folder = ''
+        if self.table_set is not None:
+            table_set_folder = self.table_set.name + '/'
+        return self.database.folder + table_set_folder + self.name + '/'
+
+    @property
+    def subtables(self) -> list:
+        """The names of the subtables in this TableSet"""
+        if self.__subtables is None:
+            self.__calc_properties__()
+        return self.__subtables
+
+    @property
+    def recurrent_subtables(self) -> dict:
+        if self.__recurrent_subtables is not None:
+            return self.__recurrent_subtables
+        result = {}
+        for subtable in subtables:
+            subtable_instance = self.get_subtable(subtable)
+            if type(subtable_instance) is TableSet:
+                result[subtable] = subtable_instance.recurrent_subtables
+            else:
+                result[subtable] = subtable
+        self.__recurrent_subtables = result
+        return result
+
+    @property
+    def ncols_tuple(self):
+        """Amount of columns split up by subtable"""
+        if self.__ncols_tuple is not None:
+            return self.__ncols_tuple
+        ncols_tuple = []
+        for subtable in self.subtables:
+            subtable_instance = self.get_subtable(subtable)
+            if type(subtable_instance) is TableSet:
+                ncols_tuple.append(self.get_subtable(subtable).ncols_tuple)
+            else:
+                ncols_tuple.append(subtable_instance.ncols)
+        self.__ncols_tuple = tuple(ncols_tuple)
+        return
+
+    @property
+    def dtype(self):
+        """The datatype of the TableSet"""
+        if self.__dtype is None:
+            self.__calc_properties__()
+        return self.__dtype
+
+    def change_dtype(self, dtype: np.dtype):
+        """
+        Changes the dtype of the TableSet
+
+        Args:
+            dtype: The desired dtype
+        """
+        for subtable in tqdm(self.subtables, disable=(not self.verbose), leave=False):
+            self.get_subtable(subtable).change_dtype(dtype)
+
+    def __calc_properties__(self):
+        """Calculates the properties of the table including the nrows and ncols"""
+        self.__subtables = self.__readfile__(self.__properties_file)
+        self.__dtype = self.get_subtable(0).dtype
+
+    def __update_properties__(self):
+        self.__writefile__(self.__properties_file, self.__subtables)
+
+    @property
+    def initialised(self):
+        """Indicates whether the TableSet was (correctly) initialised"""
+        properties_exist = os.path.isfile(self.__folder + self.__properties_file)
+        if not properties_exist:
+            return False
+        try:
+            with open(self.__folder + str(self.__properties_file), 'rb') as f:
+                subtables, types = pickle.load(f)
+        except EOFError:
+            return False
+        except TypeError:
+            return False
+        except ValueError:
+            return False
+        if type(subtables) is not list:
+            return False
+        if type(types) is not dict:
+            return False
+
+    def print_structure(self, tabs=0):
+        """
+        Prints a map of the table structure
+
+        Args:
+            tabs (int) : Amount of tabs to print before the text
+        """
+        raise NotImplementedError()
+
+    def get_subtable(self, key: Union[str, int]):
+        """
+        Returns the Table or TableSet with the key
+
+        Args:
+            key (str or int) : The key of the subtable
+        """
+        if not self.initialised:
+            raise TableNotInitialisedError("Initialise the TableSet before calling this function!")
+        if key not in self.subtables:
+            raise NoSuchTableError()
+        if type(key) is int:
+            key = self.subtables[key]
+        if Table(key, self.database, self).initialised:  # Subtable is a Table
+            return Table(key, self.database, self)
+        elif TableSet(key, self.database, self).initialised:  # Subtable is a TableSet
+            return TableSet(key, self.database, self)
+        raise NoSuchTableError('No subtable with this key was found to be initialised!')
+
+    def __readfile__(self, filename):
+        if not self.initialised:
+            raise TableNotInitialisedError("Initialise the TableSet before using it!")
+        with open(self.__folder + str(filename), 'rb') as f:
+            return pickle.load(f)
+
+    def __writefile__(self, filename, value):
+        if not self.initialised:
+            raise TableNotInitialisedError("Initialise the TableSet before using it!")
+        with open(self.__folder + str(filename), 'wb') as f:
+            pickle.dump(value, f)

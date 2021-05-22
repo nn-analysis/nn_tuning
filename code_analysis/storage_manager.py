@@ -7,18 +7,6 @@ import shutil
 from tqdm import tqdm
 
 
-class NoSuchTableError(Exception):
-    pass
-
-
-class ShapeMismatchError(Exception):
-    pass
-
-
-class TableAlreadyExists(Exception):
-    pass
-
-
 class Table:
 
     name: str
@@ -461,8 +449,9 @@ class StorageManager:
         tbl.create(array, row_index, column_index, shape, indices, dtype)
         return tbl
 
-    def save_results(self, table: str, results: np.array, row_index: list, column_index: list, shape: (int, int) = None,
-                     indices: (slice, slice) = None, verbose: bool = False, dtype: np.dtype = None):
+    def save_results(self, table: str, results: np.array, row_index: list = None, column_index: list = None,
+                     shape: (int, int) = None, indices: (slice, slice) = None, verbose: bool = False,
+                     dtype: np.dtype = None):
         if row_index is None:
             row_index = range(0, results.shape[0])
         if column_index is None:
