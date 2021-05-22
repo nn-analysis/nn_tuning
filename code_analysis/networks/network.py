@@ -10,12 +10,12 @@ class Network(ABC):
     Subclasses of this class will be the only actual interaction point between networks and the rest of the program.
 
     Attributes:
-        current_batch (int) : The current batch
+        current_batch: (int) The current batch
     """
 
     current_batch: int
 
-    def run(self, input_array: np.array) -> (tuple, dict):
+    def run(self, input_array: np.ndarray) -> (tuple, dict):
         """
         Runs the stimuli (in the `input_array`) through the network and returns the results.
 
@@ -23,7 +23,7 @@ class Network(ABC):
             input_array: Input array containing all the stimuli in this batch
 
         Returns:
-            tuple, dictionary : result arrays, labels
+            The results as a tuple and the labels as a dictionary
         """
         raise NotImplementedError
 

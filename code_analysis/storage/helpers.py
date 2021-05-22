@@ -12,7 +12,7 @@ def __slicetolist__(key, length: int):
         length (int, optional) : The length of the slice. default=nrows
 
     Returns:
-        object (list) : List of indices
+        object: List of indices
     """
     start = key.start
     if start is None:
@@ -36,7 +36,7 @@ def __keytolist__(key, length: int) -> tuple:
         key: Key of the index
 
     Returns:
-        object (list): List of indices
+        object: List of indices
     """
     if type(key) is slice:
         return __slicetolist__(key, length), None
@@ -65,7 +65,7 @@ def __verify_data_types_are_correct__(data: tuple) -> bool:
         data: The data of the subtables
 
     Returns:
-        object (bool) : True if it does, False otherwise
+        True if it does, False otherwise
     """
     for subdata in data:
         if type(subdata) is tuple:

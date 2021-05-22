@@ -7,15 +7,17 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 from tqdm import tqdm
+import math
+from ..plot import Plot
 
-from .. import StorageManager, math, Plot
+from ..storage import StorageManager
 from .two_d_input_generator import TwoDInputGenerator
 
 
 class NumerosityInputGenerator(TwoDInputGenerator):
     """Class containing function pertaining to the generation of stimuli encoding for numerosity
 
-    This class is a subclass of the TwoDInputGenerator and is responsible for implementing the generation and storage
+    This class is a subclass of the `TwoDInputGenerator` and is responsible for implementing the generation and storage
     of two dimensional numerosity stimuli and the plotting of said stimuli.
 
     Multiple stimuli are generated for each numerosity for one or multiple different calculation functions.
@@ -27,20 +29,20 @@ class NumerosityInputGenerator(TwoDInputGenerator):
     Images are generated with a random dot placement nvar times.
 
     Attributes:
-        nvars (int) : The number of random images that are generated for each numerosity-calculation function pair.
-        nrange (int, int) : The range (min, max) of numerosities stimuli will be generated for.
+        nvars: (int) The number of random images that are generated for each numerosity-calculation function pair.
+        nrange: (int, int) The range (min, max) of numerosities stimuli will be generated for.
     """
 
     def __init__(self, nvars: int, nrange: (int, int), table: str, storage_manager: StorageManager,
                  verbose: bool = False, calc_functions: Optional[List[str]] = None):
         """
         Args:
-            nvars (int) : The number of random images that are generated for each numerosity-calculation function pair.
-            nrange (int, int) : The range (min, max) of numerosities stimuli will be generated for.
-            table (str) : The name of the table the stimuli will be stored to.
-            storage_manager (:obj:`StorageManager`) : `StorageManager` that will handle the processing of the table
-            verbose (:obj:`bool`, optional) : If yes, will print the process to the console
-            calc_functions (:obj:`list` of :obj:`str`, optional) : List with 'area', 'size', and/or 'circumference.
+            nvars: (int) The number of random images that are generated for each numerosity-calculation function pair.
+            nrange: (int, int) The range (min, max) of numerosities stimuli will be generated for.
+            table: (str) The name of the table the stimuli will be stored to.
+            storage_manager: (`StorageManager`) `StorageManager` that will handle the processing of the table
+            verbose (optional, default=False): (bool) If yes, will print the process to the console
+            calc_functions (optional): List with 'area', 'size', and/or 'circumference.
         """
         if calc_functions is None:
             calc_functions = ['area', 'size', 'circumference']
@@ -55,18 +57,27 @@ class NumerosityInputGenerator(TwoDInputGenerator):
         self.__q = 0
 
     def _get_2d(self, shape: (int, int), index: int) -> np.array:
+        """Generates the 2d stimulus to be appended with other dimensions to a complete stimulus.
+
+        Args:
+            shape: (int, int) The shape of the 2d stimulus to generate.
+            index: (int) The index of the stimulus. The index allows the function to differentiate which variation to generate in a generalisable way.
+
+        Returns:
+            (np.ndarray) The generated stimulus as a 2d image.
+        """
         # Only return one colour channel, all colour channels are equal
         return self.__generate_dot_image(index, shape, self.__calc_functions[self.__q])[:, :, 0]
 
     def generate(self, shape: tuple):
         """Generates the stimuli based on the expected output shape
         It, for each numerosity in `range(self.nrange[0], self.nrange[1)`, for each `self.calc_function`, generates `self.nvar` random placed dot imgaes.
-        Finally it saves those images in a table and returns them
+        Finally it saves those images in a `Table` and returns them
         Args:
-            shape: expected shape of the final stimuli
+            shape: (tuple) expected shape of the final stimuli
 
         Returns:
-            object (:obj:`Table`) : The resulting stimuli table
+            (`Table`) The resulting stimuli `Table`
         """
         tbl = None
         for n in tqdm(range(self.nrange[0], self.nrange[1]), leave=False, disable=(not self.__verbose)):
@@ -85,14 +96,14 @@ class NumerosityInputGenerator(TwoDInputGenerator):
         The calculation function can either be area, for a constant total area of all the dots in the image, size for a constant dot size, or circumference for a constant total circumference.
 
         Args:
-            ndots: Number of dots to generate
-            img_shape (:obj:`(int, int)`): Size of the image
-            calculation_function (str): Way to calculate dot size
-            plt_image (bool): If True the generated image is plotted
-            plt_title (str): Title used in the plot if plt_image is True
+            ndots: (int) Number of dots to generate
+            img_shape: (int, int) Size of the image
+            calculation_function (optional, default='area'): (str) Way to calculate dot size
+            plt_image (optional, default=False): (bool) If True the generated image is plotted
+            plt_title (optional, default=''): (str) Title used in the plot if plt_image is True
 
         Returns:
-            object (:obj:`np.array`): The resulting stimulus
+            (np.ndarray) The resulting stimulus
         """
         # Parameters
         win_pos = Enum('win_pos', 'area size circumference')
@@ -195,18 +206,18 @@ class NumerosityInputGenerator(TwoDInputGenerator):
         return NumerosityInputGenerator.__draw_image(width, height, dotGroup, dotSize, plt_image, plt_title)
 
     @staticmethod
-    def __new_dot_pattern(ndots, width, height, dot_size, recheck_dist):
+    def __new_dot_pattern(ndots: int, width: int, height: int, dot_size: float, recheck_dist):
         """Function that generates the pattern of where the dots have to be placed.
 
         Args:
-            ndots: Number of dots to generate
-            width: Width of the stimulus
-            height: Height of the stimulus
-            dot_size: Size of the dot
+            ndots: (int) Number of dots to generate
+            width: (int) Width of the stimulus
+            height: (int) Height of the stimulus
+            dot_size: (float) Size of the dot
             recheck_dist: Variable that determines how close dots are allowed to be
 
         Returns:
-            object (tuple): Tuple of x,y coords of circle ([1,39], [43,2], ...)
+            Tuple of x,y coords of circle ([1,39], [43,2], ...)
         """
         infCounter = 0
         recheckCounter = 1000
@@ -265,15 +276,15 @@ class NumerosityInputGenerator(TwoDInputGenerator):
         """Generates the actual Image
 
         Args:
-            img_width (int) : Width of image
-            image_height (int) : Height of image
-            dot_group (tuple) : Tuple of x,y coords of circle ([1,39], [43,2], ...)
-            dot_size (float) : Diameter of a single dot.
-            plt_image (bool) : If True the generated image is plotted
-            plt_title (str) : Title used in the plot if plt_image is True
+            img_width: (int) Width of image
+            image_height: (int) Height of image
+            dot_group: (tuple) Tuple of x,y coords of circle ([1,39], [43,2], ...)
+            dot_size: (float) Diameter of a single dot.
+            plt_image: (bool) If True the generated image is plotted
+            plt_title: (str) Title used in the plot if plt_image is True
 
         Returns:
-
+            np.ndarray containing the image
         """
 
         # make a blank image first

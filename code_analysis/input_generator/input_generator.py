@@ -1,6 +1,6 @@
 import abc
 from abc import ABC
-from .. import Table, TableSet
+from ..storage import Table, TableSet
 from typing import Union
 
 

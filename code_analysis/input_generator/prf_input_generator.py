@@ -1,7 +1,11 @@
+from typing import Union
+
 import numpy as np
 from tqdm import tqdm
 
-from code_analysis import StorageManager, plt, Plot
+import matplotlib.pyplot as plt
+from ..plot import Plot
+from ..storage import StorageManager, Table, TableSet
 from .two_d_input_generator import TwoDInputGenerator
 
 
@@ -13,8 +17,8 @@ class PRFInputGenerator(TwoDInputGenerator):
         stride: The stride of the moving bar.
         table: The name of the table to save the stimuli to.
         storage_manager: The StorageManager to use to save the results.
-        block_size: The size of the blocks in the stimulus.
-        verbose (optional): Whether the class should print its progress to the console.
+        block_size (optional, default=5): The size of the blocks in the stimulus.
+        verbose (optional, default=False): Whether the class should print its progress to the console.
     """
 
     def __init__(self, stride: int, table: str, storage_manager: StorageManager, block_size: int = 5,
@@ -29,11 +33,11 @@ class PRFInputGenerator(TwoDInputGenerator):
         """Generates the 2d stimulus to be appended with other dimensions to a complete stimulus.
 
         Args:
-            shape (:obj:`(int, int)`) : The shape of the 2d stimulus to generate.
-            index (int) : The index of the stimulus. The index allows the function to differentiate which variation to generate in a generalisable way.
+            shape: (int, int) The shape of the 2d stimulus to generate.
+            index: (int) The index of the stimulus. The index allows the function to differentiate which variation to generate in a generalisable way.
 
         Returns:
-            object (:obj:`np.array`) : The generated stimulus as a 2d image.
+            (np.ndarray) The generated stimulus as a 2d image.
         """
         size_x = shape[1]
         size_y = shape[0]
@@ -77,15 +81,15 @@ class PRFInputGenerator(TwoDInputGenerator):
         result = result.reshape(-1)
         return result
 
-    def generate(self, shape: tuple):
+    def generate(self, shape: tuple) -> Union[Table, TableSet]:
         """
         Generates all input and saves the input to a table
 
         Args:
-            shape: The expected shape of the input
+            shape: (tuple) The expected shape of the input
 
         Returns:
-            Table or TableSet containing the stimuli
+            `Table` or `TableSet` containing the stimuli
         """
         tbl = None
         size_x = shape[-1]
@@ -97,16 +101,16 @@ class PRFInputGenerator(TwoDInputGenerator):
         return tbl
 
     @staticmethod
-    def get_stimulus(shape: (int, int)):
+    def get_stimulus(shape: (int, int)) -> np.ndarray:
         """
-        Generates the stimulus for the pRF data to be used by the FittingManager.
+        Generates the stimulus for the pRF data to be used by the `FittingManager`.
         The shape indicates the shape of the 2d images.
 
         Args:
-            shape: Shape of the 2d images.
+            shape: (int, int) Shape of the 2d images.
 
         Returns:
-            np.array containing the stimulus variable to be used by the FittingManager.
+            np.ndarray containing the stimulus variable to be used by the FittingManager.
         """
         results = np.zeros((shape[0] + shape[1] + 2, *shape))
         size_x = shape[1]
@@ -140,9 +144,9 @@ class PRFInputGenerator(TwoDInputGenerator):
         This function uses the Plot class to save or store plots. To save the plot as an image set `Plot.save_fig` to `True`.
 
         Args:
-            shape: Shape of the image
-            index: Index of the stimulus
-            title: Title of the plot or the filename of the plot
+            shape: (int, int) Shape of the image
+            index: (int) Index of the stimulus
+            title: (str) Title of the plot or the filename of the plot
         """
         result = self._get_2d(shape, index).reshape(shape)
         plt.imshow(result, cmap='gray', vmin=0, vmax=1, origin='lower')

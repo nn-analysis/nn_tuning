@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+from typing import Union
 
 from .storage import StorageManager, Table, TableSet
 
@@ -123,10 +124,10 @@ class FittingManager:
             responses: Recorded activations in a TableSet.
             table_set: The name of the TableSet to save the results to.
             stim_x: The stim_x variable contains an array with, for every row in the responses, what x variables were activated at that point.
-            stim_y:The stim_y variable contains an array with, for every row in the responses, what y variables were activated at that point.
+            stim_y: The stim_y variable contains an array with, for every row in the responses, what y variables were activated at that point.
             candidate_function_parameters: A numpy array with, at each row, three variables for x, y, and sigma that will be evaluated by the function.
             prediction_function: The function that will generate the prediction. by default this is a simple gaussian function.
-            stimulus (optional, default=np.eye(len(stim_x))): The stimulus variable is an np.array with, at each row, an array with the list of stimuli that were activated at that point.
+            stimulus (optional): The stimulus variable is an np.array with, at each row, an array with the list of stimuli that were activated at that point.
             parallel (optional, default=True): Boolean indicating whether the algorithm should run parallel. Parallel processing makes the algorithm a lot faster.
             verbose (optional, default=False): Boolean indicating whether the function prints progress to the console.
             dtype (optional): The data type to store the data in when storing the data in a table
@@ -210,10 +211,10 @@ class FittingManager:
         Args:
             responses: Recorded activations
             stim_x: The stim_x variable contains an array with, for every row in the responses, what x variables were activated at that point.
-            stim_y:The stim_y variable contains an array with, for every row in the responses, what y variables were activated at that point.
+            stim_y: The stim_y variable contains an array with, for every row in the responses, what y variables were activated at that point.
             candidate_function_parameters: A numpy array with, at each row, three variables for x, y, and sigma that will be evaluated by the function.
             prediction_function: The function that will generate the prediction. by default this is a simple gaussian function.
-            stimulus (optional, default=np.eye(len(stim_x))): The stimulus variable is an np.array with, at each row, an array with the list of stimuli that were activated at that point.
+            stimulus (optional): The stimulus variable is an np.array with, at each row, an array with the list of stimuli that were activated at that point.
             parallel (optional, default=True): Boolean indicating whether the algorithm should run parallel. Parallel processing makes the algorithm a lot faster.
             verbose (optional, default=False): Boolean indicating whether the function prints progress to the console.
             dtype (optional): The data type to store the data in when storing the data in a table
@@ -294,7 +295,7 @@ class FittingManager:
 
     def test_response_fitting(self, variables_to_discover, stimulus, stim_x, stim_y,
                               candidate_function_parameters, parallel=False,
-                              verbose=False) -> (bool, np.array, np.array):
+                              verbose=False):
         """
         Tests the response fitting using known function parameters by generating fake responses, fitting parameters,
         and comparing the best fitted parameter with the known parameter.
@@ -309,7 +310,7 @@ class FittingManager:
             verbose: Whether the function should print progress to the command line.
 
         Returns:
-
+            np.ndarray with the predictions
         """
         generated_responses = self.generate_fake_responses(variables_to_discover, stim_x, stim_y, stimulus)
         p, result = self.fit_response_function(generated_responses, stim_x, stim_y, candidate_function_parameters,
@@ -342,10 +343,10 @@ class FittingManager:
         Can linearise the sigma variable and move parameters into log space.
 
         Args:
-            step (float, float, float) : The step sizes of the parameters.
-            shape (int, int, int) : The shapes of the parameters.
-            linearise_s (bool) : If true, the sigmas will get linearised.
-            log (bool) : If true, the first two parameters are moved into log space.
+            step: (float, float, float) The step sizes of the parameters.
+            shape: (int, int, int) The shapes of the parameters.
+            linearise_s: (bool) If true, the sigmas will get linearised.
+            log: (bool) If true, the first two parameters are moved into log space.
 
         Returns:
             np.array with at each row a set of parameter function parameters

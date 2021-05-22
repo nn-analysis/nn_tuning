@@ -11,10 +11,10 @@ from prednet import PredNet
 
 class Prednet(Network):
     """
-    Network that accesses the PredNet models, presenting it stimuli and returning the activations in an interpretable way.
+    `Network` that accesses the PredNet models, presenting it stimuli and returning the activations in an interpretable way.
 
     Attributes:
-        feedforward_only (bool) : Determines whether the recurrent connections are used
+        feedforward_only: Boolean that determines whether the recurrent connections are used
 
     Args:
         json_file: JSon file containing the pre-trained model
@@ -31,7 +31,7 @@ class Prednet(Network):
         self._train_model, self._test_model = self._setup_prednet_models(json_file, weight_file)
 
     @staticmethod
-    def _setup_pre_trained_model_prednet(output_mode, pre_trained_model, number_of_timesteps):
+    def _setup_pre_trained_model_prednet(output_mode: str, pre_trained_model, number_of_timesteps):
         """
         Initialises a testing model of PredNet using exiting weights from the training model.
 
@@ -77,7 +77,7 @@ class Prednet(Network):
         test_model.compile(loss='mean_absolute_error', optimizer='adam')
         return train_model, test_model
 
-    def __call_and_run_prednet(self, input_array: np.array) -> dict:
+    def __call_and_run_prednet(self, input_array: np.ndarray) -> dict:
         """
         Actually runs and calls PredNet.
         Returns the raw batch output
@@ -86,7 +86,7 @@ class Prednet(Network):
             input_array: Input array containing all the stimuli in this batch
 
         Returns:
-            batch_output (dict) : Dictionary with all the np.arrays from different subparts per layer.
+            Dictionary with all the np.ndarrays from different subparts per layer.
         """
         with tf.compat.v1.Session() as sess:
             batch_output = dict()
@@ -124,7 +124,7 @@ class Prednet(Network):
             batch_output: Raw batch_output dictionary
 
         Returns:
-            tuple, dictionary : result arrays, labels
+            The results as a tuple and the labels as a dictionary
         """
         results = []
         names = {}
@@ -139,7 +139,7 @@ class Prednet(Network):
                 i += 1
         return tuple(results), names
 
-    def run(self, input_array: np.array) -> (tuple, dict):
+    def run(self, input_array: np.ndarray) -> (tuple, dict):
         """
         Runs the stimuli (in the `input_array`) through the network and returns the results.
 
@@ -147,7 +147,7 @@ class Prednet(Network):
             input_array: Input array containing all the stimuli in this batch
 
         Returns:
-            tuple, dictionary : result arrays, labels
+            The results as a tuple and the labels as a dictionary
         """
         batch_output = self.__call_and_run_prednet(input_array)
         return self.__reshape_batch_output(batch_output)

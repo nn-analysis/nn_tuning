@@ -8,19 +8,19 @@ from .storage import StorageManager
 
 class OutputManager:
     """
-    The OutputManager is the class that goes through batches of input.
-    The batches are retrieved from the provided InputManager.
-    The results are stored using the provided StorageManager.
+    The `OutputManager` is the class that goes through batches of input.
+    The batches are retrieved from the provided `InputManager`.
+    The results are stored using the provided `StorageManager`.
 
     Attributes:
-        network: The network that will be used.
-        storage_manager: The StorageManager that will allow for saving the results.
-        input_manager: The InputManager that will provide the input
+        network: The `Network` that will be used.
+        storage_manager: The `StorageManager` that will allow for saving the results.
+        input_manager: The `InputManager` that will provide the input
 
     Args:
-        network: The network that will be used.
-        storage_manager: The StorageManager that will allow for saving the results.
-        input_manager: The InputManager that will provide the input
+        network: The `Network` that will be used.
+        storage_manager: The `StorageManager` that will allow for saving the results.
+        input_manager: The `InputManager` that will provide the input
     """
 
     def __init__(self, network: Network, storage_manager: StorageManager, input_manager: InputManager):
@@ -30,14 +30,14 @@ class OutputManager:
 
     def run(self, table: str, batch_size: int, override: bool = True, resume: bool = False, verbose: bool = False):
         """
-        Function runs a batch through a network
+        Function runs a batch through a `Network`
 
         Args:
-            verbose: outputs the current batch and total percentage done
-            table: Table to save data to
-            batch_size: Size of the batches to input into the network
-            override: bool determines whether the table gets extended or overridden (default=False)
-            resume: resume at last batch on failure
+            table: `Table` to save data to
+            batch_size: (int) Size of the batches to input into the network
+            override (optional, default=True): (bool) determines whether the table gets extended or overridden (default=False)
+            resume (optional, default=False): (bool) resume at last batch on failure
+            verbose (optional, default=False): (bool) outputs the current batch and total percentage done
         """
         batch = 0
         if override and not resume:

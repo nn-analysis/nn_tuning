@@ -13,21 +13,21 @@ from .table import Table
 
 class TableSet:
     """
-    A set of Tables and or other TableSets.
+    A set of `Table`s and or other `TableSet`s.
     The get, set, and delete functions work on the aggregated table data.
     To get a specific subtable you can use `get_subtable(key)`
 
     Attributes:
-        name (str) : Name of the TableSet.
-        database (`Database`) : The database the TableSet is in.
-        table_set (`TableSet`, optional) : The TableSet this TableSet is a part of.
-        verbose (bool) : If true progress bars are shown during some operations
+        name: Name of the `TableSet`.
+        database: The `database` the TableSet is in.
+        table_set (optional): The TableSet this TableSet is a part of.
+        verbose: If true progress bars are shown during some operations
 
     Args:
-        name (str) : Name of the TableSet.
-        database (`Database`) : The database the TableSet is in.
-        table_set (`TableSet`, optional) : The TableSet this TableSet is a part of.
-        verbose (bool) : If true progress bars are shown during some operations
+        name: Name of the TableSet.
+        database: The database the TableSet is in.
+        table_set (optional): The TableSet this TableSet is a part of.
+        verbose (optional, default=False): If true progress bars are shown during some operations
     """
 
     name: str
@@ -115,7 +115,7 @@ class TableSet:
             names: The names of the subtables and subtablesets
 
         Returns:
-            object (bool) : True if they share the same size, False otherwise
+            True if they share the same size, False otherwise
         """
         if len(data) != len(names):
             return False
@@ -137,7 +137,7 @@ class TableSet:
             data: The data of the subtables
 
         Returns:
-            object (bool) : True if it does, False otherwise
+            True if it does, False otherwise
         """
         nrows = None
         for subdata in data:
@@ -158,7 +158,7 @@ class TableSet:
             names: The names of the subtables and subtablesets
 
         Returns:
-            object (bool) : True if it does, False otherwise
+            True if it does, False otherwise
         """
         for name in names.items():
             if type(name[1]) is dict:
@@ -239,17 +239,17 @@ class TableSet:
             i += 1
 
     @property
-    def shape(self):
+    def shape(self) -> (int, int):
         """Shape of the TableSet"""
         return self.nrows, self.ncols
 
     @property
-    def nrows(self):
+    def nrows(self) -> int:
         """Amount of rows in this subtable"""
         return self.get_subtable(0).nrows
 
     @property
-    def ncols(self):
+    def ncols(self) -> int:
         """Total amount of columns in this subtable"""
         if self.__ncols is not None:
             return self.__ncols
@@ -260,7 +260,7 @@ class TableSet:
         return total
 
     @property
-    def __folder(self):
+    def __folder(self) -> str:
         table_set_folder = ''
         if self.table_set is not None:
             table_set_folder = self.table_set.name + '/'
@@ -275,6 +275,7 @@ class TableSet:
 
     @property
     def recurrent_subtables(self) -> dict:
+        """Dictionary of names of subtables and subsubtables etc."""
         if self.__recurrent_subtables is not None:
             return self.__recurrent_subtables
         result = {}
@@ -288,7 +289,7 @@ class TableSet:
         return result
 
     @property
-    def ncols_tuple(self):
+    def ncols_tuple(self) -> tuple:
         """Amount of columns split up by subtable"""
         if self.__ncols_tuple is not None:
             return self.__ncols_tuple
@@ -300,10 +301,10 @@ class TableSet:
             else:
                 ncols_tuple.append(subtable_instance.ncols)
         self.__ncols_tuple = tuple(ncols_tuple)
-        return
+        return self.__ncols_tuple
 
     @property
-    def dtype(self):
+    def dtype(self) -> np.dtype:
         """The datatype of the TableSet"""
         if self.__dtype is None:
             self.__calc_properties__()
@@ -328,7 +329,7 @@ class TableSet:
         self.__writefile__(self.__properties_file, self.__subtables)
 
     @property
-    def initialised(self):
+    def initialised(self) -> bool:
         """Indicates whether the TableSet was (correctly) initialised"""
         properties_exist = os.path.isfile(self.__folder + self.__properties_file)
         if not properties_exist:
@@ -352,16 +353,16 @@ class TableSet:
         Prints a map of the table structure
 
         Args:
-            tabs (int) : Amount of tabs to print before the text
+            tabs: (Integer) Amount of tabs to print before the text
         """
         raise NotImplementedError()
 
     def get_subtable(self, key: Union[str, int]):
         """
-        Returns the Table or TableSet with the key
+        Returns the `Table` or `TableSet` with the key
 
         Args:
-            key (str or int) : The key of the subtable
+            key: The key of the subtable as a string or integer
         """
         if not self.initialised:
             raise TableNotInitialisedError("Initialise the TableSet before calling this function!")

@@ -15,7 +15,7 @@ class StorageManager:
     Class handling often used storage related queries such as saving results from an experiment or from fitting to a table_set
 
     Args:
-        database (str) : Database the Tables and TableSets should reside in
+        database: `Database` the Tables and TableSets should reside in
     """
 
     database: Database
@@ -35,17 +35,17 @@ class StorageManager:
         If a result tuple is incomplete and has completely missing parts fill in the missing parts with None values.
 
         Args:
-            results (tuple): A (nested) tuple of np.arrays containing results
-            name (str): The name of the TableSet to be
-            table_labels (dict): A (nested) tuple of the names of the Tables in the TableSet
-            nrows (int, optional): Amount of rows that will (eventually) be in the table set. If not provided nrows=results.shape[0]
-            ncols (tuple, optional): Amount of columns that will (eventually) be in the table set per subpart of the data. If not provided ncols[i]=results[i].shape[1]
-            row_start (int, optional): Int of the row where the results start. This parameter is used if nrows does not match the amount of rows in the results.
-            col_start (int, optional): Int of the column where the results start. This parameter is used if ncols does not match the amount of columns in the results.
-            append_rows (bool, optional) : If true, when the TableSet is already initialised the results will be appended as rows to the existing TableSet
+            results: A (nested) tuple of np.arrays containing results
+            name: (str) The name of the TableSet to be
+            table_labels: A (nested) dictionary of the names of the Tables in the TableSet
+            nrows (optional): Amount of rows that will (eventually) be in the table set. If not provided nrows=results.shape[0]
+            ncols (optional): Amount of columns that will (eventually) be in the table set per subpart of the data. If not provided ncols[i]=results[i].shape[1]
+            row_start (optional, default=0): Int of the row where the results start. This parameter is used if nrows does not match the amount of rows in the results.
+            col_start (optional, default=0): Int of the column where the results start. This parameter is used if ncols does not match the amount of columns in the results.
+            append_rows (optional, default=False): If true, when the TableSet is already initialised the results will be appended as rows to the existing TableSet
 
         Returns:
-            object (`TableSet`) : TableSet containing the results
+            `TableSet` containing the results
         """
         table_set = TableSet(name, self.database)
         if not __verify_data_types_are_correct__(results):
@@ -69,14 +69,14 @@ class StorageManager:
 
     def open_table(self, name: str):
         """
-        Opens a Table or TableSet in the Database with the given name.
-        The function can automatically distinguish between Tables and TableSet.
+        Opens a `Table` or `TableSet` in the `Database` with the given name.
+        The function can automatically distinguish between `Table`s and `TableSet`s.
 
         Args:
-            name: Name of the Table or TableSet
+            name: Name of the `Table` or `TableSet`
 
         Returns:
-            Table or TableSet
+            `Table` or `TableSet`
         """
         if Table(name, self.database).initialised:
             return Table(name, self.database)
@@ -87,10 +87,10 @@ class StorageManager:
 
     def remove_table(self, name: str):
         """
-        Deletes a table from the Database
+        Deletes a table from the `Database`
 
         Args:
-            name: The name of the table
+            name: The name of the `Table`
         """
         if os.path.isdir(self.database.folder + name):
             shutil.rmtree(self.database.folder + name)

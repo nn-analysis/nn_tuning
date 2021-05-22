@@ -5,7 +5,6 @@ from tqdm import tqdm
 
 from .database import Database
 from .helpers import __keytolist__, __slicetolist__
-from .table_set import TableSet
 from .error import *
 import numpy as np
 
@@ -18,18 +17,22 @@ class Table:
     do keep that in mind when initialising tables and transpose the data if necessary.
 
     Tables store rows with other dimensions removed.
+
+    Args:
+        name: The name of the `Table`
+        database: The `Database` the Table resides in
+        table_set: The `TableSet` that is the parent of this `Table`
     """
 
     __properties_file: str
     name: str
     database: Database
-    table_set: TableSet
     __nrows: int
     __ncols: int
     __dtype: np.dtype
     verbose: bool
 
-    def __init__(self, name: str, database: Database, table_set: TableSet = None):
+    def __init__(self, name: str, database: Database, table_set=None):
         self.__properties_file: str = 'properties'
         self.name = name
         self.database = database
@@ -44,26 +47,26 @@ class Table:
         return self.database.folder + table_set_folder + self.name + '/'
 
     @property
-    def shape(self):
+    def shape(self) -> tuple:
         """The shape of the table"""
         return self.nrows, self.ncols
 
     @property
-    def nrows(self):
+    def nrows(self) -> int:
         """The number of rows in the table"""
         if self.__nrows is None:
             self.__calc_properties__()
         return self.__nrows
 
     @property
-    def ncols(self):
+    def ncols(self) -> int:
         """The number of columns in the table"""
         if self.__ncols is None:
             self.__calc_properties__()
         return self.__ncols
 
     @property
-    def dtype(self):
+    def dtype(self) -> np.dtype:
         """The datatype of the table"""
         if self.__dtype is None:
             self.__calc_properties__()
@@ -115,13 +118,13 @@ class Table:
         for row in tqdm(range(0, self.nrows), disable=(not self.verbose), leave=False):
             self.__writefile__(row, self.__readfile__(row).astype(dtype))
 
-    def initialise(self, data: np.array, dtype: np.dtype = None):
+    def initialise(self, data: np.ndarray, dtype: np.dtype = None):
         """
         Initialises the table using the np.array provided
 
         Args:
-            data (np.array) : The array containing the data for the Table
-            dtype (np.dtype, optional) : The dtype of the data, changes the data's dtype if they don't match
+            data: The array containing the data for the Table
+            dtype (optional): The dtype of the data, changes the data's dtype if they don't match
         """
         if not os.path.isdir(self.__folder):
             os.mkdir(self.__folder, 0o755)
@@ -139,7 +142,7 @@ class Table:
             i += 1
         self.__update_properties__()
 
-    def append_rows(self, data: np.array):
+    def append_rows(self, data: np.ndarray):
         """
         Add a new row to the existing Table
 

@@ -13,9 +13,9 @@ class InputManager:
     That table is then used to determine which batches are valid and to retrieve input.
 
     Args:
-        table (Table or TableSet) : The table the input generator stores it's data to.
-        shape (tuple) : A tuple of the shape of the input so it can be transformed to that.
-        input_generator (InputGenerator) : An InputGenerator that can generate input.
+        table: (`Table` or `TableSet`)  The table the input generator stores it's data to.
+        shape: (tuple) A tuple of the shape of the input so it can be transformed to that.
+        input_generator: (`InputGenerator`) An InputGenerator that can generate input.
     """
 
     def __init__(self, table: Union[Table, TableSet], shape: tuple, input_generator: InputGenerator = None):
@@ -53,7 +53,7 @@ class InputManager:
         """
         return batch * batch_size < self._table.nrows
 
-    def get(self, batch: int, batch_size: int) -> np.array:
+    def get(self, batch: int, batch_size: int) -> np.ndarray:
         """
         Function to get the input for a specific batch.
 
@@ -62,7 +62,7 @@ class InputManager:
             batch_size: The size of the batch.
 
         Returns:
-            np.array containing the input
+            np.ndarray containing the input
         """
         start = batch * batch_size
         end = batch * batch_size + batch_size
