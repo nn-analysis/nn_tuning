@@ -19,7 +19,7 @@ class Plot:
     title = None
 
     @staticmethod
-    def nn_filter(units: np.array):
+    def nn_filter(units: np.ndarray):
         filters = units.shape[3]
         plt.figure(1, figsize=(20, 20))
         n_columns = 6
@@ -43,7 +43,7 @@ class Plot:
         Plot.title = ''
 
     @staticmethod
-    def feature_map(feature_map: np.array, ncols: int = 6):
+    def feature_map(feature_map: np.ndarray, ncols: int = 6):
         feature_maps = feature_map.shape[1]
         print(np.sum(feature_map))
         plt.figure(1, figsize=(20, 20))
@@ -57,7 +57,7 @@ class Plot:
         Plot.show(plt)
 
     @staticmethod
-    def estimated_parameters(results: Table, p: np.array, nodes, col: int, xlabel: str, ylabel: str, colour_label: str, title: str, shape: (int, int), threshold: float = 0):
+    def estimated_parameters(results: Table, p: np.ndarray, nodes, col: int, xlabel: str, ylabel: str, colour_label: str, title: str, shape: (int, int), threshold: float = 0):
         best_fit_tbl = results.calculate_best_fits(p)
         if isinstance(nodes, np.ndarray) and nodes.dtype is np.dtype('O'):
             nodes = np.concatenate(nodes)
@@ -81,7 +81,7 @@ class Plot:
         Plot.show(plt)
 
     @staticmethod
-    def scatter_plot_network(predicted_fits: Union[np.array, Table], p: np.array, col: int,
+    def scatter_plot_network(predicted_fits: Union[np.ndarray, Table], p: np.ndarray, col: int,
                              nodes: List[Union[slice, Tuple[slice, slice]]], threshold: float, ranges: Tuple[Tuple[int, int], Tuple[int, int]],
                              titles: List[str], y_label: str, col_two: int = -1, x_label: str = 'Goodness of Fit',
                              dtypes: Tuple[np.dtype, np.dtype] = (None, None)):
@@ -140,7 +140,7 @@ class Plot:
         Plot.show(plt)
 
     @staticmethod
-    def scatter_plot_x_y(predicted_fits: Union[np.array, Table], p: np.array, col: int,
+    def scatter_plot_x_y(predicted_fits: Union[np.ndarray, Table], p: np.ndarray, col: int,
                          nodes: Union[np.ndarray, slice],
                          threshold: float,
                          ranges: Tuple[Tuple[int, int], Tuple[int, int]],

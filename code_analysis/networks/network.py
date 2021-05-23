@@ -45,7 +45,7 @@ class Network(ABC):
             session (optional): The TensorFlow session.
 
         Returns:
-            The resulting np.array
+            The resulting np.ndarray
         """
         if not self.is_tf_one():
             return tensor.numpy()

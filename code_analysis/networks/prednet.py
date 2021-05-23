@@ -115,8 +115,7 @@ class Prednet(Network):
         gc.collect()
         return batch_output
 
-    @staticmethod
-    def __reshape_batch_output(batch_output: dict) -> (tuple, dict):
+    def __reshape_batch_output(self, batch_output: dict) -> (tuple, dict):
         """
         Reshape to desired output shape
 
@@ -134,10 +133,28 @@ class Prednet(Network):
                 if len(results)-1 < i:
                     results.append([])
                     names[f'{i+1}'] = dict()
-                layer = np.array(layer).reshape((layer.shape[0], -1))
-                names[f'{i+1}'][layer_type] = layer
+                layer = np.array(layer)
+                layer = layer.reshape((layer.shape[0], -1))
+                names[f'{i+1}'][layer_type] = layer_type
+                results[i].append(layer)
                 i += 1
-        return tuple(results), names
+        return self.__list_to_tuple_recursively(results), names
+
+    def __list_to_tuple_recursively(self, input_list: list) -> tuple:
+        """
+        Transforms a list into a tuple recursively.
+
+        Args:
+            input_list: List to be transformed
+
+        Returns:
+            The resulting tuple
+        """
+
+        for i in range(len(input_list)):
+            if type(input_list[i]) is list:
+                input_list[i] = self.__list_to_tuple_recursively(input_list[i])
+        return tuple(input_list)
 
     def run(self, input_array: np.ndarray) -> (tuple, dict):
         """

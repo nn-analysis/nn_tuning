@@ -56,7 +56,7 @@ class NumerosityInputGenerator(TwoDInputGenerator):
         self.__calc_functions = calc_functions
         self.__q = 0
 
-    def _get_2d(self, shape: (int, int), index: int) -> np.array:
+    def _get_2d(self, shape: (int, int), index: int) -> np.ndarray:
         """Generates the 2d stimulus to be appended with other dimensions to a complete stimulus.
 
         Args:
@@ -84,7 +84,7 @@ class NumerosityInputGenerator(TwoDInputGenerator):
             for q in range(len(self.__calc_functions)):
                 self.__q = q
                 for j in range(0, self.nvars):
-                    tbl = self.__storage_manager.save_result_table_set((self._generate_row(shape, n)[np.newaxis, ...]),
+                    tbl = self.__storage_manager.save_result_table_set((self._generate_row(shape, n)[np.newaxis, ...],),
                                                                        self.__table, {self.__table: self.__table}, append_rows=True)
         return tbl
 

@@ -29,7 +29,7 @@ class PRFInputGenerator(TwoDInputGenerator):
         self.__verbose = verbose
         self.__block_size = block_size
 
-    def _get_2d(self, shape: (int, int), index: int) -> np.array:
+    def _get_2d(self, shape: (int, int), index: int) -> np.ndarray:
         """Generates the 2d stimulus to be appended with other dimensions to a complete stimulus.
 
         Args:
@@ -95,7 +95,7 @@ class PRFInputGenerator(TwoDInputGenerator):
         size_x = shape[-1]
         size_y = shape[-2]
         for i in tqdm(range(0, size_x + size_y + 2, self.__stride), leave=False, disable=(not self.__verbose)):
-            tbl = self.__storage_manager.save_result_table_set((self._generate_row(shape, i)[np.newaxis, ...]),
+            tbl = self.__storage_manager.save_result_table_set((self._generate_row(shape, i)[np.newaxis, ...],),
                                                                self.__table, {self.__table: self.__table},
                                                                append_rows=True)
         return tbl

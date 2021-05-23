@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 from .input_manager import InputManager
 from code_analysis.networks.network import Network
-from .storage import StorageManager
+from .storage import StorageManager, NoSuchTableError
 
 
 class OutputManager:
@@ -43,10 +43,13 @@ class OutputManager:
         if override and not resume:
             self.storage_manager.remove_table(table)
         if resume:
-            tbl = self.storage_manager.open_table(table)
-            if tbl.initialised:
-                batch = int(np.ceil(tbl.nrows/batch_size))
-            else:
+            try:
+                tbl = self.storage_manager.open_table(table)
+                if tbl.initialised:
+                    batch = int(np.ceil(tbl.nrows/batch_size))
+                else:
+                    batch = 0
+            except NoSuchTableError:
                 batch = 0
         batch_end = batch
         while self.input_manager.valid(batch_end, batch_size):

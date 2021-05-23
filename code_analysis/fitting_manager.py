@@ -20,7 +20,7 @@ class FittingManager:
         self.storage_manager = storage_manager
 
     @staticmethod
-    def get_identity_stim_variables(size_x, size_y) -> (np.array, np.array):
+    def get_identity_stim_variables(size_x, size_y) -> (np.ndarray, np.ndarray):
         """
         Generates the stimulus variables for when every combination of x and y is a valid position.
 
@@ -39,15 +39,15 @@ class FittingManager:
                 stim_y.append(y)
         return np.array(stim_x), np.array(stim_y)
 
-    def calculate_best_fits(self, results: Union[Table, TableSet, np.array], candidate_function_parameters,
+    def calculate_best_fits(self, results: Union[Table, TableSet, np.ndarray], candidate_function_parameters,
                             table: str = None):
         """
-        Use already generated results in a Table, TableSet, or np.array to get the best fits from those sets.
+        Use already generated results in a Table, TableSet, or np.ndarray to get the best fits from those sets.
         Saves those best_fits to the table.
         It the results are a TableSet this will preserver the organisation of the TableSet.
 
         Args:
-            results: Table, TableSet, np.array with results.
+            results: `Table`, `TableSet`, np.ndarray with results.
             candidate_function_parameters: The set with candidate function parameters
             table: Table to save the best fits to.
 
@@ -72,12 +72,12 @@ class FittingManager:
                 self.__save__(table, best_predicted, False, 0, dtype)
         return best_predicted
 
-    def __unpack_tuple_according_to_labels(self, result: np.array, table_set: TableSet) -> tuple:
+    def __unpack_tuple_according_to_labels(self, result: np.ndarray, table_set: TableSet) -> tuple:
         """
         Takes a TableSet and a result array to split the result array into parts fitting into the provided TableSet
 
         Args:
-            result: np.array containing items from a
+            result: np.ndarray containing items from a
             table_set: The TableSet the results will be formed to
 
         Returns:
@@ -104,10 +104,10 @@ class FittingManager:
         # Return the results as a tuple
         return tuple(results)
 
-    def fit_response_function_on_table_set(self, responses: TableSet, table_set: str, stim_x: np.array, stim_y: np.array,
-                                           candidate_function_parameters: np.array,
+    def fit_response_function_on_table_set(self, responses: TableSet, table_set: str, stim_x: np.ndarray, stim_y: np.ndarray,
+                                           candidate_function_parameters: np.ndarray,
                                            prediction_function: str = "np.exp(((stim_x - x) ** 2 + (stim_y - y) ** 2) / (-2 * s ** 2))",
-                                           stimulus: np.array = None, parallel: bool = True, verbose: bool = False,
+                                           stimulus: np.ndarray = None, parallel: bool = True, verbose: bool = False,
                                            dtype: np.dtype = None, split_calculation: bool = True):
         """
         Creates a new TableSet based on the input TableSet.
@@ -127,7 +127,7 @@ class FittingManager:
             stim_y: The stim_y variable contains an array with, for every row in the responses, what y variables were activated at that point.
             candidate_function_parameters: A numpy array with, at each row, three variables for x, y, and sigma that will be evaluated by the function.
             prediction_function: The function that will generate the prediction. by default this is a simple gaussian function.
-            stimulus (optional): The stimulus variable is an np.array with, at each row, an array with the list of stimuli that were activated at that point.
+            stimulus (optional): The stimulus variable is an np.ndarray with, at each row, an array with the list of stimuli that were activated at that point.
             parallel (optional, default=True): Boolean indicating whether the algorithm should run parallel. Parallel processing makes the algorithm a lot faster.
             verbose (optional, default=False): Boolean indicating whether the function prints progress to the console.
             dtype (optional): The data type to store the data in when storing the data in a table
@@ -197,12 +197,12 @@ class FittingManager:
         return new_table_set
 
     @staticmethod
-    def fit_response_function(responses: np.ndarray, stim_x: np.array, stim_y: np.array,
-                              candidate_function_parameters: np.array,
+    def fit_response_function(responses: np.ndarray, stim_x: np.ndarray, stim_y: np.ndarray,
+                              candidate_function_parameters: np.ndarray,
                               prediction_function: str = "np.exp(((stim_x - x) ** 2 + (stim_y - y) ** 2) / (-2 * s ** 2))",
                               stimulus: np.ndarray = None,
                               parallel: bool = True, verbose: bool = False,
-                              dtype: np.dtype = None) -> (np.array, np.array):
+                              dtype: np.dtype = None) -> (np.ndarray, np.ndarray):
         """
         Function that uses a prediction function to generate predictions for the activations of neurons for all the
         candidate function parameters described in the `candidate_function_parameters` variable.
@@ -214,13 +214,13 @@ class FittingManager:
             stim_y: The stim_y variable contains an array with, for every row in the responses, what y variables were activated at that point.
             candidate_function_parameters: A numpy array with, at each row, three variables for x, y, and sigma that will be evaluated by the function.
             prediction_function: The function that will generate the prediction. by default this is a simple gaussian function.
-            stimulus (optional): The stimulus variable is an np.array with, at each row, an array with the list of stimuli that were activated at that point.
+            stimulus (optional): The stimulus variable is an np.ndarray with, at each row, an array with the list of stimuli that were activated at that point.
             parallel (optional, default=True): Boolean indicating whether the algorithm should run parallel. Parallel processing makes the algorithm a lot faster.
             verbose (optional, default=False): Boolean indicating whether the function prints progress to the console.
             dtype (optional): The data type to store the data in when storing the data in a table
 
         Returns:
-           np.array containing the goodness of fits.
+           np.ndarray containing the goodness of fits.
         """
 
         # If the stimulus is None, assume that each feature was shown once and one at the time represented by an identity matrix
@@ -254,14 +254,14 @@ class FittingManager:
                     goodness_of_fits[row, response] = goodness_of_fit
         return goodness_of_fits
 
-    def __save__(self, table: str, results: np.array, override: bool,
+    def __save__(self, table: str, results: np.ndarray, override: bool,
                  col_start: int, dtype: np.dtype = None):
         """
         Saves the results to a TableSet.
 
         Args:
             table: Name of the TableSet.
-            results: np.array of the results.
+            results: np.ndarray of the results.
             override: If true, overrides the existing Table/TableSet if it exists
             col_start: Position of the data
             dtype: Data type to store the data in
@@ -270,10 +270,10 @@ class FittingManager:
             return
         if override:
             self.storage_manager.remove_table(table)
-        self.storage_manager.save_result_table_set((results.astype(dtype)), table, {}, col_start=col_start)
+        self.storage_manager.save_result_table_set((results.astype(dtype),), table, {}, col_start=col_start)
 
     @staticmethod
-    def generate_fake_responses(variables, stim_x, stim_y, stimulus) -> np.array:
+    def generate_fake_responses(variables, stim_x, stim_y, stimulus) -> np.ndarray:
         """
         Generates fake responses for the fitting test.
 
@@ -284,7 +284,7 @@ class FittingManager:
             stimulus: The stimulus of the fake responses.
 
         Returns:
-            np.array of fake responses.
+            np.ndarray of fake responses.
         """
         nd_list = list()
         for required_x, required_y, _required_s in variables:
@@ -349,7 +349,7 @@ class FittingManager:
             log: (bool) If true, the first two parameters are moved into log space.
 
         Returns:
-            np.array with at each row a set of parameter function parameters
+            np.ndarray with at each row a set of parameter function parameters
         """
         i = 0
         if step[2] < 1:

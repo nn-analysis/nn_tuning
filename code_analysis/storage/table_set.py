@@ -32,12 +32,6 @@ class TableSet:
 
     name: str
     database: Database
-    __subtables: list
-    __properties_file: str
-    __dtype: np.dtype
-    __ncols: int
-    __recurrent_subtables: dict
-    __ncols_tuple: tuple
     verbose: bool
 
     def __init__(self, name: str, database: Database, table_set=None, verbose=False):
@@ -46,9 +40,14 @@ class TableSet:
         self.table_set = table_set
         self.__properties_file = 'properties'
         self.verbose = verbose
+        self.__subtables = None
+        self.__dtype = None
+        self.__ncols = None
+        self.__ncols_tuple = None
+        self.__recurrent_subtables = None
 
     def __repr__(self):
-        return f"Table('{self.name}', ({self.nrows}, {self.ncols}), '{self.__folder}')"
+        return f"Table('{self.name}', ({self.nrows}, {self.ncols}), '{self.folder}')"
 
     def __getitem__(self, key):
         rows, cols = __keytolist__(key, self.nrows)
@@ -57,19 +56,20 @@ class TableSet:
             try:
                 subtable_total = np.array([])
                 for subtables in self.subtables:
-                    np.concatenate((subtable_total, self.get_subtable(subtables)[row]))
+                    subtable_total = np.concatenate((subtable_total, self.get_subtable(subtables)[row]))
                 if cols is None:
                     results.append(subtable_total)
                 else:
                     results.append(subtable_total[cols])
             except OSError:
                 raise IndexError(f"index {row} is out of bounds for axis 0 with size {self.nrows}")
+        return np.array(results)
 
     def __setitem__(self, key, value):
         rows, cols = __keytolist__(key, self.nrows)
         single_value = False
         if type(cols) is slice and cols.start is None and cols.step is None and cols.stop is None and type(
-                value) is np.array:
+                value) is np.ndarray:
             cols = None
             if type(value) is list:
                 expected_shape = (len(rows), self.ncols)
@@ -182,24 +182,24 @@ class TableSet:
             dtype: Data type of the array
         """
         if not __verify_data_types_are_correct__(data):
-            raise ValueError('data is not a tuple of nested tuples of np.arrays or a tuple of np.arrays!')
+            raise ValueError('data is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!')
         if not self.__verify_name_types_are_correct(names):
             raise ValueError('names is not a dict of nested dicts of strings or a dict of strings!')
         if not self.__verify_data_and_names_have_matching_shapes(data, names):
             raise ValueError('data and names do not have the same shape!')
         if not self.__verify_coherent_data_rows(data):
-            raise ValueError('expected the rows of all np.arrays in the data variable to be of the same length!')
-        if not os.path.isdir(self.__folder):
-            os.mkdir(self.__folder, 0o755)
+            raise ValueError('expected the rows of all np.ndarrays in the data variable to be of the same length!')
+        if not os.path.isdir(self.folder):
+            os.mkdir(self.folder, 0o755)
         i = 0
         self.__subtables = []
         for item in data:
             name = list(names.items())[i][0]
             self.__subtables.append(name)
-            if item is tuple:
+            if type(item) is tuple:
                 TableSet(name, self.database, self, self.verbose).initialise(item, list(names.items())[i][1], dtype)
-            elif item is np.array:
-                Table(name, self.database, self).initialise(data, dtype)
+            elif type(item) is np.ndarray:
+                Table(name, self.database, self).initialise(item, dtype)
             else:
                 raise ValueError('Expected type')
             i += 1
@@ -223,13 +223,13 @@ class TableSet:
         Add a new rows to the existing TableSet
 
         Args:
-            data: The new rows as a (nested) tuple of np.arrays
+            data: The new rows as a (nested) tuple of np.ndarrays
         """
         # Verify the data
         if not __verify_data_types_are_correct__(data):
-            raise ValueError('data is not a tuple of nested tuples of np.arrays or a tuple of np.arrays!')
+            raise ValueError('data is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!')
         if not self.__verify_coherent_data_rows(data):
-            raise ValueError('expected the rows of all np.arrays in the data variable to be of the same length!')
+            raise ValueError('expected the rows of all np.ndarrays in the data variable to be of the same length!')
         if not self.__verify_ncols(data):
             raise ValueError('make sure data.ncols is the same as the existing ncols')
         i = 0
@@ -260,11 +260,10 @@ class TableSet:
         return total
 
     @property
-    def __folder(self) -> str:
-        table_set_folder = ''
+    def folder(self) -> str:
         if self.table_set is not None:
-            table_set_folder = self.table_set.name + '/'
-        return self.database.folder + table_set_folder + self.name + '/'
+            return self.table_set.folder + self.name + '/'
+        return self.database.folder + self.name + '/'
 
     @property
     def subtables(self) -> list:
@@ -326,17 +325,17 @@ class TableSet:
         self.__dtype = self.get_subtable(0).dtype
 
     def __update_properties__(self):
-        self.__writefile__(self.__properties_file, self.__subtables)
+        self.__writefile__(self.__properties_file, self.__subtables, override=True)
 
     @property
     def initialised(self) -> bool:
         """Indicates whether the TableSet was (correctly) initialised"""
-        properties_exist = os.path.isfile(self.__folder + self.__properties_file)
+        properties_exist = os.path.isfile(self.folder + self.__properties_file)
         if not properties_exist:
             return False
         try:
-            with open(self.__folder + str(self.__properties_file), 'rb') as f:
-                subtables, types = pickle.load(f)
+            with open(self.folder + str(self.__properties_file), 'rb') as f:
+                subtables = pickle.load(f)
         except EOFError:
             return False
         except TypeError:
@@ -345,8 +344,7 @@ class TableSet:
             return False
         if type(subtables) is not list:
             return False
-        if type(types) is not dict:
-            return False
+        return True
 
     def print_structure(self, tabs=0):
         """
@@ -366,7 +364,7 @@ class TableSet:
         """
         if not self.initialised:
             raise TableNotInitialisedError("Initialise the TableSet before calling this function!")
-        if key not in self.subtables:
+        if type(key) is not int and key not in self.subtables:
             raise NoSuchTableError()
         if type(key) is int:
             key = self.subtables[key]
@@ -376,14 +374,14 @@ class TableSet:
             return TableSet(key, self.database, self)
         raise NoSuchTableError('No subtable with this key was found to be initialised!')
 
-    def __readfile__(self, filename):
-        if not self.initialised:
+    def __readfile__(self, filename, override=False):
+        if not override and not self.initialised:
             raise TableNotInitialisedError("Initialise the TableSet before using it!")
-        with open(self.__folder + str(filename), 'rb') as f:
+        with open(self.folder + str(filename), 'rb') as f:
             return pickle.load(f)
 
-    def __writefile__(self, filename, value):
-        if not self.initialised:
+    def __writefile__(self, filename, value, override=False):
+        if not override and not self.initialised:
             raise TableNotInitialisedError("Initialise the TableSet before using it!")
-        with open(self.__folder + str(filename), 'wb') as f:
+        with open(self.folder + str(filename), 'wb') as f:
             pickle.dump(value, f)

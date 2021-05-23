@@ -3,7 +3,7 @@ import numpy as np
 from .error import ShapeMismatchError
 
 
-def __slicetolist__(key, length: int):
+def __slicetolist__(key, length: int) -> list:
     """
     Converts slices to lists of indices
 
@@ -59,7 +59,7 @@ def __keytolist__(key, length: int) -> tuple:
 
 def __verify_data_types_are_correct__(data: tuple) -> bool:
     """
-    Checks whether the data is a tuple of tuples or np.arrays everywhere
+    Checks whether the data is a tuple of tuples or np.ndarrays everywhere
 
     Args:
         data: The data of the subtables
@@ -71,6 +71,6 @@ def __verify_data_types_are_correct__(data: tuple) -> bool:
         if type(subdata) is tuple:
             if not __verify_data_types_are_correct__(subdata):
                 return False
-        elif type(subdata) is not np.array:
+        elif type(subdata) is not np.ndarray:
             return False
     return True

@@ -35,7 +35,7 @@ class StorageManager:
         If a result tuple is incomplete and has completely missing parts fill in the missing parts with None values.
 
         Args:
-            results: A (nested) tuple of np.arrays containing results
+            results: A (nested) tuple of np.ndarrays containing results
             name: (str) The name of the TableSet to be
             table_labels: A (nested) dictionary of the names of the Tables in the TableSet
             nrows (optional): Amount of rows that will (eventually) be in the table set. If not provided nrows=results.shape[0]
@@ -49,7 +49,9 @@ class StorageManager:
         """
         table_set = TableSet(name, self.database)
         if not __verify_data_types_are_correct__(results):
-            raise ValueError('results is not a tuple of nested tuples of np.arrays or a tuple of np.arrays!')
+            raise ValueError('results is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!')
+        if not self.__verify_results_and_ncols_shape(results, ncols):
+            raise ValueError('ncols and results should be of the same shape')
         if table_set.initialised:  # Update existing TableSet
             if append_rows:
                 table_set.append_rows(results)
@@ -100,7 +102,7 @@ class StorageManager:
             return False
         for result in results:
             if type(result) is tuple:  # If the result is a tuple unpack it further
-                if not self.__requires_nrows_calculation(results):
+                if not self.__requires_nrows_calculation(result):
                     return False
             elif result is None:
                 return True
@@ -109,7 +111,7 @@ class StorageManager:
     def __requires_ncols_to_be_set_somewhere(self, results: tuple):
         for result in results:
             if type(result) is tuple:  # If the result is a tuple unpack it further
-                if not self.__requires_nrows_calculation(results):
+                if not self.__requires_nrows_calculation(result):
                     return False
             elif result is None:
                 return True
@@ -125,28 +127,49 @@ class StorageManager:
                 return result.shape[0]
         raise ValueError('When all results are None values nrows has to be set!')
 
+    def __verify_results_and_ncols_shape(self, results: tuple, ncols: tuple):
+        if ncols is None:
+            return True
+        if len(ncols) != len(results):
+            return False
+        i = 0
+        for result in results:
+            if type(result) is tuple:
+                if type(ncols[i]) is not tuple:
+                    return False
+                if not self.__verify_results_and_ncols_shape(result, ncols[i]):
+                    return False
+            i += 1
+        return True
+
     def __pad_with_zeros(self, results: tuple, ncols: tuple, nrows: int) -> tuple:
         i = 0
         final_result = []
         for result in results:
             if type(result) is tuple:  # If the result is a tuple unpack it further
-                final_result.append(self.__pad_with_zeros(result, ncols[i], nrows))
+                this_ncols = ncols
+                if ncols is not None:
+                    this_ncols = ncols[i]
+                final_result.append(self.__pad_with_zeros(result, this_ncols, nrows))
             elif result is None:  # If the result is None fill the result using the ncols and nrows
-                if ncols[i] is None:
-                    raise ValueError('When a particular result is None ncols for that result has to be set!')
+                if ncols is None or ncols[i] is None:
+                    raise ValueError('When a particular result is None, ncols for that result has to be set!')
                 final_result.append(np.zeros((nrows, ncols[i])))
             else:  # If the result is a result fit it in a padded result array of shape (ncols, nrows)
                 flattened_array = result.reshape(result.shape[0], -1)
                 this_nrows = flattened_array.shape[0]
+                this_ncols = flattened_array.shape[1]
                 if nrows is not None:
                     this_nrows = nrows
-                padded_array = np.zeros((this_nrows, ncols[i]))
+                if ncols is not None:
+                    this_ncols = ncols[i]
+                padded_array = np.zeros((this_nrows, this_ncols))
                 padded_array[:, :flattened_array.shape[1]] = flattened_array
                 final_result.append(padded_array)
             i += 1
         return tuple(final_result)
 
-    def __combine_into_big_array(self, results: tuple) -> np.array:
+    def __combine_into_big_array(self, results: tuple) -> np.ndarray:
         final_result = []
         for result in results:
             if type(result) is tuple:
