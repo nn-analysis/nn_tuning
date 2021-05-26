@@ -155,7 +155,7 @@ class FittingManager:
         if new_table_set.initialised:
             raise ValueError('A TableSet with this name already exists! Delete it or choose another name!')
         print('Initialising TableSet')
-        for row in tqdm(range(0, nrows, 500)):
+        for _ in tqdm(range(0, nrows, 500)):
             new_table_set = self.storage_manager.save_result_table_set(new_table_initialisation_data, table_set,
                                                                        responses.recurrent_subtables,
                                                                        100, ncols, append_rows=True)
@@ -168,15 +168,15 @@ class FittingManager:
                 new_parent = responses_in_function.name
             # Keep track of starting column to update the TableSet
             col_start = 0
-            for subtable in responses_in_function:
+            for subtable in responses_in_function.subtables:
                 subtable_instance = responses_in_function.get_subtable(subtable)
                 if type(subtable_instance) is TableSet:  # Use this function recursively
-                    recursively_run_response_function(subtable_instance, parent=new_parent)
+                    recursively_run_response_function_by_splitting(subtable_instance, parent=new_parent)
                 else:  # If node --> Run the fit
                     # Print the name of the table "parent > child"
                     print(f'{new_parent} > {subtable_instance.name}')
                     # Run the fit_response_function
-                    results = self.fit_response_function(subtable_instance[:], stim_x, stim_y,
+                    results = self.fit_response_function(subtable_instance[:].T, stim_x, stim_y,
                                                          candidate_function_parameters, prediction_function,
                                                          stimulus=stimulus, parallel=parallel, verbose=verbose,
                                                          dtype=dtype)
@@ -186,7 +186,7 @@ class FittingManager:
                 col_start += subtable_instance.ncols
 
         def run_response_function_all_at_once(responses_in_function: TableSet):
-            results = self.fit_response_function(responses_in_function[:], stim_x, stim_y,
+            results = self.fit_response_function(responses_in_function[:].T, stim_x, stim_y,
                                                  candidate_function_parameters, prediction_function,
                                                  stimulus=stimulus, parallel=parallel, verbose=verbose,
                                                  dtype=dtype)
@@ -236,8 +236,8 @@ class FittingManager:
 
         responses_T = responses.T
 
-        goodness_of_fits = np.zeros((parameter_set.shape[0], responses.shape[0]), dtype=dtype)
-        for row in tqdm(range(0, parameter_set.shape[0]), disable=(not verbose), leave=False):
+        goodness_of_fits = np.zeros((candidate_function_parameters.shape[0], responses.shape[0]), dtype=dtype)
+        for row in tqdm(range(0, candidate_function_parameters.shape[0]), disable=(not verbose), leave=False):
             x, y, s = candidate_function_parameters[row]
             g = eval(prediction_function)
             pred = (stimulus @ g)[..., np.newaxis]
