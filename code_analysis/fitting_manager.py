@@ -155,10 +155,14 @@ class FittingManager:
         if new_table_set.initialised:
             raise ValueError('A TableSet with this name already exists! Delete it or choose another name!')
         print('Initialising TableSet')
-        for _ in tqdm(range(0, nrows, 500)):
+        step = 500
+        for row in tqdm(range(0, nrows, step)):
+            new_nrows = step
+            if row * step + nrows > nrows:
+                new_nrows = nrows - row * step
             new_table_set = self.storage_manager.save_result_table_set(new_table_initialisation_data, table_set,
                                                                        responses.recurrent_subtables,
-                                                                       100, ncols, append_rows=True)
+                                                                       new_nrows, ncols, append_rows=True)
 
         # Run the fit response function for each subtable recursively when using splitting
         def recursively_run_response_function_by_splitting(responses_in_function: TableSet, parent: str = None):

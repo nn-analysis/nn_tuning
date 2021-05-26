@@ -230,7 +230,7 @@ class Table:
                 updated = self.__readfile__(row)
                 updated[cols] = value_to_set
             self.__deletefile__(row)
-            self.__writefile__(row, updated)
+            self.__writefile__(row, updated, override=True)
             i += 1
 
     def __delitem__(self, key):

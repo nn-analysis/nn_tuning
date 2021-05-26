@@ -118,11 +118,11 @@ class TableSet:
                 cols_array = cols_array[np.where(cols_array <= max_col)]
                 value_array = value
                 if value_array.ndim > 1:
-                    value_array = value_array[:, np.where(cols_array >= min_col)]
-                    value_array = value_array[:, np.where(cols_array <= max_col)]
+                    value_array = value_array[:, np.where(cols_array >= min_col)[0]]
+                    value_array = value_array[:, np.where(cols_array <= max_col)[0]]
                 else:
-                    value_array = value_array[np.where(cols_array >= min_col)]
-                    value_array = value_array[np.where(cols_array <= max_col)]
+                    value_array = value_array[np.where(cols_array >= min_col)[0]]
+                    value_array = value_array[np.where(cols_array <= max_col)[0]]
                 cols_list = cols_array.tolist()
                 if len(cols_list) > 0:
                     subtable_instance[rows, cols_list] = value_array
