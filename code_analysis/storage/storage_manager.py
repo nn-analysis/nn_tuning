@@ -12,10 +12,10 @@ from .helpers import __verify_data_types_are_correct__
 
 class StorageManager:
     """
-    Class handling often used storage related queries such as saving results from an experiment or from fitting to a table_set
+    Class handling often used storage related queries such as saving results from an experiment or from fitting to a `TableSet`
 
     Args:
-        database: `Database` the Tables and TableSets should reside in
+        database: `Database` the `Table`s and `TableSet`s should reside in
     """
 
     database: Database
@@ -27,7 +27,7 @@ class StorageManager:
                               ncols: tuple = None, row_start: int = 0, col_start: int = 0,
                               append_rows: bool = False) -> TableSet:
         """
-        Function that saves a TableSet with the results.
+        Function that saves a `TableSet` with the results.
         Results do not have to be complete. If the result is incomplete provide the nrows or ncols parameters.
         The lacking rows or columns will then be filled with zeros. When providing the additional results use the
         row_start and col_start parameters to indicate where the existing TableSet is to be overridden.
@@ -36,13 +36,13 @@ class StorageManager:
 
         Args:
             results: A (nested) tuple of np.ndarrays containing results
-            name: (str) The name of the TableSet to be
-            table_labels: A (nested) dictionary of the names of the Tables in the TableSet
-            nrows (optional): Amount of rows that will (eventually) be in the table set. If not provided nrows=results.shape[0]
-            ncols (optional): Amount of columns that will (eventually) be in the table set per subpart of the data. If not provided ncols[i]=results[i].shape[1]
+            name: (str) The name of the `TableSet` to be created or updated
+            table_labels: A (nested) dictionary of the names of the `Table`s/`SubTable`s in the `TableSet`
+            nrows (optional): Amount of rows that will (eventually) be in the `TableSet`. If not provided `nrows=results.shape[0]`
+            ncols (optional): Amount of columns that will (eventually) be in the table set per subpart of the data. If not provided `ncols[i]=results[i].shape[1]`
             row_start (optional, default=0): Int of the row where the results start. This parameter is used if nrows does not match the amount of rows in the results.
             col_start (optional, default=0): Int of the column where the results start. This parameter is used if ncols does not match the amount of columns in the results.
-            append_rows (optional, default=False): If true, when the TableSet is already initialised the results will be appended as rows to the existing TableSet
+            append_rows (optional, default=False): If true, when the `TableSet` is already initialised the results will be appended as rows to the existing `TableSet`
 
         Returns:
             `TableSet` containing the results
@@ -52,20 +52,20 @@ class StorageManager:
             raise ValueError('results is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!')
         if not self.__verify_results_and_ncols_shape(results, ncols):
             raise ValueError('ncols and results should be of the same shape')
+        if self.__requires_nrows_calculation(results, nrows):
+            nrows = self.__fetch_nrows_from_partial_result_set(results)
+        if ncols is None and self.__requires_ncols_to_be_set_somewhere(results):
+            raise ValueError('When one of the results is None, ncols has to be set for that result!')
+        padded_results = self.__pad_with_zeros(results, ncols, nrows)
         if table_set.initialised:  # Update existing TableSet
             if append_rows:
-                table_set.append_rows(results)
+                table_set.append_rows(padded_results)
             else:
                 # Combine the small arrays into one large array so we can use the TableSet update function
-                combined_results = self.__combine_into_big_array(results)
+                combined_results = self.__combine_into_big_array(padded_results)
                 table_set[row_start:combined_results.shape[0]+row_start,
                           col_start:combined_results.shape[1]+col_start] = combined_results
         else:
-            if self.__requires_nrows_calculation(results, nrows):
-                nrows = self.__fetch_nrows_from_partial_result_set(results)
-            if ncols is None and self.__requires_ncols_to_be_set_somewhere(results):
-                raise ValueError('When one of the results is None, ncols has to be set for that result!')
-            padded_results = self.__pad_with_zeros(results, ncols, nrows)
             table_set.initialise(padded_results, table_labels)
         return table_set
 

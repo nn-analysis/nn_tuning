@@ -132,13 +132,13 @@ class Table:
         # Change dtype if necessary
         if np.dtype is not None:
             data = data.astype(dtype)
-        self.__nrows = data.shape[0]
-        self.__ncols = data.shape[1]
         # Go through all the data with a progress bar
         i = 0
         for row in tqdm(data, disable=(not self.verbose), leave=False):
             self.__writefile__(i, row, override=True)
             i += 1
+        self.__nrows = data.shape[0]
+        self.__ncols = data.shape[1]
         self.__update_properties__()
 
     def append_rows(self, data: np.ndarray):
@@ -154,6 +154,7 @@ class Table:
         i = self.nrows
         for row in reshaped_data:
             self.__writefile__(i, row)
+            i += 1
         self.__nrows += reshaped_data.shape[0]
         self.__update_properties__()
 
@@ -187,7 +188,7 @@ class Table:
                 value) is np.ndarray:
             cols = None
             expected_shape = (len(rows),)
-        elif type(cols) is slice:
+        elif type(cols) is slice or type(cols) is list:
             cols_is_slice = True
             cols_len = len(__slicetolist__(cols, self.ncols))
             expected_shape = (len(rows), cols_len)

@@ -8,12 +8,14 @@ def __slicetolist__(key, length: int) -> list:
     Converts slices to lists of indices
 
     Args:
-        key (slice) : The key
-        length (int, optional) : The length of the slice. default=nrows
+        key: (slice) The key
+        length: (int, optional) The length of the slice. default=nrows
 
     Returns:
         object: List of indices
     """
+    if type(key) is list:
+        return key
     start = key.start
     if start is None:
         start = 0
@@ -71,6 +73,6 @@ def __verify_data_types_are_correct__(data: tuple) -> bool:
         if type(subdata) is tuple:
             if not __verify_data_types_are_correct__(subdata):
                 return False
-        elif type(subdata) is not np.ndarray:
+        elif type(subdata) is not np.ndarray and subdata is not None:
             return False
     return True

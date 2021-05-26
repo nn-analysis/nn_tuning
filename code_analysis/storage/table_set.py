@@ -54,16 +54,22 @@ class TableSet:
         results = []
         for row in tqdm(rows, disable=(not self.verbose), leave=False):
             try:
-                subtable_total = np.array([])
+                subtable_total = None
                 for subtables in self.subtables:
-                    subtable_total = np.concatenate((subtable_total, self.get_subtable(subtables)[row]))
+                    if subtable_total is None:
+                        subtable_total = self.get_subtable(subtables)[row]
+                    else:
+                        subtable_total = np.concatenate((subtable_total, self.get_subtable(subtables)[row]))
                 if cols is None:
                     results.append(subtable_total)
                 else:
                     results.append(subtable_total[cols])
             except OSError:
                 raise IndexError(f"index {row} is out of bounds for axis 0 with size {self.nrows}")
-        return np.array(results)
+        results = np.array(results)
+        if results.shape[0] is 1:
+            return results[0]
+        return results
 
     def __setitem__(self, key, value):
         rows, cols = __keytolist__(key, self.nrows)
@@ -82,6 +88,11 @@ class TableSet:
             expected_shape = (len(rows), cols_len)
             if len(value) != cols_len:
                 raise ValueError(f'Expected shape {expected_shape}, found ({key}, {value})')
+        elif type(cols) is list:
+            cols_len = len(cols)
+            expected_shape = (len(rows), cols_len)
+            if len(value) != cols_len:
+                raise ValueError(f'Expected shape {expected_shape}, found ({key}, {value})')
         else:
             single_value = True
 
@@ -90,7 +101,8 @@ class TableSet:
             subtable_instance = self.get_subtable(subtable)
             max_col = min_col + subtable_instance.ncols
             if single_value:
-                subtable_instance[rows, cols] = key
+                if min_col < cols < max_col:
+                    subtable_instance[rows[0], cols] = value
             else:
                 cols_array = np.array(__slicetolist__(cols, self.ncols))
                 cols_array = cols_array[np.where(cols_array >= min_col)]
@@ -99,7 +111,8 @@ class TableSet:
                 value_array = value_array[np.where(cols_array >= min_col)]
                 value_array = value_array[np.where(cols_array <= max_col)]
                 cols_list = cols_array.tolist()
-                subtable_instance[rows, cols_list] = value_array
+                if len(cols_list) > 0:
+                    subtable_instance[rows, cols_list] = value_array
             min_col += subtable_instance.ncols
 
     def __delitem__(self, key):
@@ -218,24 +231,29 @@ class TableSet:
             i += 1
         return True
 
-    def append_rows(self, data: tuple):
+    def append_rows(self, data: tuple, skip_verification: bool = False):
         """
         Add a new rows to the existing TableSet
 
         Args:
             data: The new rows as a (nested) tuple of np.ndarrays
+            skip_verification (optional, default=False) : If True the verification steps are skipped. This allows for faster processing and is used when this function calls itself.
         """
         # Verify the data
-        if not __verify_data_types_are_correct__(data):
-            raise ValueError('data is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!')
-        if not self.__verify_coherent_data_rows(data):
-            raise ValueError('expected the rows of all np.ndarrays in the data variable to be of the same length!')
-        if not self.__verify_ncols(data):
-            raise ValueError('make sure data.ncols is the same as the existing ncols')
+        if not skip_verification:
+            if not __verify_data_types_are_correct__(data):
+                raise ValueError('data is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!')
+            if not self.__verify_coherent_data_rows(data):
+                raise ValueError('expected the rows of all np.ndarrays in the data variable to be of the same length!')
+            if not self.__verify_ncols(data):
+                raise ValueError('make sure data.ncols is the same as the existing ncols')
         i = 0
         for subtable_key in self.subtables:
             subtable = self.get_subtable(subtable_key)
-            subtable.append_rows(data[i])
+            if type(subtable) is TableSet:
+                subtable.append_rows(data[i], skip_verification=True)
+            else:
+                subtable.append_rows(data[i])
             i += 1
 
     @property
@@ -278,7 +296,7 @@ class TableSet:
         if self.__recurrent_subtables is not None:
             return self.__recurrent_subtables
         result = {}
-        for subtable in subtables:
+        for subtable in self.subtables:
             subtable_instance = self.get_subtable(subtable)
             if type(subtable_instance) is TableSet:
                 result[subtable] = subtable_instance.recurrent_subtables

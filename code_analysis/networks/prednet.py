@@ -109,7 +109,6 @@ class Prednet(Network):
                             batch_output[key][_l].append(list())
                         batch_output[key][_l][s].append(t)
                 prednet.step_outputs = []
-            print("Extracting numpy arrays")
             batch_output = self.extract_numpy_array(batch_output, sess)
             sess.close()
         gc.collect()
