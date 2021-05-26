@@ -110,7 +110,7 @@ class TableSet:
             subtable_instance = self.get_subtable(subtable)
             max_col = min_col + subtable_instance.ncols
             if single_value:
-                if min_col < cols < max_col:
+                if min_col <= cols <= max_col:
                     subtable_instance[rows[0], cols] = value
             else:
                 cols_array = np.array(__slicetolist__(cols, self.ncols))
