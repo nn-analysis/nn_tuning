@@ -362,8 +362,8 @@ class FittingManager:
         p = np.zeros(
             (int((int((shape[0] / step[0])) * int((shape[1]) / step[1])) * int(((shape[2] - 1) / step[2]))), 3),
             dtype=np.float32)
-        for x in range(0, int(shape[0] * (1 / step[0]))):
-            for y in range(0, int(shape[1] * (1 / step[1]))):
+        for x in range(step[0], int(shape[0] * (1 / step[0]))):
+            for y in range(step[1], int(shape[1] * (1 / step[1]))):
                 for s in range(start_at, int(shape[2] * (1 / step[2]))):
                     if log:
                         p[i] = np.array([np.log(x * step[0]) if x > 0 else 0,

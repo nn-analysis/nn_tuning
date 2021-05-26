@@ -74,27 +74,36 @@ class TableSet:
     def __setitem__(self, key, value):
         rows, cols = __keytolist__(key, self.nrows)
         single_value = False
+        len_value = 1
+        if type(value) is list:
+            value = np.array(value)
+            if value.ndim > 1:
+                value = value.reshape(len(value), -1)
+        if type(value) is np.ndarray:
+            if value.ndim > 1:
+                len_value = value.shape[1]
+            else:
+                len_value = value.shape[0]
         if type(cols) is slice and cols.start is None and cols.step is None and cols.stop is None and type(
                 value) is np.ndarray:
             cols = None
-            if type(value) is list:
-                expected_shape = (len(rows), self.ncols)
-                if len(value) != self.ncols:
-                    raise ValueError(f'Expected shape {expected_shape}, found ({key}, {value})')
+            if type(value) is np.ndarray:
+                if len_value != self.ncols:
+                    raise ValueError(f'Expected len(value)={self.ncols}, found {len(value)}')
             else:
                 single_value = True
         elif type(cols) is slice:
             cols_len = len(__slicetolist__(cols, self.ncols))
-            expected_shape = (len(rows), cols_len)
-            if len(value) != cols_len:
-                raise ValueError(f'Expected shape {expected_shape}, found ({key}, {value})')
+            if len_value != cols_len:
+                raise ValueError(f'Expected len(value)={cols_len}, found {len(value)}')
         elif type(cols) is list:
             cols_len = len(cols)
-            expected_shape = (len(rows), cols_len)
-            if len(value) != cols_len:
-                raise ValueError(f'Expected shape {expected_shape}, found ({key}, {value})')
+            if len_value != cols_len:
+                raise ValueError(f'Expected len(value)={cols_len}, found {len(value)}')
         else:
             single_value = True
+            if len_value > 1:
+                raise ValueError(f'Expected len(value)=1, found len(value)={len_value}')
 
         min_col = 0
         for subtable in self.subtables:
@@ -107,9 +116,13 @@ class TableSet:
                 cols_array = np.array(__slicetolist__(cols, self.ncols))
                 cols_array = cols_array[np.where(cols_array >= min_col)]
                 cols_array = cols_array[np.where(cols_array <= max_col)]
-                value_array = np.array(value)
-                value_array = value_array[np.where(cols_array >= min_col)]
-                value_array = value_array[np.where(cols_array <= max_col)]
+                value_array = value
+                if value_array.ndim > 1:
+                    value_array = value_array[:, np.where(cols_array >= min_col)]
+                    value_array = value_array[:, np.where(cols_array <= max_col)]
+                else:
+                    value_array = value_array[np.where(cols_array >= min_col)]
+                    value_array = value_array[np.where(cols_array <= max_col)]
                 cols_list = cols_array.tolist()
                 if len(cols_list) > 0:
                     subtable_instance[rows, cols_list] = value_array
