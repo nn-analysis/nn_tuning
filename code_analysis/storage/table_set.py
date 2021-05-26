@@ -108,7 +108,7 @@ class TableSet:
         min_col = 0
         for subtable in self.subtables:
             subtable_instance = self.get_subtable(subtable)
-            max_col = min_col + subtable_instance.ncols
+            max_col = min_col + subtable_instance.ncols-1
             if single_value:
                 if min_col <= cols <= max_col:
                     subtable_instance[rows[0], cols] = value
@@ -123,6 +123,7 @@ class TableSet:
                 else:
                     value_array = value_array[np.where(cols_array >= min_col)[0]]
                     value_array = value_array[np.where(cols_array <= max_col)[0]]
+                cols_array = cols_array - min_col
                 cols_list = cols_array.tolist()
                 if len(cols_list) > 0:
                     subtable_instance[rows, cols_list] = value_array

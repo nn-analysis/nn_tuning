@@ -158,7 +158,7 @@ class FittingManager:
         step = 500
         for row in tqdm(range(0, nrows, step)):
             new_nrows = step
-            if row * step + nrows > nrows:
+            if row * step + step > nrows:
                 new_nrows = nrows - row * step
             new_table_set = self.storage_manager.save_result_table_set(new_table_initialisation_data, table_set,
                                                                        responses.recurrent_subtables,
