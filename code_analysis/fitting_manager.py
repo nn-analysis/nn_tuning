@@ -55,11 +55,11 @@ class FittingManager:
             TableSet with the resulting best_fits.
         """
         best_predicted = np.zeros((results.shape[1], 4))
-        results = results[:]
-        best_r2s = np.nanmax(results[:], axis=0)
-        for i in range(results.shape[1]):
+        results_ndarray = results[:]
+        best_r2s = np.nanmax(results_ndarray[:], axis=0)
+        for i in range(results_ndarray.shape[1]):
             best_r2 = best_r2s[i]
-            best_index = np.where(results[:, i] == best_r2)[0][0]
+            best_index = np.where(results_ndarray[:, i] == best_r2)[0][0]
             best_x, best_y, best_s = candidate_function_parameters[best_index, 0], \
                                      candidate_function_parameters[best_index, 1], \
                                      candidate_function_parameters[best_index, 2]
