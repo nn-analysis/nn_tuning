@@ -245,21 +245,21 @@ class FittingManager:
         goodness_of_fits = np.zeros((candidate_function_parameters.shape[0], responses.shape[0]), dtype=dtype)
         for row in tqdm(range(0, candidate_function_parameters.shape[0]), disable=(not verbose), leave=False):
             x, y, s = candidate_function_parameters[row]
-            g = eval(prediction_function)
-            pred = (stimulus @ g)[..., np.newaxis]
+            evaluated_prediction_function = eval(prediction_function)
+            prediction = (stimulus @ evaluated_prediction_function)[..., np.newaxis]
             if parallel:
                 # noinspection PyUnboundLocalVariable
-                _x = np.concatenate((pred, o), axis=1)
+                _x = np.concatenate((prediction, o), axis=1)
                 scale = np.linalg.pinv(_x) @ responses_T
-                u = np.var(responses_T - _x @ scale, axis=0)
+                variance_unexplained = np.var(responses_T - _x @ scale, axis=0)
                 # noinspection PyUnboundLocalVariable
-                goodness_of_fit = 1 - (u / var_resp)
+                goodness_of_fit = 1 - (variance_unexplained / var_resp)  # This is the inverted portion of the variance that is unexplained
                 goodness_of_fit[np.isnan(goodness_of_fit)] = 0
                 goodness_of_fit[goodness_of_fit == -np.inf] = 0
                 goodness_of_fits[row] = goodness_of_fit
             else:
                 for response in range(0, responses.shape[0]):
-                    goodness_of_fit = np.corrcoef(pred.reshape(-1), responses[response])[0, 1]
+                    goodness_of_fit = np.corrcoef(prediction.reshape(-1), responses[response])[0, 1]
                     goodness_of_fits[row, response] = goodness_of_fit
         return goodness_of_fits
 
@@ -279,7 +279,7 @@ class FittingManager:
             return
         if override:
             self.storage_manager.remove_table(table)
-        self.storage_manager.save_result_table_set((results.astype(dtype),), table, {}, col_start=col_start)
+        self.storage_manager.save_result_table_set((results.astype(dtype),), table, {table: table}, col_start=col_start)
 
     @staticmethod
     def generate_fake_responses(variables, stim_x, stim_y, stimulus) -> np.ndarray:

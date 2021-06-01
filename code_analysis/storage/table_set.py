@@ -73,6 +73,8 @@ class TableSet:
 
     def __setitem__(self, key, value):
         rows, cols = __keytolist__(key, self.nrows)
+
+        # Make sure the shape and types of the keys and the values is something we expect
         single_value = False
         len_value = 1
         if type(value) is list:
@@ -105,25 +107,31 @@ class TableSet:
             if len_value > 1:
                 raise ValueError(f'Expected len(value)=1, found len(value)={len_value}')
 
+        # Go through the subtables to delegate the values to the correct subtables
         min_col = 0
         for subtable in self.subtables:
             subtable_instance = self.get_subtable(subtable)
             max_col = min_col + subtable_instance.ncols-1
+            # If only one value is changed check if that column is in the subtable and update it accordingly
             if single_value:
                 if min_col <= cols <= max_col:
                     subtable_instance[rows[0], cols] = value
             else:
+                # Select the columns that are in this subtable
                 cols_array = np.array(__slicetolist__(cols, self.ncols))
                 cols_array = cols_array[np.where(cols_array >= min_col)]
                 cols_array = cols_array[np.where(cols_array <= max_col)]
                 value_array = value
+                # Select just the values for the columns in this subtable
                 if value_array.ndim > 1:
                     value_array = value_array[:, np.where(cols_array >= min_col)[0]]
                     value_array = value_array[:, np.where(cols_array <= max_col)[0]]
                 else:
                     value_array = value_array[np.where(cols_array >= min_col)[0]]
                     value_array = value_array[np.where(cols_array <= max_col)[0]]
+                # Make sure the columns start at the right place
                 cols_array = cols_array - min_col
+                # Make the columns a list and update the subtable with the values and columns that were just calculated
                 cols_list = cols_array.tolist()
                 if len(cols_list) > 0:
                     subtable_instance[rows, cols_list] = value_array
