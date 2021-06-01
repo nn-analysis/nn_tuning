@@ -1,7 +1,12 @@
 from abc import ABC
 
 import numpy as np
-import tensorflow as tf
+try:
+    import tensorflow as tf
+    tensorflow = True
+except ImportError:
+    tf = None
+    tensorflow = False
 
 
 class Network(ABC):
@@ -31,6 +36,8 @@ class Network(ABC):
         """
         Helper function for checking the TensorFlow function
         """
+        if not tensorflow:
+            return False
         return tf.__version__ <= "2"
 
     def extract_numpy_array(self, tensor, session: tf.compat.v1.Session = None):
@@ -47,6 +54,8 @@ class Network(ABC):
         Returns:
             The resulting np.ndarray
         """
+        if not tensorflow:
+            raise ImportError("tensflow could not be imported")
         if not self.is_tf_one():
             return tensor.numpy()
         if session is not None:

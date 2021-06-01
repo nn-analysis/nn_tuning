@@ -1,5 +1,10 @@
+import os
+# Disable the extensive tensorflow debugging info
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from code_analysis import *
 from prednet.kitti_settings import *  # This contains the weights dir we need later
+from code_analysis.networks.prednet import Prednet
 
 base_folder = os.getcwd()
 

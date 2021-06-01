@@ -1,2 +1,2 @@
-from .prednet import *
+# from .prednet import *
 from .network import *
