@@ -55,11 +55,12 @@ class AlexNet(Network):
         self.__raw_output = {}
         input_tensor = torch.from_numpy(input_array)
 
-        # move the input and model to GPU for speed if available
+        # Move the input and model to GPU for speed if available
         if torch.cuda.is_available():
             input_tensor = input_tensor.to("cuda")
 
+        # Run the model without gradients (since we're not training and the network is not recurrent)
         with torch.no_grad():
             self.model.float()(input_tensor)
 
-        return list(self.__raw_output), self.labels
+        return list(self.__raw_output.values()), self.labels
