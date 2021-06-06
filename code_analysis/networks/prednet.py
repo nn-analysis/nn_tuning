@@ -1,4 +1,5 @@
 import gc
+from typing import Union
 
 import tensorflow as tf
 from keras import Input, Model
@@ -93,7 +94,7 @@ class Prednet(Network):
             Dictionary with all the np.ndarrays from different subparts per layer.
         """
         with tf.compat.v1.Session() as sess:
-            batch_output = dict()
+            batch_outputs = []
             prednet = self._test_model.layers[1]
             prednet.feedforward_only = self.feedforward_only
             for s in range(0, input_array.shape[0]):
@@ -105,8 +106,13 @@ class Prednet(Network):
                     step_outputs = [prednet.step_outputs[i] for i in self.time_points_to_measure]
                 else:
                     step_outputs = prednet.step_outputs
-                batch_outputs = []
+                i = 0
                 for outputs in step_outputs:
+                    if len(batch_outputs) > i:
+                        batch_output = batch_outputs[i]
+                    else:
+                        batch_output = dict()
+                        batch_outputs.append(batch_output)
                     for key, value, in outputs.items():
                         if key not in batch_output.keys():
                             batch_output[key] = list()
@@ -117,7 +123,8 @@ class Prednet(Network):
                             if not s < len(batch_output[key][_l]):
                                 batch_output[key][_l].append(list())
                             batch_output[key][_l][s].append(t)
-                    batch_outputs.append(batch_output)
+                    batch_outputs[i] = batch_output
+                    i += 1
                 prednet.step_outputs = []
             batch_outputs = self.extract_numpy_array(batch_outputs, sess)
             sess.close()
@@ -168,7 +175,7 @@ class Prednet(Network):
         return tuple(input_list)
 
     @staticmethod
-    def __calculate_mean(outputs: list) -> dict:
+    def __calculate_mean(outputs: Union[tuple, list]) -> dict:
         """
         Calculates the mean from output with multiple time steps
 
@@ -183,7 +190,7 @@ class Prednet(Network):
             result = []
             i = 0
             for item in recursive_list:
-                if type(item) is list:
+                if type(item) is tuple or type(item) is list:
                     sublist = create_indices_list(item)
                     for subitem in sublist:
                         result.append(subitem)
