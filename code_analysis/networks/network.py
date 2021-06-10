@@ -48,16 +48,33 @@ class Network(ABC):
         saving memory.
 
         Args:
-            tensor: The tensor that needs to be extracted.
+            tensor: The tensor or structure containing tensors that needs to be extracted.
             session (optional): The TensorFlow session.
 
         Returns:
             The resulting np.ndarray
         """
         if not tensorflow:
-            raise ImportError("tensflow could not be imported")
+            raise ImportError("tensorflow could not be imported")
         if not self.is_tf_one():
-            return tensor.numpy()
+            if tf.is_tensor(tensor):
+                return tensor.numpy()
+            else:
+                output = tensor
+                tensor_type = type(tensor)
+                if tensor_type is dict:
+                    for key, value in tensor.items():
+                        output[key] = self.extract_numpy_array(tensor[key], session)
+                if tensor_type is list:
+                    for i in range(len(x)):
+                        output[i] = self.extract_numpy_array(tensor[i], session)
+                if tensor_type is tuple:
+                    # Make a list, tuples cannot be changed
+                    new_output = []
+                    for i in range(len(tensor)):
+                        new_output.append(self.extract_numpy_array(tensor[i], session))
+                    return new_output
+                return output
         if session is not None:
             session.run(tf.compat.v1.global_variables_initializer())
             return session.run(tensor)
