@@ -1,4 +1,3 @@
-import gc
 from typing import Union
 
 import tensorflow as tf
@@ -101,20 +100,19 @@ class Prednet(Network):
         batch_outputs = self.__init_result_array(ntime)
         prednet = self._test_model.layers[1]
         prednet.feedforward_only = self.feedforward_only
-        for s in range(input_array.shape[0]):
-            if self.presentation is 'iterative':
-                iterator = self.time_points_to_measure if self.time_points_to_measure is not None else range(input_array.shape[1])
-                for j in iterator:
-                    raw_step_outputs = self.__call_prednet(prednet, input_array[s, 0:j].reshape((1, len(list(range(0, j)))), input_array.shape[2], input_array.shape[3]))
-                    batch_outputs = self.__extract_from_step_output(raw_step_outputs, batch_outputs, j)
-            elif self.presentation is 'single_pass':
-                batch_input = input_array[s:s+1]
-                batch_input_tensor = tf.convert_to_tensor(batch_input, np.float32)
-                raw_step_outputs = self.__call_prednet(prednet, batch_input_tensor)
-                batch_outputs = self.__extract_from_step_output(raw_step_outputs, batch_outputs, 0)
-            else:
-                raise ValueError(f'Expected presentation to be either iterative or single_pass, found {self.presentation}')
-        gc.collect()
+        # for s in range(input_array.shape[0]):
+        if self.presentation is 'iterative':
+            iterator = self.time_points_to_measure if self.time_points_to_measure is not None else range(1, input_array.shape[1]+1)
+            for j in iterator:
+                raw_step_outputs = self.__call_prednet(prednet, input_array[:, 0:j].reshape((input_array.shape[0], len(list(range(0, j))), input_array.shape[2], input_array.shape[3], input_array.shape[4])).astype(np.float32))
+                batch_outputs = self.__extract_from_step_output(raw_step_outputs, batch_outputs, j-1)
+        elif self.presentation is 'single_pass':
+            batch_input = input_array[:]
+            batch_input_tensor = tf.convert_to_tensor(batch_input, np.float32)
+            raw_step_outputs = self.__call_prednet(prednet, batch_input_tensor)
+            batch_outputs = self.__extract_from_step_output(raw_step_outputs, batch_outputs, 0)
+        else:
+            raise ValueError(f'Expected presentation to be either iterative or single_pass, found {self.presentation}')
         if len(batch_outputs) == 1:
             return batch_outputs[0]
         return batch_outputs
@@ -133,12 +131,21 @@ class Prednet(Network):
                 prednet.output_layer_type = output_mode[:-1]
                 prednet.output_layer_num = int(output_mode[-1])
                 # run prednet
-                outputs[layer_type].append(prednet(stimulus))
+                outputs[layer_type].append(prednet.call(stimulus))
         # after the loop return the result
         outputs = {'R': outputs['R'], 'Â': outputs['Ahat'], 'A': outputs['A'], 'E': outputs['E']}
         return outputs
 
     def __init_result_array(self, number_of_timesteps):
+        """
+        Initialises a result array based on the number of time steps in the input video
+
+        Args:
+            number_of_timesteps: The number of time steps in the video (the second dimension in the input_array).
+
+        Returns:
+            A list with the network structure for each time step.
+        """
         final = []
         if self.feedforward_only:
             base = {
@@ -158,10 +165,9 @@ class Prednet(Network):
 
     @staticmethod
     def __extract_from_step_output(step_output, final_output, time_step):
-        for layer_type, layers_ta in step_output:
-            layer = 0
-            for layer_list in layers_ta:
-                final_output[time_step][layer_type][layer].append(layer_list)
+        for layer_type, layers in step_output.items():
+            for layer in range(len(layers)):
+                final_output[time_step][layer_type][layer] = layers[layer]
         return final_output
 
     def __reshape_batch_output(self, batch_output: dict) -> (tuple, dict):
@@ -182,14 +188,12 @@ class Prednet(Network):
                 if len(results)-1 < i:
                     results.append([])
                     names[f'{i+1}'] = dict()
-                layer = np.array(layer)
-                layer = layer.reshape((layer.shape[0], -1))
                 names[f'{i+1}'][layer_type] = layer_type
                 results[i].append(layer)
                 i += 1
         return self.__list_to_tuple_recursively(results), names
 
-    def __list_to_tuple_recursively(self, input_list: list) -> tuple:
+    def __list_to_tuple_recursively(self, input_list) -> tuple:
         """
         Transforms a list into a tuple recursively.
 
@@ -199,10 +203,10 @@ class Prednet(Network):
         Returns:
             The resulting tuple
         """
-
+        if not (type(input_list) is list or type(input_list) is tuple):
+            return input_list
         for i in range(len(input_list)):
-            if type(input_list[i]) is list:
-                input_list[i] = self.__list_to_tuple_recursively(input_list[i])
+            input_list[i] = self.__list_to_tuple_recursively(input_list[i])
         return tuple(input_list)
 
     def __calculate_mean(self, outputs: Union[tuple, list]) -> dict:
@@ -303,5 +307,5 @@ class Prednet(Network):
                 full_names = dict()
                 for i in range(len(reshaped_output)):
                     full_names[f'iteration.{i}'] = names
-                return tuple(reshaped_output), full_names
-        return self.__reshape_batch_output(output)
+                return tuple(self.extract_numpy_array(reshaped_output)), full_names
+        return self.extract_numpy_array(self.__reshape_batch_output(output))

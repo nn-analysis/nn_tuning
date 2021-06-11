@@ -66,7 +66,7 @@ class Network(ABC):
                     for key, value in tensor.items():
                         output[key] = self.extract_numpy_array(tensor[key], session)
                 if tensor_type is list:
-                    for i in range(len(x)):
+                    for i in range(len(tensor)):
                         output[i] = self.extract_numpy_array(tensor[i], session)
                 if tensor_type is tuple:
                     # Make a list, tuples cannot be changed
