@@ -3,6 +3,7 @@ import pickle
 
 from tqdm import tqdm
 
+from .storage_manager import StorageManager
 from .database import Database
 from .helpers import __keytolist__, __slicetolist__
 from .error import *
@@ -38,6 +39,12 @@ class Table:
         self.__nrows = None
         self.__ncols = None
         self.__dtype = None
+        self.__inputs = None
+        self.__outputs = None
+        self.__has_inputs = None
+        self.__has_outputs = None
+        self.__inputs_table_sets = None
+        self.__outputs_table_sets = None
 
     @property
     def folder(self):
@@ -72,6 +79,42 @@ class Table:
         return self.__dtype
 
     @property
+    def inputs(self):
+        """List of TableSets that were the inputs for the data in this TableSet"""
+        if self.__has_inputs is None:
+            self.__calc_properties__()
+        if not self.__has_inputs:
+            return None
+        if self.__inputs_table_sets is not None:
+            return self.__inputs_table_sets
+        self.__inputs_table_sets = []
+        super_item = self.table_set if self.table_set is not None else self.database
+        for name in self.__inputs:
+            if type(super_item) is Database:
+                self.__inputs_table_sets.append(StorageManager(super_item).open_table(name))
+            else:
+                self.__inputs_table_sets.append(super_item.get_subtable(name))
+        return self.__inputs_table_sets
+
+    @property
+    def outputs(self):
+        """List of TableSets that were the outputs for the data in this TableSet"""
+        if self.__has_outputs is None:
+            self.__calc_properties__()
+        if not self.__has_outputs:
+            return None
+        if self.__outputs_table_sets is not None:
+            return self.__outputs_table_sets
+        self.__outputs_table_sets = []
+        super_item = self.table_set if self.table_set is not None else self.database
+        for name in self.__inputs:
+            if type(super_item) is Database:
+                self.__outputs_table_sets.append(StorageManager(super_item).open_table(name))
+            else:
+                self.__outputs_table_sets.append(super_item.get_subtable(name))
+        return self.__outputs_table_sets
+
+    @property
     def initialised(self) -> bool:
         """Indicates whether the necessary files are initialised and whether the shapes are correct"""
         properties_exist = os.path.isfile(self.folder + self.__properties_file)
@@ -79,13 +122,19 @@ class Table:
             return False
         try:
             with open(self.folder + str(self.__properties_file), 'rb') as f:
-                nrows, ncols = pickle.load(f)
+                nrows, ncols, inputs, outputs = pickle.load(f)
         except EOFError:
             return False
         except TypeError:
             return False
         except ValueError:
-            return False
+            try:
+                self.__nrows, self.__ncols = pickle.load(f)
+                self.__inputs, self.__outputs = None, None
+                self.__update_properties__()
+                return self.initialised
+            except ValueError:
+                return False
         try:
             last_row = self.__readfile__(nrows-1, override=True)
         except FileNotFoundError:
@@ -94,18 +143,24 @@ class Table:
             return False
         if type(last_row) is not np.ndarray:
             return False
+        if inputs is not None and type(inputs) is not list:
+            return False
+        if outputs is not None and type(outputs) is not list:
+            return False
         return last_row.size == ncols
 
     def __calc_properties__(self):
         """Calculates the properties of the table including the nrows and ncols"""
-        self.__nrows, self.__ncols = self.__readfile__(self.__properties_file)
+        self.__nrows, self.__ncols, self.__inputs, self.__outputs = self.__readfile__(self.__properties_file)
+        self.__has_inputs = self.__inputs is not None
+        self.__has_outputs = self.__outputs is not None
         self.__nrows = int(self.__nrows)
         self.__ncols = int(self.__ncols)
         self.__dtype = self.__readfile__('0').dtype
 
     def __update_properties__(self):
         """Updates the properties of the table including the nrows and ncols"""
-        self.__writefile__(self.__properties_file, (self.__nrows, self.__ncols), override=True)
+        self.__writefile__(self.__properties_file, (self.__nrows, self.__ncols, self.__inputs, self.__outputs), override=True)
 
     def change_dtype(self, dtype: np.dtype):
         """
@@ -117,13 +172,15 @@ class Table:
         for row in tqdm(range(0, self.nrows), disable=(not self.verbose), leave=False):
             self.__writefile__(row, self.__readfile__(row).astype(dtype))
 
-    def initialise(self, data: np.ndarray, dtype: np.dtype = None):
+    def initialise(self, data: np.ndarray, dtype: np.dtype = None, inputs: list = None, outputs: list = None):
         """
         Initialises the table using the np.ndarray provided
 
         Args:
             data: The array containing the data for the Table
             dtype (optional): The dtype of the data, changes the data's dtype if they don't match
+            inputs (optional): Denotes the inputs for the data in this Table represented as a list of Table names. Table names have to be in the same TableSet or Database.
+            outputs (optional): Denotes the outputs for the data in this Table represented as a list of Table names. Table names have to be in the same TableSet or Database.
         """
         if not os.path.isdir(self.folder):
             os.mkdir(self.folder, 0o755)
@@ -139,6 +196,10 @@ class Table:
             i += 1
         self.__nrows = data.shape[0]
         self.__ncols = data.shape[1]
+        self.__inputs = inputs
+        self.__outputs = outputs
+        self.__has_inputs = inputs is not None
+        self.__has_outputs = outputs is not None
         self.__update_properties__()
 
     def append_rows(self, data: np.ndarray):

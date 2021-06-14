@@ -9,6 +9,7 @@ from .database import Database
 from .error import NoSuchTableError, TableNotInitialisedError
 from .helpers import __keytolist__, __slicetolist__, __verify_data_types_are_correct__
 from .table import Table
+from .storage_manager import StorageManager
 
 
 class TableSet:
@@ -45,6 +46,12 @@ class TableSet:
         self.__ncols = None
         self.__ncols_tuple = None
         self.__recurrent_subtables = None
+        self.__inputs = None
+        self.__outputs = None
+        self.__has_inputs = None
+        self.__has_outputs = None
+        self.__inputs_table_sets = None
+        self.__outputs_table_sets = None
 
     def __repr__(self):
         return f"Table('{self.name}', ({self.nrows}, {self.ncols}), '{self.folder}')"
@@ -203,7 +210,7 @@ class TableSet:
                 return False
         return True
 
-    def initialise(self, data: tuple, names: dict, dtype: np.dtype = None):
+    def initialise(self, data: tuple, names: dict, dtype: np.dtype = None, relations: dict = None, inputs: list = None, outputs: list = None):
         """
         Initialise the TableSet with the structure set in the data parameter.
         Names and data need to be of the same shape.
@@ -214,7 +221,10 @@ class TableSet:
         Args:
             data: The data of the subtables
             names: The names of the subtables and subtablesets
-            dtype: Data type of the array
+            dtype (optional): Data type of the array
+            relations (optional): Relations between components of the data in terms of inputs and outputs. Example: `{ 'name': (inputs=list of names, outputs=list of names, child=child dict),  'name2': (inputs=list of names, outputs=list of names, child=child dict), etc... }`
+            inputs (optional): Denotes the inputs for the data in this TableSet represented as a list of Table names. TableSet names have to be in the same TableSet or Database.
+            outputs (optional): Denotes the outputs for the data in this TableSet represented as a list of Table names. TableSet names have to be in the same TableSet or Database.
         """
         if not __verify_data_types_are_correct__(data):
             raise ValueError('data is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!')
@@ -228,13 +238,21 @@ class TableSet:
             os.mkdir(self.folder, 0o755)
         i = 0
         self.__subtables = []
+        self.__inputs = inputs
+        self.__outputs = outputs
+        self.__has_inputs = inputs is not None
+        self.__has_outputs = outputs is not None
         for item in data:
             name = list(names.items())[i][0]
             self.__subtables.append(name)
+            inputs = relations[name][0] if relations is not None and name in relations and len(relations[name]) > 0 else None
+            outputs = relations[name][1] if relations is not None and name in relations and len(relations[name]) > 1 else None
+            child = relations[name][2] if relations is not None and name in relations and len(relations[name]) > 2 else None
             if type(item) is tuple:
-                TableSet(name, self.database, self, self.verbose).initialise(item, list(names.items())[i][1], dtype)
+                TableSet(name, self.database, self, self.verbose).initialise(item, list(names.items())[i][1], dtype,
+                                                                             child, inputs, outputs)
             elif type(item) is np.ndarray:
-                Table(name, self.database, self).initialise(item, dtype)
+                Table(name, self.database, self).initialise(item, dtype, inputs, outputs)
             else:
                 raise ValueError('Expected type')
             i += 1
@@ -277,6 +295,42 @@ class TableSet:
             else:
                 subtable.append_rows(data[i])
             i += 1
+
+    @property
+    def inputs(self):
+        """List of TableSets that were the inputs for the data in this TableSet"""
+        if self.__has_inputs is None:
+            self.__calc_properties__()
+        if not self.__has_inputs:
+            return None
+        if self.__inputs_table_sets is not None:
+            return self.__inputs_table_sets
+        self.__inputs_table_sets = []
+        super_item = self.table_set if self.table_set is not None else self.database
+        for name in self.__inputs:
+            if type(super_item) is Database:
+                self.__inputs_table_sets.append(StorageManager(super_item).open_table(name))
+            else:
+                self.__inputs_table_sets.append(super_item.get_subtable(name))
+        return self.__inputs_table_sets
+
+    @property
+    def outputs(self):
+        """List of TableSets that were the outputs for the data in this TableSet"""
+        if self.__has_outputs is None:
+            self.__calc_properties__()
+        if not self.__has_outputs:
+            return None
+        if self.__outputs_table_sets is not None:
+            return self.__outputs_table_sets
+        self.__outputs_table_sets = []
+        super_item = self.table_set if self.table_set is not None else self.database
+        for name in self.__inputs:
+            if type(super_item) is Database:
+                self.__outputs_table_sets.append(StorageManager(super_item).open_table(name))
+            else:
+                self.__outputs_table_sets.append(super_item.get_subtable(name))
+        return self.__outputs_table_sets
 
     @property
     def shape(self) -> (int, int):
@@ -361,11 +415,15 @@ class TableSet:
 
     def __calc_properties__(self):
         """Calculates the properties of the table including the nrows and ncols"""
-        self.__subtables = self.__readfile__(self.__properties_file)
+        if not self.initialised:
+            raise TableNotInitialisedError
+        self.__subtables, self.__inputs, self.__outputs = self.__readfile__(self.__properties_file)
+        self.__has_inputs = self.__inputs is not None
+        self.__has_outputs = self.__outputs is not None
         self.__dtype = self.get_subtable(0).dtype
 
     def __update_properties__(self):
-        self.__writefile__(self.__properties_file, self.__subtables, override=True)
+        self.__writefile__(self.__properties_file, (self.__subtables, self.__inputs, self.__outputs), override=True)
 
     @property
     def initialised(self) -> bool:
@@ -375,14 +433,24 @@ class TableSet:
             return False
         try:
             with open(self.folder + str(self.__properties_file), 'rb') as f:
-                subtables = pickle.load(f)
+                subtables, inputs, outputs = pickle.load(f)
         except EOFError:
             return False
         except TypeError:
             return False
         except ValueError:
-            return False
+            try:
+                self.__subtables = pickle.load(f)
+                self.__inputs, self.__outputs = None, None
+                self.__update_properties__()
+                return self.initialised
+            except ValueError:
+                return False
         if type(subtables) is not list:
+            return False
+        if inputs is not None and type(inputs) is not list:
+            return False
+        if outputs is not None and type(outputs) is not list:
             return False
         return True
 
