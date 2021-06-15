@@ -100,17 +100,16 @@ class Prednet(Network):
         batch_outputs = self.__init_result_array(ntime)
         prednet = self._test_model.layers[1]
         prednet.feedforward_only = self.feedforward_only
-        # for s in range(input_array.shape[0]):
         if self.presentation is 'iterative':
             iterator = self.time_points_to_measure if self.time_points_to_measure is not None else range(1, input_array.shape[1]+1)
             for j in iterator:
                 raw_step_outputs = self.__call_prednet(prednet, input_array[:, 0:j].reshape((input_array.shape[0], len(list(range(0, j))), input_array.shape[2], input_array.shape[3], input_array.shape[4])).astype(np.float32))
-                batch_outputs = self.__extract_from_step_output(raw_step_outputs, batch_outputs, j-1)
+                batch_outputs = self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs, batch_outputs, j-1))
         elif self.presentation is 'single_pass':
             batch_input = input_array[:]
             batch_input_tensor = tf.convert_to_tensor(batch_input, np.float32)
             raw_step_outputs = self.__call_prednet(prednet, batch_input_tensor)
-            batch_outputs = self.__extract_from_step_output(raw_step_outputs, batch_outputs, 0)
+            batch_outputs = self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs, batch_outputs, 0))
         else:
             raise ValueError(f'Expected presentation to be either iterative or single_pass, found {self.presentation}')
         if len(batch_outputs) == 1:
@@ -275,10 +274,11 @@ class Prednet(Network):
             return x
 
         # Loop over highest dimension
-        summed_output = self.extract_numpy_array(outputs[0])
-        for output in outputs:
+        summed_output = outputs[0]
+        for output_index in range(1, len(outputs)):
+            output = outputs[output_index]
             # Use the sum function to sum the dimensions per two, first extracting values from the structure.
-            summed_output = sum_structure(summed_output, self.extract_numpy_array(output))
+            summed_output = sum_structure(summed_output, output)
         # Divide the resulting sum by the length of the first dimension
         mean_output = divide_structure_by(summed_output, len(outputs))
         return mean_output
