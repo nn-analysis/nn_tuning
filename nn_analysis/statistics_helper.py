@@ -1,5 +1,5 @@
 import numpy as np
-import statsmodels.stats.weightstats as smws
+# import statsmodels.stats.weightstats as smws
 
 
 def llincc(x, y):
@@ -22,17 +22,17 @@ def llincc(x, y):
     return lincc
 
 
-def tost(a, b, dx=-0.5, dy=0.5):
-    """
-    Runs a Two One Sided T-test to test for similarity
-
-    Args:
-        a: Input array 1
-        b: Input array 2
-        dx: delta x
-        dy: delta y
-
-    Returns:
-        The resulting tost value
-    """
-    return smws.ttost_ind(a, b, dx, dy)[0]
+# def tost(a, b, dx=-0.5, dy=0.5):
+#     """
+#     Runs a Two One Sided T-test to test for similarity
+#
+#     Args:
+#         a: Input array 1
+#         b: Input array 2
+#         dx: delta x
+#         dy: delta y
+#
+#     Returns:
+#         The resulting tost value
+#     """
+#     return smws.ttost_ind(a, b, dx, dy)[0]

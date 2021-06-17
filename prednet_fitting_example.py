@@ -2,9 +2,9 @@ import os
 # Disable the extensive tensorflow debugging info
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-from code_analysis import *
+from nn_analysis import *
 from prednet.kitti_settings import *  # This contains the weights dir we need later
-from code_analysis.networks.prednet import Prednet
+from nn_analysis.networks.prednet import Prednet
 
 base_folder = os.getcwd()
 
@@ -31,7 +31,7 @@ prf_input_generator = PRFInputGenerator(1, 'prf_input', storage_manager, verbose
 prf_nd_input_manager = InputManager(TableSet('prf_input', database), network_input_shape, prf_input_generator)
 
 # Initialise the network with the weight files
-network = Prednet(json_file, weights_file)
+network = Prednet(json_file, weights_file, presentation='iterative')
 
 # Create the output manager
 output_manager = OutputManager(network, storage_manager, prf_nd_input_manager)

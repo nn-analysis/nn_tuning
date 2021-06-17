@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 
 from .input_manager import InputManager
-from code_analysis.networks.network import Network
+from .networks.network import Network
 from .storage import StorageManager, NoSuchTableError
 
 
