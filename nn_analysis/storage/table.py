@@ -3,7 +3,6 @@ import pickle
 
 from tqdm import tqdm
 
-from .storage_manager import StorageManager
 from .database import Database
 from .helpers import __keytolist__, __slicetolist__
 from .error import *
@@ -39,12 +38,8 @@ class Table:
         self.__nrows = None
         self.__ncols = None
         self.__dtype = None
-        self.__inputs = None
-        self.__outputs = None
-        self.__has_inputs = None
-        self.__has_outputs = None
-        self.__inputs_table_sets = None
-        self.__outputs_table_sets = None
+        self.inputs = None
+        self.outputs = None
 
     @property
     def folder(self):
@@ -79,42 +74,6 @@ class Table:
         return self.__dtype
 
     @property
-    def inputs(self):
-        """List of TableSets that were the inputs for the data in this TableSet"""
-        if self.__has_inputs is None:
-            self.__calc_properties__()
-        if not self.__has_inputs:
-            return None
-        if self.__inputs_table_sets is not None:
-            return self.__inputs_table_sets
-        self.__inputs_table_sets = []
-        super_item = self.table_set if self.table_set is not None else self.database
-        for name in self.__inputs:
-            if type(super_item) is Database:
-                self.__inputs_table_sets.append(StorageManager(super_item).open_table(name))
-            else:
-                self.__inputs_table_sets.append(super_item.get_subtable(name))
-        return self.__inputs_table_sets
-
-    @property
-    def outputs(self):
-        """List of TableSets that were the outputs for the data in this TableSet"""
-        if self.__has_outputs is None:
-            self.__calc_properties__()
-        if not self.__has_outputs:
-            return None
-        if self.__outputs_table_sets is not None:
-            return self.__outputs_table_sets
-        self.__outputs_table_sets = []
-        super_item = self.table_set if self.table_set is not None else self.database
-        for name in self.__inputs:
-            if type(super_item) is Database:
-                self.__outputs_table_sets.append(StorageManager(super_item).open_table(name))
-            else:
-                self.__outputs_table_sets.append(super_item.get_subtable(name))
-        return self.__outputs_table_sets
-
-    @property
     def initialised(self) -> bool:
         """Indicates whether the necessary files are initialised and whether the shapes are correct"""
         properties_exist = os.path.isfile(self.folder + self.__properties_file)
@@ -130,7 +89,7 @@ class Table:
         except ValueError:
             try:
                 self.__nrows, self.__ncols = pickle.load(f)
-                self.__inputs, self.__outputs = None, None
+                self.inputs, self.outputs = None, None
                 self.__update_properties__()
                 return self.initialised
             except ValueError:
@@ -160,7 +119,7 @@ class Table:
 
     def __update_properties__(self):
         """Updates the properties of the table including the nrows and ncols"""
-        self.__writefile__(self.__properties_file, (self.__nrows, self.__ncols, self.__inputs, self.__outputs), override=True)
+        self.__writefile__(self.__properties_file, (self.__nrows, self.__ncols, self.inputs, self.outputs), override=True)
 
     def change_dtype(self, dtype: np.dtype):
         """
@@ -196,10 +155,8 @@ class Table:
             i += 1
         self.__nrows = data.shape[0]
         self.__ncols = data.shape[1]
-        self.__inputs = inputs
-        self.__outputs = outputs
-        self.__has_inputs = inputs is not None
-        self.__has_outputs = outputs is not None
+        self.inputs = inputs
+        self.outputs = outputs
         self.__update_properties__()
 
     def append_rows(self, data: np.ndarray):

@@ -27,7 +27,7 @@ setup(
     packages=find_packages(exclude=("tests", "prednet_fitting_example")),
     include_package_data=False,
     install_requires=[
-        "numpy", "tqdm"
+        "numpy", "tqdm", "Pillow"
     ],
     python_requires=">=3.6",
 )

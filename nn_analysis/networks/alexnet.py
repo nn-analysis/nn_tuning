@@ -1,10 +1,21 @@
 import numpy as np
-from torch import nn
 
 from .network import Network
-import torch
-from torchvision.models import alexnet
-from torchvision.models import AlexNet as AlexNetModel
+try:
+    import torch
+    no_torch = False
+except ImportError:
+    torch = None
+    no_torch = True
+
+try:
+    from torchvision.models import alexnet
+    from torchvision.models import AlexNet as AlexNetModel
+    no_torchvision = False
+except ImportError:
+    AlexNetModel = None
+    alexnet = None
+    no_torchvision = True
 
 
 class AlexNet(Network):
@@ -18,6 +29,12 @@ class AlexNet(Network):
     """
 
     def __init__(self):
+        if no_torch and no_torchvision:
+            raise ImportError('This package requires torch and torchvision to be installed. Please make sure these packages are correctly installed.')
+        if no_torch:
+            raise ImportError('This package requires the torch package to be installed.')
+        if no_torchvision:
+            raise ImportError('This package requires the torchvision package to be installed.')
         self.model = alexnet(pretrained=True)
         self.labels = {}
         self.__raw_output = {}
@@ -38,7 +55,7 @@ class AlexNet(Network):
 
             return hook
         for submodel_name, submodel in self.model.named_modules():
-            if type(submodel) is not AlexNetModel and type(submodel) is not nn.Sequential:
+            if type(submodel) is not AlexNetModel and type(submodel) is not torch.nn.Sequential:
                 self.labels[submodel_name] = submodel_name
                 submodel.register_forward_hook(hook_wrapper(submodel_name))
 

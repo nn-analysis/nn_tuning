@@ -3,7 +3,11 @@ from typing import Union
 import numpy as np
 from tqdm import tqdm
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+    no_plotting = False
+except ImportError:
+    no_plotting = True
 from ..plot import Plot
 from ..storage import StorageManager, Table, TableSet
 from .two_d_input_generator import TwoDInputGenerator
@@ -148,6 +152,8 @@ class PRFInputGenerator(TwoDInputGenerator):
             index: (int) Index of the stimulus
             title: (str) Title of the plot or the filename of the plot
         """
+        if no_plotting:
+            raise ImportError('Plotting requires the matplotlib package. Please install the package and try again.')
         result = self._get_2d(shape, index).reshape(shape)
         plt.imshow(result, cmap='gray', vmin=0, vmax=1, origin='lower')
         if Plot.save_fig:

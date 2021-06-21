@@ -1,8 +1,18 @@
 from typing import Union
 
-import tensorflow as tf
-from keras import Input, Model
-from keras.engine.saving import model_from_json
+try:
+    import tensorflow as tf
+    no_tensorflow = False
+except ImportError:
+    tf = None
+    no_tensorflow = True
+try:
+    from keras import Input, Model
+    from keras.engine.saving import model_from_json
+    no_keras = False
+except ImportError:
+    no_keras = True
+    Input, Model, model_from_json = None, None, None
 import numpy as np
 
 from .network import Network
@@ -27,6 +37,8 @@ class Prednet(Network):
     feedforward_only: bool
 
     def __init__(self, json_file, weight_file, presentation, time_points_to_measure=None, take_mean_of_measures=True):
+        if no_tensorflow:
+            raise ImportError("This network requires tensforflow==1.* to be installed")
         if not self.is_tf_one():
             raise AssertionError("Expected module Tensorflow to have version < 2, found tensorflow version " +
                                  tf.__version__)

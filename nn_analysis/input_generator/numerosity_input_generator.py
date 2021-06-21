@@ -2,7 +2,12 @@ import random
 from enum import Enum
 from typing import List, Optional
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+    no_plotting = False
+except ImportError:
+    plt = None
+    no_plotting = True
 import numpy as np
 from PIL import Image, ImageDraw
 
@@ -99,7 +104,7 @@ class NumerosityInputGenerator(TwoDInputGenerator):
             ndots: (int) Number of dots to generate
             img_shape: (int, int) Size of the image
             calculation_function (optional, default='area'): (str) Way to calculate dot size
-            plt_image (optional, default=False): (bool) If True the generated image is plotted
+            plt_image (optional, default=False): (bool) If True the generated image is plotted (requires matplotlib to be installed)
             plt_title (optional, default=''): (str) Title used in the plot if plt_image is True
 
         Returns:
@@ -296,7 +301,7 @@ class NumerosityInputGenerator(TwoDInputGenerator):
             draw.ellipse((np.ceil(dot[0] - r), np.ceil(dot[1] - r), np.ceil(dot[0] + r), np.ceil(dot[1] + r)), fill=(255, 255, 255))
 
         image = np.array(image)
-        if plt_image:
+        if plt_image and not no_plotting:
             plt.imshow(image, origin='lower')
             if Plot.save_fig:
                 Plot.title = plt_title
@@ -304,5 +309,7 @@ class NumerosityInputGenerator(TwoDInputGenerator):
                 plt.title(plt_title)
             Plot.show(plt)
             Plot.title = None
+        elif plt_image and no_plotting:
+            print('Matplotlib not found. Skipping image plotting.')
 
         return image

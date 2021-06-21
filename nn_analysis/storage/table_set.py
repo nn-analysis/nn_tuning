@@ -9,7 +9,6 @@ from .database import Database
 from .error import NoSuchTableError, TableNotInitialisedError
 from .helpers import __keytolist__, __slicetolist__, __verify_data_types_are_correct__
 from .table import Table
-from .storage_manager import StorageManager
 
 
 class TableSet:
@@ -46,12 +45,8 @@ class TableSet:
         self.__ncols = None
         self.__ncols_tuple = None
         self.__recurrent_subtables = None
-        self.__inputs = None
-        self.__outputs = None
-        self.__has_inputs = None
-        self.__has_outputs = None
-        self.__inputs_table_sets = None
-        self.__outputs_table_sets = None
+        self.inputs = None
+        self.outputs = None
 
     def __repr__(self):
         return f"Table('{self.name}', ({self.nrows}, {self.ncols}), '{self.folder}')"
@@ -238,10 +233,8 @@ class TableSet:
             os.mkdir(self.folder, 0o755)
         i = 0
         self.__subtables = []
-        self.__inputs = inputs
-        self.__outputs = outputs
-        self.__has_inputs = inputs is not None
-        self.__has_outputs = outputs is not None
+        self.inputs = inputs
+        self.outputs = outputs
         for item in data:
             name = list(names.items())[i][0]
             self.__subtables.append(name)
@@ -295,42 +288,6 @@ class TableSet:
             else:
                 subtable.append_rows(data[i])
             i += 1
-
-    @property
-    def inputs(self):
-        """List of TableSets that were the inputs for the data in this TableSet"""
-        if self.__has_inputs is None:
-            self.__calc_properties__()
-        if not self.__has_inputs:
-            return None
-        if self.__inputs_table_sets is not None:
-            return self.__inputs_table_sets
-        self.__inputs_table_sets = []
-        super_item = self.table_set if self.table_set is not None else self.database
-        for name in self.__inputs:
-            if type(super_item) is Database:
-                self.__inputs_table_sets.append(StorageManager(super_item).open_table(name))
-            else:
-                self.__inputs_table_sets.append(super_item.get_subtable(name))
-        return self.__inputs_table_sets
-
-    @property
-    def outputs(self):
-        """List of TableSets that were the outputs for the data in this TableSet"""
-        if self.__has_outputs is None:
-            self.__calc_properties__()
-        if not self.__has_outputs:
-            return None
-        if self.__outputs_table_sets is not None:
-            return self.__outputs_table_sets
-        self.__outputs_table_sets = []
-        super_item = self.table_set if self.table_set is not None else self.database
-        for name in self.__inputs:
-            if type(super_item) is Database:
-                self.__outputs_table_sets.append(StorageManager(super_item).open_table(name))
-            else:
-                self.__outputs_table_sets.append(super_item.get_subtable(name))
-        return self.__outputs_table_sets
 
     @property
     def shape(self) -> (int, int):
@@ -441,7 +398,7 @@ class TableSet:
         except ValueError:
             try:
                 self.__subtables = pickle.load(f)
-                self.__inputs, self.__outputs = None, None
+                self.inputs, self.outputs = None, None
                 self.__update_properties__()
                 return self.initialised
             except ValueError:

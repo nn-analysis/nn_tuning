@@ -1,11 +1,15 @@
 from abc import ABC
+from typing import Any
 
 import numpy as np
 try:
     import tensorflow as tf
     tensorflow = True
 except ImportError:
-    tf = None
+    tf = lambda: None
+    tf.compat = lambda: None
+    tf.compat.v1 = lambda: None
+    tf.compat.v1.Session = Any
     tensorflow = False
 
 
