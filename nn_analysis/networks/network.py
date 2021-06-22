@@ -2,6 +2,7 @@ from abc import ABC
 from typing import Any
 
 import numpy as np
+
 try:
     import tensorflow as tf
     tensorflow = True
@@ -36,7 +37,8 @@ class Network(ABC):
         """
         raise NotImplementedError
 
-    def is_tf_one(self):
+    @staticmethod
+    def is_tf_one():
         """
         Helper function for checking the TensorFlow function
         """
@@ -44,7 +46,7 @@ class Network(ABC):
             return False
         return tf.__version__ <= "2"
 
-    def extract_numpy_array(self, tensor, session: tf.compat.v1.Session = None):
+    def extract_numpy_array(self, to_extract, session: tf.compat.v1.Session = None):
         """
         If the tensorflow version is version 1, the extraction of arrays from tensors follows a different algorithm.
         This function provides a universal function to perform the operation.
@@ -52,7 +54,7 @@ class Network(ABC):
         saving memory.
 
         Args:
-            tensor: The tensor or structure containing tensors that needs to be extracted.
+            to_extract: The tensor or structure containing tensors that needs to be extracted.
             session (optional): The TensorFlow session.
 
         Returns:
@@ -61,28 +63,28 @@ class Network(ABC):
         if not tensorflow:
             raise ImportError("tensorflow could not be imported")
         if not self.is_tf_one():
-            if tf.is_tensor(tensor):
-                return tensor.numpy()
+            if tf.is_tensor(to_extract):
+                return to_extract.numpy()
             else:
-                output = tensor
-                tensor_type = type(tensor)
+                output = to_extract
+                tensor_type = type(to_extract)
                 if tensor_type is dict:
-                    for key, value in tensor.items():
-                        output[key] = self.extract_numpy_array(tensor[key], session)
+                    for key, value in to_extract.items():
+                        output[key] = self.extract_numpy_array(to_extract[key], session)
                 if tensor_type is list:
-                    for i in range(len(tensor)):
-                        output[i] = self.extract_numpy_array(tensor[i], session)
+                    for i in range(len(to_extract)):
+                        output[i] = self.extract_numpy_array(to_extract[i], session)
                 if tensor_type is tuple:
                     # Make a list, tuples cannot be changed
                     new_output = []
-                    for i in range(len(tensor)):
-                        new_output.append(self.extract_numpy_array(tensor[i], session))
+                    for i in range(len(to_extract)):
+                        new_output.append(self.extract_numpy_array(to_extract[i], session))
                     return new_output
                 return output
         if session is not None:
             session.run(tf.compat.v1.global_variables_initializer())
-            return session.run(tensor)
+            return session.run(to_extract)
         else:
             with tf.compat.v1.Session() as sess:
                 sess.run(tf.compat.v1.global_variables_initializer())
-                return sess.run(tensor)
+                return sess.run(to_extract)

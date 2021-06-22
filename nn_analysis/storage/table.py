@@ -124,7 +124,7 @@ class Table:
         Changes the dtype of the table
 
         Args:
-            dtype: The desired dtype
+            dtype: The desired `np.dtype`
         """
         for row in tqdm(range(0, self.nrows), disable=(not self.verbose), leave=False):
             self.__writefile__(row, self.__readfile__(row).astype(dtype))

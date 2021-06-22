@@ -8,6 +8,7 @@ try:
     no_plotting = False
 except ImportError:
     no_plotting = True
+    plt = None
 from ..plot import Plot
 from ..storage import StorageManager, Table, TableSet
 from .two_d_input_generator import TwoDInputGenerator
