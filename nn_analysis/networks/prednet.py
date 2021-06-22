@@ -36,7 +36,7 @@ class Prednet(Network):
 
     feedforward_only: bool
 
-    def __init__(self, json_file, weight_file, presentation, time_points_to_measure=None, take_mean_of_measures=True):
+    def __init__(self, json_file, weight_file, presentation="single_pass", time_points_to_measure=None, take_mean_of_measures=True):
         if no_tensorflow:
             raise ImportError("This network requires tensforflow==1.* to be installed")
         if not self.is_tf_one():
@@ -112,18 +112,19 @@ class Prednet(Network):
         batch_outputs = self.__init_result_array(ntime)
         prednet = self._test_model.layers[1]
         prednet.feedforward_only = self.feedforward_only
-        if self.presentation is 'iterative':
-            iterator = self.time_points_to_measure if self.time_points_to_measure is not None else range(1, input_array.shape[1]+1)
-            for j in iterator:
-                raw_step_outputs = self.__call_prednet(prednet, input_array[:, 0:j].reshape((input_array.shape[0], len(list(range(0, j))), input_array.shape[2], input_array.shape[3], input_array.shape[4])).astype(np.float32))
-                batch_outputs = self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs, batch_outputs, j-1))
-        elif self.presentation is 'single_pass':
-            batch_input = input_array[:]
-            batch_input_tensor = tf.convert_to_tensor(batch_input, np.float32)
-            raw_step_outputs = self.__call_prednet(prednet, batch_input_tensor)
-            batch_outputs = self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs, batch_outputs, 0))
-        else:
-            raise ValueError(f'Expected presentation to be either iterative or single_pass, found {self.presentation}')
+        with tf.compat.v1.Session() as sess:
+            if self.presentation is 'iterative':
+                iterator = self.time_points_to_measure if self.time_points_to_measure is not None else range(1, input_array.shape[1]+1)
+                for j in iterator:
+                    raw_step_outputs = self.__call_prednet(prednet, input_array[:, 0:j].reshape((input_array.shape[0], len(list(range(0, j))), input_array.shape[2], input_array.shape[3], input_array.shape[4])).astype(np.float32))
+                    batch_outputs = self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs, batch_outputs, j-1), sess)
+            elif self.presentation is 'single_pass':
+                batch_input = input_array[:]
+                batch_input_tensor = tf.convert_to_tensor(batch_input, np.float32)
+                raw_step_outputs = self.__call_prednet(prednet, batch_input_tensor)
+                batch_outputs = self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs, batch_outputs, 0), sess)
+            else:
+                raise ValueError(f'Expected presentation to be either iterative or single_pass, found {self.presentation}')
         if len(batch_outputs) == 1:
             return batch_outputs[0]
         return batch_outputs
@@ -142,7 +143,7 @@ class Prednet(Network):
                 prednet.output_layer_type = output_mode[:-1]
                 prednet.output_layer_num = int(output_mode[-1])
                 # run prednet
-                outputs[layer_type].append(prednet.call(stimulus))
+                outputs[layer_type].append(prednet.call(tf.convert_to_tensor(stimulus, np.float32)))
         # after the loop return the result
         outputs = {'R': outputs['R'], 'Â': outputs['Ahat'], 'A': outputs['A'], 'E': outputs['E']}
         return outputs
@@ -319,5 +320,5 @@ class Prednet(Network):
                 full_names = dict()
                 for i in range(len(reshaped_output)):
                     full_names[f'iteration.{i}'] = names
-                return tuple(self.extract_numpy_array(reshaped_output)), full_names
-        return self.extract_numpy_array(self.__reshape_batch_output(output))
+                return tuple(reshaped_output), full_names
+        return self.__reshape_batch_output(output)

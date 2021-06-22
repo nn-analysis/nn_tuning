@@ -110,9 +110,7 @@ class Table:
 
     def __calc_properties__(self):
         """Calculates the properties of the table including the nrows and ncols"""
-        self.__nrows, self.__ncols, self.__inputs, self.__outputs = self.__readfile__(self.__properties_file)
-        self.__has_inputs = self.__inputs is not None
-        self.__has_outputs = self.__outputs is not None
+        self.__nrows, self.__ncols, self.inputs, self.outputs = self.__readfile__(self.__properties_file)
         self.__nrows = int(self.__nrows)
         self.__ncols = int(self.__ncols)
         self.__dtype = self.__readfile__('0').dtype

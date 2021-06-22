@@ -374,13 +374,11 @@ class TableSet:
         """Calculates the properties of the table including the nrows and ncols"""
         if not self.initialised:
             raise TableNotInitialisedError
-        self.__subtables, self.__inputs, self.__outputs = self.__readfile__(self.__properties_file)
-        self.__has_inputs = self.__inputs is not None
-        self.__has_outputs = self.__outputs is not None
+        self.__subtables, self.inputs, self.outputs = self.__readfile__(self.__properties_file)
         self.__dtype = self.get_subtable(0).dtype
 
     def __update_properties__(self):
-        self.__writefile__(self.__properties_file, (self.__subtables, self.__inputs, self.__outputs), override=True)
+        self.__writefile__(self.__properties_file, (self.__subtables, self.inputs, self.outputs), override=True)
 
     @property
     def initialised(self) -> bool:
