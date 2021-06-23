@@ -34,6 +34,19 @@ class StorageManager:
 
         If a result tuple is incomplete and has completely missing parts fill in the missing parts with None values.
 
+        Examples
+        ---------
+        >>> StorageManager(Database('path')).save_result_table_set((np.array([[1,2,3,4], [2,3,4,5]]),), 'TableSetName', {'first':''})
+        TableSet('TableSetName') <-- `TableSet` with the two rows of data in a single subtable
+        >>> StorageManager(Database('path')).save_result_table_set((np.array([[1,2,3,4], [2,3,4,5]]),), 'TableSetName', {'first':''}, nrows=4)
+        TableSet('TableSetName') <-- `TableSet` with the two rows of data appended with two rows of zeros in a single subtable
+        >>> StorageManager(Database('path')).save_result_table_set((np.array([[1,2,3,4], [2,3,4,5]]),), 'TableSetName', {'first':''}, ncols=(6,))
+        TableSet('TableSetName') <-- `TableSet` with the two rows and four columns of data appended with two columns of zeros in a single subtable
+        >>> StorageManager(Database('path')).save_result_table_set((np.array([[3,4,5,6], [4,5,6,7]]),), 'TableSetName', {'first':''}, row_start=2)
+        TableSet('TableSetName') <-- `TableSet` with four rows. The original `TableSet` was changed in rows 2 and 3 with the data given here.
+        >>> StorageManager(Database('path')).save_result_table_set((np.array([[3,4,5,6], [4,5,6,7]]),), 'TableSetName', {'first':''}, append_rows=True)
+        TableSet('TableSetName') <-- `TableSet` with four rows. The original `TableSet` was appended with the two rows given here.
+
         Args:
             results: A (nested) tuple of np.ndarrays containing results
             name: (str) The name of the `TableSet` to be created or updated
