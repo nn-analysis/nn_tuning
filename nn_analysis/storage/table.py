@@ -3,7 +3,6 @@ import pickle
 
 from tqdm import tqdm
 
-from .storage_manager import StorageManager
 from .database import Database
 from .helpers import __keytolist__, __slicetolist__
 from .error import *
@@ -18,6 +17,22 @@ class Table:
     do keep that in mind when initialising tables and transpose the data if necessary.
 
     Tables store rows with other dimensions removed.
+
+    Slicing
+    -----------
+    Tables can be accessed using slicing. Slicing in Tables works similar to slicing in Numpy arrays.
+
+    Slicing support both get, set, and delete commands.
+
+    Examples
+    -----------
+    >>> table[1,2]
+    3 <-- this is the element in the second row, in the third column of the `Table`.
+    >>> table[1,2:4]
+    Array([3, 4]) <-- The second and third column of the second row.
+    >>> table[1:5]
+    Array([[1,2,3,4],[2,3,4,5],[3,4,5,6],[4,5,6,7]]) <-- The rows from the second row to the fifth row in a `Table` with 4 columns.
+
 
     Args:
         name: The name of the `Table`
@@ -39,12 +54,8 @@ class Table:
         self.__nrows = None
         self.__ncols = None
         self.__dtype = None
-        self.__inputs = None
-        self.__outputs = None
-        self.__has_inputs = None
-        self.__has_outputs = None
-        self.__inputs_table_sets = None
-        self.__outputs_table_sets = None
+        self.inputs = None
+        self.outputs = None
 
     @property
     def folder(self):
@@ -79,42 +90,6 @@ class Table:
         return self.__dtype
 
     @property
-    def inputs(self):
-        """List of TableSets that were the inputs for the data in this TableSet"""
-        if self.__has_inputs is None:
-            self.__calc_properties__()
-        if not self.__has_inputs:
-            return None
-        if self.__inputs_table_sets is not None:
-            return self.__inputs_table_sets
-        self.__inputs_table_sets = []
-        super_item = self.table_set if self.table_set is not None else self.database
-        for name in self.__inputs:
-            if type(super_item) is Database:
-                self.__inputs_table_sets.append(StorageManager(super_item).open_table(name))
-            else:
-                self.__inputs_table_sets.append(super_item.get_subtable(name))
-        return self.__inputs_table_sets
-
-    @property
-    def outputs(self):
-        """List of TableSets that were the outputs for the data in this TableSet"""
-        if self.__has_outputs is None:
-            self.__calc_properties__()
-        if not self.__has_outputs:
-            return None
-        if self.__outputs_table_sets is not None:
-            return self.__outputs_table_sets
-        self.__outputs_table_sets = []
-        super_item = self.table_set if self.table_set is not None else self.database
-        for name in self.__inputs:
-            if type(super_item) is Database:
-                self.__outputs_table_sets.append(StorageManager(super_item).open_table(name))
-            else:
-                self.__outputs_table_sets.append(super_item.get_subtable(name))
-        return self.__outputs_table_sets
-
-    @property
     def initialised(self) -> bool:
         """Indicates whether the necessary files are initialised and whether the shapes are correct"""
         properties_exist = os.path.isfile(self.folder + self.__properties_file)
@@ -130,7 +105,7 @@ class Table:
         except ValueError:
             try:
                 self.__nrows, self.__ncols = pickle.load(f)
-                self.__inputs, self.__outputs = None, None
+                self.inputs, self.outputs = None, None
                 self.__update_properties__()
                 return self.initialised
             except ValueError:
@@ -151,23 +126,21 @@ class Table:
 
     def __calc_properties__(self):
         """Calculates the properties of the table including the nrows and ncols"""
-        self.__nrows, self.__ncols, self.__inputs, self.__outputs = self.__readfile__(self.__properties_file)
-        self.__has_inputs = self.__inputs is not None
-        self.__has_outputs = self.__outputs is not None
+        self.__nrows, self.__ncols, self.inputs, self.outputs = self.__readfile__(self.__properties_file)
         self.__nrows = int(self.__nrows)
         self.__ncols = int(self.__ncols)
         self.__dtype = self.__readfile__('0').dtype
 
     def __update_properties__(self):
         """Updates the properties of the table including the nrows and ncols"""
-        self.__writefile__(self.__properties_file, (self.__nrows, self.__ncols, self.__inputs, self.__outputs), override=True)
+        self.__writefile__(self.__properties_file, (self.__nrows, self.__ncols, self.inputs, self.outputs), override=True)
 
     def change_dtype(self, dtype: np.dtype):
         """
         Changes the dtype of the table
 
         Args:
-            dtype: The desired dtype
+            dtype: The desired `np.dtype`
         """
         for row in tqdm(range(0, self.nrows), disable=(not self.verbose), leave=False):
             self.__writefile__(row, self.__readfile__(row).astype(dtype))
@@ -175,6 +148,11 @@ class Table:
     def initialise(self, data: np.ndarray, dtype: np.dtype = None, inputs: list = None, outputs: list = None):
         """
         Initialises the table using the np.ndarray provided
+
+        Examples
+        ---------
+        >>> Table('Name', Database('path')).initialise(np.array([[1,2,3,4],[2,3,4,5]]))
+        Creates a table with name 'Name' and two rows of data Array([[1,2,3,4], [2,3,4,5]])
 
         Args:
             data: The array containing the data for the Table
@@ -196,15 +174,18 @@ class Table:
             i += 1
         self.__nrows = data.shape[0]
         self.__ncols = data.shape[1]
-        self.__inputs = inputs
-        self.__outputs = outputs
-        self.__has_inputs = inputs is not None
-        self.__has_outputs = outputs is not None
+        self.inputs = inputs
+        self.outputs = outputs
         self.__update_properties__()
 
     def append_rows(self, data: np.ndarray):
         """
         Add a new row to the existing Table
+
+        Examples
+        ---------
+        >>> Table('Name', Database('path')).append_rows(np.array([[10,11,12,13], [11, 12, 13, 14]]))
+        Adds rows Array([[10,11,12,13], [11, 12, 13, 14]]) to the existing table at path 'path' with name 'Name'.
 
         Args:
             data: The new rows as an np.ndarray

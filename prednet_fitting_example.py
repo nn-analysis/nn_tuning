@@ -2,9 +2,9 @@ import os
 # Disable the extensive tensorflow debugging info
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-from code_analysis import *
+from nn_analysis import *
 from prednet.kitti_settings import *  # This contains the weights dir we need later
-from code_analysis.networks.prednet import Prednet
+from nn_analysis.networks.prednet import Prednet
 
 base_folder = os.getcwd()
 
@@ -31,7 +31,7 @@ prf_input_generator = PRFInputGenerator(1, 'prf_input', storage_manager, verbose
 prf_nd_input_manager = InputManager(TableSet('prf_input', database), network_input_shape, prf_input_generator)
 
 # Initialise the network with the weight files
-network = Prednet(json_file, weights_file)
+network = Prednet(json_file, weights_file, presentation='iterative')
 
 # Create the output manager
 output_manager = OutputManager(network, storage_manager, prf_nd_input_manager)
@@ -79,7 +79,7 @@ log = False
 # For that you first need all the candidate function parameters that were tested
 # You can generate those from the fitting manager
 candidate_function_parameters = FittingManager.init_parameter_set((step, step, sigma_step), (*shape, max_sigma),
-                                                                  linearise_s=log)
+                                                                  (1, 1, 0.2), linearise_s=log)
 
 # Name of the table to store the results of th fit_response_function in
 fitting_results_table = f"{table}_estimates_step{step}_sigma-step{sigma_step}"

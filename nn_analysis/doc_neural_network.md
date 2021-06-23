@@ -1,5 +1,4 @@
-# Adding new neural networks to the code analysis system
-
+##Adding new neural networks to the code analysis system
 In order to extend the code analysis system to new neural networks a new class has to be created for that network in the networks sub package. This class has to extend the network class from that same sub package. 
 
 The new class has to implement a run function. The run function should run a batch of inputs, given in the input variable, through the model, record activations, and return those activations in the form of a nested tuple of np arrays along with a names dictionary that gives names to each of the items in the nested tuple.
@@ -8,7 +7,7 @@ Variables specific to the network can be added to the initialisation function of
 
 In practice, for most hierarchical networks, this all means setting up a model in the `__init__` function and running the input through that model in the `run` function. For pre-trained hierarchical PyTorch and TensorFlow/Keras models this means that it is possible to use a fairly standardised approach to building a new network class since recording activations has standardised functions.
 
-## PyTorch models
+### PyTorch models
 For PyTorch models it is possible to load the model using the functions in the submodules in `torchvision.models` and then registering hooks for the layers in that model using the following function. This function also fills a labels variable that you can use as a names variable when returning output in the `run` function. Run this function after setting up the model in the `__init__` function. For an example of this method in use please see the AlexNet class.
 
 ```
@@ -30,7 +29,7 @@ def __register_hooks(self):
 
 Note that this does not work well for recurrent models. There you would need to build your own implementation specific to that network.
 
-## TensorFlow models
+### TensorFlow models
 For TensorFlow you will need a slightly different function but with much of the same idea. In the case of TensorFlow, the way to do this generally is to create a second model with the weights of the previous network. This new model has layers that are enclosed in a new type of layer that is accessible by hooks in a similar way to PyTorch models. The enclosed layer is shown below.
 
 ```

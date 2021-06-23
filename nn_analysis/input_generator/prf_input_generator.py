@@ -3,7 +3,12 @@ from typing import Union
 import numpy as np
 from tqdm import tqdm
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+    no_plotting = False
+except ImportError:
+    no_plotting = True
+    plt = None
 from ..plot import Plot
 from ..storage import StorageManager, Table, TableSet
 from .two_d_input_generator import TwoDInputGenerator
@@ -143,11 +148,18 @@ class PRFInputGenerator(TwoDInputGenerator):
         The title will either be displayed in the plot (when the plot is shown), or used as a filename (when the plot is saved).
         This function uses the Plot class to save or store plots. To save the plot as an image set `Plot.save_fig` to `True`.
 
+        Examples
+        ----------
+        >>> PRFInputGenerator().plot_image((128, 160), 10, 'Title')
+        Plots an image with a size 160x128 at index 10 with title 'Title'.
+
         Args:
             shape: (int, int) Shape of the image
             index: (int) Index of the stimulus
             title: (str) Title of the plot or the filename of the plot
         """
+        if no_plotting:
+            raise ImportError('Plotting requires the matplotlib package. Please install the package and try again.')
         result = self._get_2d(shape, index).reshape(shape)
         plt.imshow(result, cmap='gray', vmin=0, vmax=1, origin='lower')
         if Plot.save_fig:

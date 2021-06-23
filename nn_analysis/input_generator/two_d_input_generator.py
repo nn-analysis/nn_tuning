@@ -12,6 +12,8 @@ class TwoDInputGenerator(InputGenerator, ABC):
 
     To implement this class, call the _generate_row function from the generate function and implement the _get_2d function.
     The _get_2d function handles the creation of 2d stimuli while the _generate_row function handles creating the right shapes around the stimuli.
+
+    For an example of a class that implement this class see `PRFInputGenerator`
     """
 
     def _get_2d(self, shape: (int, int), index: int) -> np.ndarray:

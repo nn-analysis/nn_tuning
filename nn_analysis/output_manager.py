@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 
 from .input_manager import InputManager
-from code_analysis.networks.network import Network
+from .networks.network import Network
 from .storage import StorageManager, NoSuchTableError
 
 
@@ -31,6 +31,11 @@ class OutputManager:
     def run(self, table: str, batch_size: int, override: bool = True, resume: bool = False, verbose: bool = False):
         """
         Function runs a batch through a `Network`
+
+        Examples
+        -----------
+        >>> run('TableName', 100)
+        >>> run('TableName', 100, resume=True, verbose=True)
 
         Args:
             table: `Table` to save data to

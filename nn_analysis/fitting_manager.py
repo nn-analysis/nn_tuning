@@ -24,6 +24,13 @@ class FittingManager:
         """
         Generates the stimulus variables for when every combination of x and y is a valid position.
 
+        Examples
+        --------
+        >>> FittingManager.get_identity_stim_variables(3, 4)
+        (array([1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]), array([1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4]))
+        >>> FittingManager.get_identity_stim_variables(3, 2)
+        (array([1, 1, 2, 2, 3, 3]), array([1, 2, 1, 2, 1, 2]))
+
         Args:
             size_x: The size of x.
             size_y: The size of y.
@@ -44,7 +51,8 @@ class FittingManager:
         """
         Use already generated results in a Table, TableSet, or np.ndarray to get the best fits from those sets.
         Saves those best_fits to the table.
-        It the results are a TableSet this will preserver the organisation of the TableSet.
+
+        It the results are a TableSet this function will preserve the organisation of the original TableSet.
 
         Args:
             results: `Table`, `TableSet`, np.ndarray with results.
@@ -52,7 +60,7 @@ class FittingManager:
             table: Table to save the best fits to.
 
         Returns:
-            TableSet with the resulting best_fits.
+            Array with the resulting best_fits. If a table name has been provided, a TableSet with the best fits.
         """
         best_predicted = np.zeros((results.shape[1], 4))
         results_ndarray = results[:]
@@ -68,10 +76,10 @@ class FittingManager:
         if table is not None:
             if type(results) is TableSet:
                 table_labels = results.recurrent_subtables
-                self.storage_manager.save_result_table_set(self.__unpack_tuple_according_to_labels(best_predicted, results),
-                                                           table, table_labels)
+                return self.storage_manager.save_result_table_set(self.__unpack_tuple_according_to_labels(best_predicted, results),
+                                                                  table, table_labels)
             else:
-                self.__save__(table, best_predicted, False, 0, dtype)
+                return self.__save__(table, best_predicted, False, 0, dtype)
         return best_predicted
 
     def __unpack_tuple_according_to_labels(self, result: np.ndarray, table_set: TableSet) -> tuple:
@@ -120,7 +128,15 @@ class FittingManager:
         Besides that the function has the necessary parameters for the `fit_response_function`.
         The `fit_response_function` is a function that uses a prediction function to generate predictions for the activations of neurons for all the
         candidate function parameters described in the `candidate_function_parameters` variable.
+
+        By default, the prediction_function is a gaussian function. Another example of a prediction functions could be 'stim_x**x'.
+        At the point of executing the prediction function stim_x, stim_y, x, y, and s are the available parameters.
+
         The predictions are compared to the recorded responses to determine a goodness of fit.
+
+        See Also
+        --------
+        fit_response_function : The function this function uses. This function's documentation also contains some examples of input.
 
         Args:
             responses: Recorded activations in a TableSet.
@@ -211,11 +227,28 @@ class FittingManager:
                               prediction_function: str = "np.exp(((stim_x - x) ** 2 + (stim_y - y) ** 2) / (-2 * s ** 2))",
                               stimulus: np.ndarray = None,
                               parallel: bool = True, verbose: bool = False,
-                              dtype: np.dtype = None) -> (np.ndarray, np.ndarray):
+                              dtype: np.dtype = None) -> np.ndarray:
         """
         Function that uses a prediction function to generate predictions for the activations of neurons for all the
         candidate function parameters described in the `candidate_function_parameters` variable.
+
+        By default, the prediction_function is a gaussian function. Another example of a prediction functions could be 'stim_x**x'.
+        At the point of executing the prediction function stim_x, stim_y, x, y, and s are the available parameters.
+
         The predictions are compared to the recorded responses to determine a goodness of fit.
+
+        Examples
+        --------
+        >>> FittingManager.fit_response_function(np.array([[1,2,3],[1,2,3],[1,2,3]]),
+        >>>                                      np.array([1,2,3,1,2,3]), np.array([1,2,3,1,2,3]),
+        >>>                                      np.array([[1,1,1], [1,1,2], [1,1,3], [1,2,1]])
+        >>>                                      'np.exp(((stim_x - x) ** 2 + (stim_y - y) ** 2) / (-2 * s ** 2))')
+        array([0.35, 0.44, 0.99])
+        >>> FittingManager.fit_response_function(np.array([[1,2,3],[1,2,3],[1,2,3]]),
+        >>>                                      np.array([1,2,3,1,2,3]), np.array([0,0,0,0,0,0]),
+        >>>                                      np.array([[1,0,1], [1,0,2], [1,1,3], [2,0,1], ...]),
+        >>>                                      'np.exp(((stim_x - x) ** 2) / (-2 * s ** 2))')
+        array([0.35, 0.44, 0.24])
 
         Args:
             responses: Recorded activations
@@ -236,6 +269,8 @@ class FittingManager:
         if stimulus is None:
             stimulus = np.eye(len(stim_x))
 
+        var_resp = None
+        o = None
         if parallel:
             var_resp = np.var(responses, axis=1)
             o = np.ones((responses.shape[1], 1))
@@ -248,11 +283,9 @@ class FittingManager:
             evaluated_prediction_function = eval(prediction_function)
             prediction = (stimulus @ evaluated_prediction_function)[..., np.newaxis]
             if parallel:
-                # noinspection PyUnboundLocalVariable
                 _x = np.concatenate((prediction, o), axis=1)
                 scale = np.linalg.pinv(_x) @ responses_T
                 variance_unexplained = np.var(responses_T - _x @ scale, axis=0)
-                # noinspection PyUnboundLocalVariable
                 goodness_of_fit = 1 - (variance_unexplained / var_resp)  # This is the inverted portion of the variance that is unexplained
                 goodness_of_fit[np.isnan(goodness_of_fit)] = 0
                 goodness_of_fit[goodness_of_fit == -np.inf] = 0
@@ -279,12 +312,21 @@ class FittingManager:
             return
         if override:
             self.storage_manager.remove_table(table)
-        self.storage_manager.save_result_table_set((results.astype(dtype),), table, {table: table}, col_start=col_start)
+        return self.storage_manager.save_result_table_set((results.astype(dtype),), table, {table: table}, col_start=col_start)
 
     @staticmethod
     def generate_fake_responses(variables, stim_x, stim_y, stimulus) -> np.ndarray:
         """
         Generates fake responses for the fitting test.
+
+        Examples
+        ------------
+        >>> FittingManager.generate_fake_responses([(1,1,2), (3,2,1)], *FittingManager.get_identity_stim_variables(2,3), np.array([[0, 0, 1, 1, 0, 0], [1, 0, 1, 0, 0, 0]]))
+        array([[1.48902756, 1.60653066],
+               [0.44996444, 0.16417]])
+        >>> FittingManager.generate_fake_responses([(2,3,1), (1,2,1)], *FittingManager.get_identity_stim_variables(2,3), np.array([[0, 0, 1, 1, 0, 0], [1, 0, 1, 0, 0, 0]]))
+        array([[0.74186594, 0.68861566],
+               [0.9744101 , 1.21306132]])
 
         Args:
             variables: list of tuples containing the known variables
@@ -332,6 +374,13 @@ class FittingManager:
         """
         Calculates a linear full width half maximum for a sigma variable.
 
+        Examples
+        -----------
+        >>> FittingManager.linearise_sigma(0.01, 3)
+        0.07064623359911781
+        >>> FittingManager.linearise_sigma(0.2, 5)
+        2.3766436233783077
+
         Args:
             log_sigma: The sigma value in log space.
             x: The corresponding variable
@@ -345,15 +394,29 @@ class FittingManager:
         return fwhm_lin
 
     @staticmethod
-    def init_parameter_set(step: (float, float, float), shape: (int, int, int), linearise_s: bool = False,
+    def init_parameter_set(step: (float, float, float), par_max: (int, int, int), par_min: (int, int, int),
+                           linearise_s: bool = False,
                            log: bool = False):
         """
         Initialises the candidate function parameters by using the step and shape of the candidate parameters.
         Can linearise the sigma variable and move parameters into log space.
 
+        Examples
+        ---------
+        >>> FittingManager.init_parameter_set((1.,1.,0.1), (3.,3.,0.3), (1,1,0.1), False, False)
+        array([[1. , 1. , 0.1],
+               [1. , 1. , 0.2],
+               [1. , 2. , 0.1],
+               [1. , 2. , 0.2],
+               [2. , 1. , 0.1],
+               [2. , 1. , 0.2],
+               [2. , 2. , 0.1],
+               [2. , 2. , 0.2]], dtype=float32)
+
         Args:
             step: (float, float, float) The step sizes of the parameters.
-            shape: (int, int, int) The shapes of the parameters.
+            par_max: (int, int, int) The maximum of the parameters.
+            par_min: (int, int, int) The minimum of the parameters.
             linearise_s: (bool) If true, the sigmas will get linearised.
             log: (bool) If true, the first two parameters are moved into log space.
 
@@ -361,21 +424,16 @@ class FittingManager:
             np.ndarray with at each row a set of parameter function parameters
         """
         i = 0
-        if step[2] < 1:
-            start_at = int(1 / step[2])
-        else:
-            start_at = 1
-        p = np.zeros(
-            (int((int((shape[0] / step[0])) * int((shape[1]) / step[1])) * int(((shape[2] - 1) / step[2]))), 3),
-            dtype=np.float32)
-        for x in range(step[0], int(shape[0] * (1 / step[0]))):
-            for y in range(step[1], int(shape[1] * (1 / step[1]))):
-                for s in range(start_at, int(shape[2] * (1 / step[2]))):
+        p = np.zeros(((np.arange(par_min[0], par_max[0], step[0]).size *
+                       np.arange(par_min[1], par_max[1], step[1]).size) *
+                       np.arange(par_min[2], par_max[2], step[2]).size, 3), dtype=np.float32)
+        for x in np.arange(par_min[0], par_max[0], step[0]):
+            for y in np.arange(par_min[1], par_max[1], step[1]):
+                for s in np.arange(par_min[2], par_max[2], step[2]):
                     if log:
-                        p[i] = np.array([np.log(x * step[0]) if x > 0 else 0,
-                                         np.log(y * step[1]) if y > 0 else 0, s * step[2]])
+                        p[i] = np.array([np.log(x), np.log(y), s])
                     else:
-                        p[i] = np.array([x * step[0], y * step[1], s * step[2]])
+                        p[i] = np.array([x, y, s])
                     i += 1
         if linearise_s:
             p[:, 2] = FittingManager.linearise_sigma(p[:, 2], p[:, 0])

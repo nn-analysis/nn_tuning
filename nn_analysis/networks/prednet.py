@@ -1,8 +1,18 @@
 from typing import Union
 
-import tensorflow as tf
-from keras import Input, Model
-from keras.engine.saving import model_from_json
+try:
+    import tensorflow as tf
+    no_tensorflow = False
+except ImportError:
+    tf = None
+    no_tensorflow = True
+try:
+    from keras import Input, Model
+    from keras.engine.saving import model_from_json
+    no_keras = False
+except ImportError:
+    no_keras = True
+    Input, Model, model_from_json = None, None, None
 import numpy as np
 
 from .network import Network
@@ -20,13 +30,14 @@ class Prednet(Network):
         json_file: JSon file containing the pre-trained model
         weight_file: File containing the pre-trained weights
         presentation: The presentation of the stimuli. "single_pass" by default. Making it "iterative" will present each intermediate frame separately
-        time_points_to_measure (optional): List of which time points should be measured
         take_mean_of_measures (optional, default=True): If True, the measured time points will be averaged and only the average will be stored
     """
 
     feedforward_only: bool
 
-    def __init__(self, json_file, weight_file, presentation, time_points_to_measure=None, take_mean_of_measures=True):
+    def __init__(self, json_file, weight_file, presentation="single_pass", take_mean_of_measures=True):
+        if no_tensorflow:
+            raise ImportError("This network requires tensforflow==1.* to be installed")
         if not self.is_tf_one():
             raise AssertionError("Expected module Tensorflow to have version < 2, found tensorflow version " +
                                  tf.__version__)
@@ -35,7 +46,6 @@ class Prednet(Network):
             raise ValueError(f'Presentation should be "iterative" or "single_pass", found "{presentation}"')
         self.presentation = presentation
         self._train_model, self._test_model = self._setup_prednet_models(json_file, weight_file)
-        self.time_points_to_measure = time_points_to_measure
         self.take_mean_of_measures = take_mean_of_measures
 
     @staticmethod
@@ -96,25 +106,27 @@ class Prednet(Network):
         Returns:
             Dictionary with all the np.ndarrays from different subparts per layer.
         """
-        ntime = input_array.shape[1]
-        batch_outputs = self.__init_result_array(ntime)
         prednet = self._test_model.layers[1]
         prednet.feedforward_only = self.feedforward_only
-        if self.presentation is 'iterative':
-            iterator = self.time_points_to_measure if self.time_points_to_measure is not None else range(1, input_array.shape[1]+1)
-            for j in iterator:
-                raw_step_outputs = self.__call_prednet(prednet, input_array[:, 0:j].reshape((input_array.shape[0], len(list(range(0, j))), input_array.shape[2], input_array.shape[3], input_array.shape[4])).astype(np.float32))
-                batch_outputs = self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs, batch_outputs, j-1))
-        elif self.presentation is 'single_pass':
-            batch_input = input_array[:]
-            batch_input_tensor = tf.convert_to_tensor(batch_input, np.float32)
-            raw_step_outputs = self.__call_prednet(prednet, batch_input_tensor)
-            batch_outputs = self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs, batch_outputs, 0))
-        else:
-            raise ValueError(f'Expected presentation to be either iterative or single_pass, found {self.presentation}')
-        if len(batch_outputs) == 1:
-            return batch_outputs[0]
-        return batch_outputs
+        with tf.compat.v1.Session() as sess:
+            if self.presentation is 'iterative':
+                iterator = range(1, input_array.shape[1]+1)
+                summed_batch_output = None
+                for j in iterator:
+                    raw_step_outputs = self.__call_prednet(prednet, input_array[:, 0:j].reshape((input_array.shape[0], len(list(range(0, j))), input_array.shape[2], input_array.shape[3], input_array.shape[4])).astype(np.float32))
+                    this_batch_output = self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs), sess)
+                    if summed_batch_output is None:
+                        summed_batch_output = this_batch_output
+                    else:
+                        summed_batch_output = self.__sum_structure(summed_batch_output, this_batch_output)
+                return self.__divide_structure_by(summed_batch_output, input_array.shape[1])
+            elif self.presentation is 'single_pass':
+                batch_input = input_array[:]
+                batch_input_tensor = tf.convert_to_tensor(batch_input, np.float32)
+                raw_step_outputs = self.__call_prednet(prednet, batch_input_tensor)
+                return self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs), sess)
+            else:
+                raise ValueError(f'Expected presentation to be either iterative or single_pass, found {self.presentation}')
 
     @staticmethod
     def __call_prednet(prednet, stimulus) -> dict:
@@ -130,44 +142,37 @@ class Prednet(Network):
                 prednet.output_layer_type = output_mode[:-1]
                 prednet.output_layer_num = int(output_mode[-1])
                 # run prednet
-                outputs[layer_type].append(prednet.call(stimulus))
+                outputs[layer_type].append(prednet.call(tf.convert_to_tensor(stimulus, np.float32)))
         # after the loop return the result
         outputs = {'R': outputs['R'], 'Â': outputs['Ahat'], 'A': outputs['A'], 'E': outputs['E']}
         return outputs
 
-    def __init_result_array(self, number_of_timesteps):
+    def __init_result_array(self):
         """
         Initialises a result array based on the number of time steps in the input video
-
-        Args:
-            number_of_timesteps: The number of time steps in the video (the second dimension in the input_array).
 
         Returns:
             A list with the network structure for each time step.
         """
-        final = []
         if self.feedforward_only:
-            base = {
+            return {
                 'A': [[], [], [], []],
                 'E': [[], [], [], []]
             }
         else:
-            base = {
+            return {
                 'R': [[], [], [], []],
                 'Â': [[], [], [], []],
                 'A': [[], [], [], []],
                 'E': [[], [], [], []]
             }
-        for i in range(number_of_timesteps):
-            final.append(base)
-        return final
 
-    @staticmethod
-    def __extract_from_step_output(step_output, final_output, time_step):
+    def __extract_from_step_output(self, step_output):
+        output = self.__init_result_array()
         for layer_type, layers in step_output.items():
             for layer in range(len(layers)):
-                final_output[time_step][layer_type][layer] = layers[layer]
-        return final_output
+                output[layer_type][layer] = layers[layer]
+        return output
 
     def __reshape_batch_output(self, batch_output: dict) -> (tuple, dict):
         """
@@ -208,80 +213,71 @@ class Prednet(Network):
             input_list[i] = self.__list_to_tuple_recursively(input_list[i])
         return tuple(input_list)
 
-    def __calculate_mean(self, outputs: Union[tuple, list]) -> dict:
+    def __sum_structure(self, x: Union[dict, list, tuple, np.ndarray], y: Union[dict, list, tuple]) \
+            -> Union[dict, list, tuple, np.ndarray]:
         """
-        Calculates the mean from output with multiple time steps in the iterative recording case.
-        This is useful in old versions of tensorflow and pytorch where easier functions for this don't exist.
-
-        This function assumes the first dimension in the output tuple or list is the time dimension.
-        The substructure can be a nested structure of dictionaries, tuples or lists.
-
-        The output of the function will have the same dimensions and types as the substructure of the outputs argument.
+        Define a sum function for Union[dict, list, tuple]
 
         Args:
-            outputs: The output that has multiple steps to take the mean over
+            x: The first input structure
+            y: The second input structure
 
         Returns:
-            A dict with just the mean output
+            A summed dict, list, tuple or np.ndarray
         """
-        # Define a sum function for Union[dict, list, tuple]
-        def sum_structure(x: Union[dict, list, tuple, np.ndarray], y: Union[dict, list, tuple]) \
-                -> Union[dict, list, tuple, np.ndarray]:
-            # use x as output structure, x is destroyed
-            # check the type of structure
-            type_x = type(x)
-            # Return if this is a leaf
-            if type_x is np.ndarray:
-                return x + y
-            # Otherwise, fill in the x variable according to the type it was before
-            if type_x is dict:
-                for key, value in x.items():
-                    x[key] = sum_structure(x[key], y[key])
-            if type_x is list:
-                for i in range(len(x)):
-                    x[i] = sum_structure(x[i], y[i])
-            if type_x is tuple:
-                # Make a list, tuples cannot be changed
-                new_x = []
-                for i in range(len(x)):
-                    new_x.append(sum_structure(x[i], y[i]))
-                return new_x
-            return x
+        # use x as output structure, x is destroyed
+        # check the type of structure
+        type_x = type(x)
+        # Return if this is a leaf
+        if type_x is np.ndarray:
+            return x + y
+        # Otherwise, fill in the x variable according to the type it was before
+        if type_x is dict:
+            for key, value in x.items():
+                x[key] = self.__sum_structure(x[key], y[key])
+        if type_x is list:
+            for i in range(len(x)):
+                x[i] = self.__sum_structure(x[i], y[i])
+        if type_x is tuple:
+            # Make a list, tuples cannot be changed
+            new_x = []
+            for i in range(len(x)):
+                new_x.append(self.__sum_structure(x[i], y[i]))
+            return new_x
+        return x
 
-        # Define a function to divide values of a nested structure by a float
-        def divide_structure_by(x: Union[dict, list, tuple, np.ndarray], division: float) \
-                -> Union[dict, list, tuple, np.ndarray]:
+    def __divide_structure_by(self, x: Union[dict, list, tuple, np.ndarray], division: float) \
+            -> Union[dict, list, tuple, np.ndarray]:
+        """
+        Define a function to divide values of a nested structure by a float
 
-            # use x as output structure, x is destroyed
-            # check the type of structure
-            type_x = type(x)
-            # Return if this is a leaf
-            if type_x is np.ndarray:
-                return x / division
-            # Otherwise, fill in the x variable according to the type it was before
-            if type_x is dict:
-                for key, value in x.items():
-                    x[key] = divide_structure_by(x[key], division)
-            if type_x is list:
-                for i in range(len(x)):
-                    x[i] = divide_structure_by(x[i], division)
-            if type_x is tuple:
-                # Make a list, tuples cannot be changed
-                new_x = []
-                for i in range(len(x)):
-                    new_x.append(divide_structure_by(x[i], division))
-                return new_x
-            return x
+        Args:
+            x: The input structure
+            division: The float to divide the items in the structure with
 
-        # Loop over highest dimension
-        summed_output = outputs[0]
-        for output_index in range(1, len(outputs)):
-            output = outputs[output_index]
-            # Use the sum function to sum the dimensions per two, first extracting values from the structure.
-            summed_output = sum_structure(summed_output, output)
-        # Divide the resulting sum by the length of the first dimension
-        mean_output = divide_structure_by(summed_output, len(outputs))
-        return mean_output
+        Returns:
+            A divided dict, list, tuple or np.ndarray
+        """
+        # use x as output structure, x is destroyed
+        # check the type of structure
+        type_x = type(x)
+        # Return if this is a leaf
+        if type_x is np.ndarray:
+            return x / division
+        # Otherwise, fill in the x variable according to the type it was before
+        if type_x is dict:
+            for key, value in x.items():
+                x[key] = self.__divide_structure_by(x[key], division)
+        if type_x is list:
+            for i in range(len(x)):
+                x[i] = self.__divide_structure_by(x[i], division)
+        if type_x is tuple:
+            # Make a list, tuples cannot be changed
+            new_x = []
+            for i in range(len(x)):
+                new_x.append(self.__divide_structure_by(x[i], division))
+            return new_x
+        return x
 
     def run(self, input_array: np.ndarray) -> (tuple, dict):
         """
@@ -294,18 +290,4 @@ class Prednet(Network):
             The results as a tuple and the labels as a dictionary
         """
         output = self.__call_and_run_prednet(input_array)
-        if type(output) is list:
-            names = None
-            reshaped_output = []
-            for single_time_point_item in output:
-                reshaped_output_item, names = self.__reshape_batch_output(single_time_point_item)
-                reshaped_output.append(reshaped_output_item)
-            if self.take_mean_of_measures:
-                reshaped_output = self.__calculate_mean(reshaped_output)
-                return reshaped_output, names
-            else:
-                full_names = dict()
-                for i in range(len(reshaped_output)):
-                    full_names[f'iteration.{i}'] = names
-                return tuple(self.extract_numpy_array(reshaped_output)), full_names
-        return self.extract_numpy_array(self.__reshape_batch_output(output))
+        return self.__reshape_batch_output(output)
