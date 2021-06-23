@@ -74,6 +74,11 @@ class StorageManager:
         Opens a `Table` or `TableSet` in the `Database` with the given name.
         The function can automatically distinguish between `Table`s and `TableSet`s.
 
+        Examples
+        ----------
+        >>> StorageManager(Database('path')).open_table('Name')
+        Table('Name') or TableSet('Name') if a `Table` or `TableSet` exists in this database.
+
         Args:
             name: Name of the `Table` or `TableSet`
 
@@ -90,6 +95,11 @@ class StorageManager:
     def remove_table(self, name: str):
         """
         Deletes a table from the `Database`
+
+        Examples
+        ----------
+        >>> StorageManager(Database('path')).remove_table('Name')
+        Removes table with the name 'Name' from the database at path 'path'.
 
         Args:
             name: The name of the `Table`

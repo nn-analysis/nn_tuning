@@ -29,6 +29,13 @@ class InputManager:
         """
         The product of all iterable variables together
 
+        Examples
+        ----------
+        >>> InputManager._InputManager__prod((1,2,3,4,5))
+        120
+        >>> InputManager._InputManager__prod((8, 12, 5))
+        480
+
         Args:
             val: tuple
 
@@ -44,6 +51,13 @@ class InputManager:
         """
         Determines if the batch is valid for the input table
 
+        Examples
+        ------------
+        >>> valid(1, 100)
+        True
+        >>> valid(10, 100)
+        False
+
         Args:
             batch: Integer of the batch that needs to be tested for validity
             batch_size: The size of the batches.
@@ -56,6 +70,21 @@ class InputManager:
     def get(self, batch: int, batch_size: int) -> np.ndarray:
         """
         Function to get the input for a specific batch.
+
+        Examples
+        ----------
+        >>> get(0, 2)
+        Array([
+            [1,1,1,1,1,1,0,0,0,0,0,0,0,...],
+            [0,1,1,1,1,1,1,0,0,0,0,0,0,...]
+        ])
+        >>> get(0, 4)
+        Array([
+            [1,1,1,1,1,1,0,0,0,0,0,0,0,...],
+            [0,1,1,1,1,1,1,0,0,0,0,0,0,...],
+            [0,1,1,1,1,1,1,0,0,0,0,0,0,...],
+            [0,1,1,1,1,1,1,0,0,0,0,0,0,...]
+        ])
 
         Args:
             batch: Integer of the batch.

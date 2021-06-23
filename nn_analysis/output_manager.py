@@ -32,6 +32,11 @@ class OutputManager:
         """
         Function runs a batch through a `Network`
 
+        Examples
+        -----------
+        >>> run('TableName', 100)
+        >>> run('TableName', 100, resume=True, verbose=True)
+
         Args:
             table: `Table` to save data to
             batch_size: (int) Size of the batches to input into the network

@@ -17,6 +17,23 @@ class TableSet:
     The get, set, and delete functions work on the aggregated table data.
     To get a specific subtable you can use `get_subtable(key)`
 
+    Slicing
+    -----------
+    TableSets can be accessed using slicing. Slicing in TableSets works similar to slicing in Numpy arrays.
+
+    The `TableSet` slicing combines all subtables into one structure. When using slicing the underlying subtables are combined.
+
+    Slicing support both get, set, and delete commands.
+
+    Examples
+    -----------
+    >>> tableset[1,2]
+    3 <-- this is the element in the second row, in the third column of the `TableSet`.
+    >>> tableset[1,2:4]
+    Array([3, 4]) <-- The second and third column of the second row.
+    >>> tableset[1:5]
+    Array([[1,2,3,4],[2,3,4,5],[3,4,5,6],[4,5,6,7]]) <-- The rows from the second row to the fifth row in a `TableSet` with 4 columns.
+
     Attributes:
         name: Name of the `TableSet`.
         database: The `database` the TableSet is in.
@@ -209,9 +226,18 @@ class TableSet:
         """
         Initialise the TableSet with the structure set in the data parameter.
         Names and data need to be of the same shape.
+
         The program will use the key of the names dict as the name of the Table or TableSet.
+
         It is possible to create sub TableSets by making nested dicts in the names variable and nested tuples in the
         data variable.
+
+        Examples
+        -----------
+        >>> TableSet('Name', Database('path')).initialise((np.array([[1,2,3]]), (np.array([[2,3,4]]))), {'first_subtable':'', 'second_subtable':{'first_subtable':''}})
+        Initiliases a TableSet in the database with the given data and names
+        >>> TableSet('Name').initialise((np.array([[1,2,3]]), (np.array([[2,3,4]]), np.array([[3,4,5]]))), {'first_subtable':'', 'second_subtable':{'first_subtable':'', 'second_subtable':''}}, relations={'first_subtable':([], ['second_subtable']), 'second_subtable':(['first_subtable'],[],{'first_subtable':([],['second_subtable']), 'second_subtable':(['first_subtable'], [])})})
+        Initialises a TableSet in the database with the given data and names that has defined inputs and outputs
 
         Args:
             data: The data of the subtables
@@ -267,6 +293,11 @@ class TableSet:
     def append_rows(self, data: tuple, skip_verification: bool = False):
         """
         Add a new rows to the existing TableSet
+
+        Examples
+        -----------
+        >>> TableSet('Name', Database('path')).append_rows((np.array([[1,2,3,3]]),))
+        Adds a single row to a TableSet with one subtable with 4 columns
 
         Args:
             data: The new rows as a (nested) tuple of np.ndarrays

@@ -18,6 +18,22 @@ class Table:
 
     Tables store rows with other dimensions removed.
 
+    Slicing
+    -----------
+    Tables can be accessed using slicing. Slicing in Tables works similar to slicing in Numpy arrays.
+
+    Slicing support both get, set, and delete commands.
+
+    Examples
+    -----------
+    >>> table[1,2]
+    3 <-- this is the element in the second row, in the third column of the `Table`.
+    >>> table[1,2:4]
+    Array([3, 4]) <-- The second and third column of the second row.
+    >>> table[1:5]
+    Array([[1,2,3,4],[2,3,4,5],[3,4,5,6],[4,5,6,7]]) <-- The rows from the second row to the fifth row in a `Table` with 4 columns.
+
+
     Args:
         name: The name of the `Table`
         database: The `Database` the Table resides in
@@ -133,6 +149,11 @@ class Table:
         """
         Initialises the table using the np.ndarray provided
 
+        Examples
+        ---------
+        >>> Table('Name', Database('path')).initialise(np.array([[1,2,3,4],[2,3,4,5]]))
+        Creates a table with name 'Name' and two rows of data Array([[1,2,3,4], [2,3,4,5]])
+
         Args:
             data: The array containing the data for the Table
             dtype (optional): The dtype of the data, changes the data's dtype if they don't match
@@ -160,6 +181,11 @@ class Table:
     def append_rows(self, data: np.ndarray):
         """
         Add a new row to the existing Table
+
+        Examples
+        ---------
+        >>> Table('Name', Database('path')).append_rows(np.array([[10,11,12,13], [11, 12, 13, 14]]))
+        Adds rows Array([[10,11,12,13], [11, 12, 13, 14]]) to the existing table at path 'path' with name 'Name'.
 
         Args:
             data: The new rows as an np.ndarray
