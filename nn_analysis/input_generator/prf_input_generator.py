@@ -148,6 +148,11 @@ class PRFInputGenerator(TwoDInputGenerator):
         The title will either be displayed in the plot (when the plot is shown), or used as a filename (when the plot is saved).
         This function uses the Plot class to save or store plots. To save the plot as an image set `Plot.save_fig` to `True`.
 
+        Examples
+        ----------
+        >>> PRFInputGenerator().plot_image((128, 160), 10, 'Title')
+        Plots an image with a size 160x128 at index 10 with title 'Title'.
+
         Args:
             shape: (int, int) Shape of the image
             index: (int) Index of the stimulus
