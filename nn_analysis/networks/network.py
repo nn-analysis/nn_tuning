@@ -29,6 +29,11 @@ class Network(ABC):
         """
         Runs the stimuli (in the `input_array`) through the network and returns the results.
 
+        Examples
+        ---------
+        >>> Network().run(np.array([[1,2,3,4], [2,3,4,5]]))
+        (tuple of results split up in subparts for the subtable structure of the `TableSet`, dict of names for the structure of the `TableSet`.
+
         Args:
             input_array: Input array containing all the stimuli in this batch
 
@@ -50,11 +55,19 @@ class Network(ABC):
         """
         If the tensorflow version is version 1, the extraction of arrays from tensors follows a different algorithm.
         This function provides a universal function to perform the operation.
+
         The session is an optional variable that allows you to share the same session across different extractions
         saving memory.
 
+        Examples
+        ---------
+        >>> Network().extract_numpy_array([tf.Tensor(), tf.Tensor])
+        [Array([]), Array([])]
+        >>> Network().extract_numpy_array({'A': tf.Tensor(), 'B': tf.Tensor()})
+        {'A': Array([]), 'B': Array([])}
+
         Args:
-            to_extract: The tensor or structure containing tensors that needs to be extracted.
+            to_extract: The tensor or structure containing tensors that needs to be extracted. This structure can be of any type but may not contain any np.ndarrays.
             session (optional): The TensorFlow session.
 
         Returns:
