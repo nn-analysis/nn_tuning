@@ -2,6 +2,7 @@
 .. include:: ./introduction.md
 .. include:: ./getting_started.md
 .. include:: ./doc_neural_network.md
+.. include:: ./doc_stimulus_set.md
 """
 
 from .storage import *

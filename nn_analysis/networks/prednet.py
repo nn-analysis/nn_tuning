@@ -118,7 +118,7 @@ class Prednet(Network):
                     padded_reshaped_iterative_input_array = np.zeros(input_array.shape)
                     padded_reshaped_iterative_input_array[:] = 255/2
                     padded_reshaped_iterative_input_array = padded_reshaped_iterative_input_array.reshape((-1,))
-                    padded_reshaped_iterative_input_array[:, :reshaped_iterative_input_array.size] = reshaped_iterative_input_array.reshape((-1,))
+                    padded_reshaped_iterative_input_array[:reshaped_iterative_input_array.size] = reshaped_iterative_input_array.reshape((-1,))
                     padded_reshaped_iterative_input_array = padded_reshaped_iterative_input_array.reshape(input_array.shape)
                     # Run PredNet
                     raw_step_outputs = self.__call_prednet(prednet, padded_reshaped_iterative_input_array)
