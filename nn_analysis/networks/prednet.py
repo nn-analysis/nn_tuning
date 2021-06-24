@@ -113,7 +113,15 @@ class Prednet(Network):
                 iterator = range(1, input_array.shape[1]+1)
                 summed_batch_output = None
                 for j in iterator:
-                    raw_step_outputs = self.__call_prednet(prednet, input_array[:, 0:j].reshape((input_array.shape[0], len(list(range(0, j))), input_array.shape[2], input_array.shape[3], input_array.shape[4])).astype(np.float32))
+                    # Pad with zeros
+                    reshaped_iterative_input_array = input_array[:, 0:j].reshape((input_array.shape[0], len(list(range(0, j))), input_array.shape[2], input_array.shape[3], input_array.shape[4])).astype(np.float32)
+                    padded_reshaped_iterative_input_array = np.zeros(input_array.shape)
+                    padded_reshaped_iterative_input_array[:] = 255/2
+                    padded_reshaped_iterative_input_array = padded_reshaped_iterative_input_array.reshape((-1,))
+                    padded_reshaped_iterative_input_array[:, :reshaped_iterative_input_array.size] = reshaped_iterative_input_array.reshape((-1,))
+                    padded_reshaped_iterative_input_array = padded_reshaped_iterative_input_array.reshape(input_array.shape)
+                    # Run PredNet
+                    raw_step_outputs = self.__call_prednet(prednet, padded_reshaped_iterative_input_array)
                     this_batch_output = self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs), sess)
                     if summed_batch_output is None:
                         summed_batch_output = this_batch_output
@@ -213,7 +221,7 @@ class Prednet(Network):
             input_list[i] = self.__list_to_tuple_recursively(input_list[i])
         return tuple(input_list)
 
-    def __sum_structure(self, x: Union[dict, list, tuple, np.ndarray], y: Union[dict, list, tuple]) \
+    def __sum_structure(self, x: Union[dict, list, tuple, np.ndarray], y: Union[dict, list, tuple, np.ndarray]) \
             -> Union[dict, list, tuple, np.ndarray]:
         """
         Define a sum function for Union[dict, list, tuple]

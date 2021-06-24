@@ -1,4 +1,4 @@
-##Adding new neural networks to the code analysis system
+## Adding new neural networks to the code analysis system
 In order to extend the code analysis system to new neural networks a new class has to be created for that network in the networks sub package. This class has to extend the network class from that same sub package. 
 
 The new class has to implement a run function. The run function should run a batch of inputs, given in the input variable, through the model, record activations, and return those activations in the form of a nested tuple of np arrays along with a names dictionary that gives names to each of the items in the nested tuple.
