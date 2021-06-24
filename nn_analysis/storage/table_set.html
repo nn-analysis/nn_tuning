@@ -1,0 +1,1501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>nn_analysis.storage.table_set API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>nn_analysis.storage.table_set</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import os
+import pickle
+from typing import Union
+
+import numpy as np
+from tqdm import tqdm
+
+from .database import Database
+from .error import NoSuchTableError, TableNotInitialisedError
+from .helpers import __keytolist__, __slicetolist__, __verify_data_types_are_correct__
+from .table import Table
+
+
+class TableSet:
+    &#34;&#34;&#34;
+    A set of `Table`s and or other `TableSet`s.
+    The get, set, and delete functions work on the aggregated table data.
+    To get a specific subtable you can use `get_subtable(key)`
+
+    Slicing
+    -----------
+    TableSets can be accessed using slicing. Slicing in TableSets works similar to slicing in Numpy arrays.
+
+    The `TableSet` slicing combines all subtables into one structure. When using slicing the underlying subtables are combined.
+
+    Slicing support both get, set, and delete commands.
+
+    Examples
+    -----------
+    &gt;&gt;&gt; tableset[1,2]
+    3 &lt;-- this is the element in the second row, in the third column of the `TableSet`.
+    &gt;&gt;&gt; tableset[1,2:4]
+    Array([3, 4]) &lt;-- The second and third column of the second row.
+    &gt;&gt;&gt; tableset[1:5]
+    Array([[1,2,3,4],[2,3,4,5],[3,4,5,6],[4,5,6,7]]) &lt;-- The rows from the second row to the fifth row in a `TableSet` with 4 columns.
+
+    Attributes:
+        name: Name of the `TableSet`.
+        database: The `database` the TableSet is in.
+        table_set (optional): The TableSet this TableSet is a part of.
+        verbose: If true progress bars are shown during some operations
+
+    Args:
+        name: Name of the TableSet.
+        database: The database the TableSet is in.
+        table_set (optional): The TableSet this TableSet is a part of.
+        verbose (optional, default=False): If true progress bars are shown during some operations
+    &#34;&#34;&#34;
+
+    name: str
+    database: Database
+    verbose: bool
+
+    def __init__(self, name: str, database: Database, table_set=None, verbose=False):
+        self.name = name
+        self.database = database
+        self.table_set = table_set
+        self.__properties_file = &#39;properties&#39;
+        self.verbose = verbose
+        self.__subtables = None
+        self.__dtype = None
+        self.__ncols = None
+        self.__ncols_tuple = None
+        self.__recurrent_subtables = None
+        self.inputs = None
+        self.outputs = None
+
+    def __repr__(self):
+        return f&#34;Table(&#39;{self.name}&#39;, ({self.nrows}, {self.ncols}), &#39;{self.folder}&#39;)&#34;
+
+    def __getitem__(self, key):
+        rows, cols = __keytolist__(key, self.nrows)
+        results = []
+        for row in tqdm(rows, disable=(not self.verbose), leave=False):
+            try:
+                subtable_total = None
+                for subtables in self.subtables:
+                    if subtable_total is None:
+                        subtable_total = self.get_subtable(subtables)[row]
+                    else:
+                        subtable_total = np.concatenate((subtable_total, self.get_subtable(subtables)[row]))
+                if cols is None:
+                    results.append(subtable_total)
+                else:
+                    results.append(subtable_total[cols])
+            except OSError:
+                raise IndexError(f&#34;index {row} is out of bounds for axis 0 with size {self.nrows}&#34;)
+        results = np.array(results)
+        if results.shape[0] is 1:
+            return results[0]
+        return results
+
+    def __setitem__(self, key, value):
+        rows, cols = __keytolist__(key, self.nrows)
+
+        # Make sure the shape and types of the keys and the values is something we expect
+        single_value = False
+        len_value = 1
+        if type(value) is list:
+            value = np.array(value)
+            if value.ndim &gt; 1:
+                value = value.reshape(len(value), -1)
+        if type(value) is np.ndarray:
+            if value.ndim &gt; 1:
+                len_value = value.shape[1]
+            else:
+                len_value = value.shape[0]
+        if type(cols) is slice and cols.start is None and cols.step is None and cols.stop is None and type(
+                value) is np.ndarray:
+            cols = None
+            if type(value) is np.ndarray:
+                if len_value != self.ncols:
+                    raise ValueError(f&#39;Expected len(value)={self.ncols}, found {len(value)}&#39;)
+            else:
+                single_value = True
+        elif type(cols) is slice:
+            cols_len = len(__slicetolist__(cols, self.ncols))
+            if len_value != cols_len:
+                raise ValueError(f&#39;Expected len(value)={cols_len}, found {len(value)}&#39;)
+        elif type(cols) is list:
+            cols_len = len(cols)
+            if len_value != cols_len:
+                raise ValueError(f&#39;Expected len(value)={cols_len}, found {len(value)}&#39;)
+        else:
+            single_value = True
+            if len_value &gt; 1:
+                raise ValueError(f&#39;Expected len(value)=1, found len(value)={len_value}&#39;)
+
+        # Go through the subtables to delegate the values to the correct subtables
+        min_col = 0
+        for subtable in self.subtables:
+            subtable_instance = self.get_subtable(subtable)
+            max_col = min_col + subtable_instance.ncols-1
+            # If only one value is changed check if that column is in the subtable and update it accordingly
+            if single_value:
+                if min_col &lt;= cols &lt;= max_col:
+                    subtable_instance[rows[0], cols] = value
+            else:
+                # Select the columns that are in this subtable
+                cols_array = np.array(__slicetolist__(cols, self.ncols))
+                cols_array = cols_array[np.where(cols_array &gt;= min_col)]
+                cols_array = cols_array[np.where(cols_array &lt;= max_col)]
+                value_array = value
+                # Select just the values for the columns in this subtable
+                if value_array.ndim &gt; 1:
+                    value_array = value_array[:, np.where(cols_array &gt;= min_col)[0]]
+                    value_array = value_array[:, np.where(cols_array &lt;= max_col)[0]]
+                else:
+                    value_array = value_array[np.where(cols_array &gt;= min_col)[0]]
+                    value_array = value_array[np.where(cols_array &lt;= max_col)[0]]
+                # Make sure the columns start at the right place
+                cols_array = cols_array - min_col
+                # Make the columns a list and update the subtable with the values and columns that were just calculated
+                cols_list = cols_array.tolist()
+                if len(cols_list) &gt; 0:
+                    subtable_instance[rows, cols_list] = value_array
+            min_col += subtable_instance.ncols
+
+    def __delitem__(self, key):
+        for subtable in self.subtables:
+            del self.get_subtable(subtable)[key]
+
+    def __verify_data_and_names_have_matching_shapes(self, data: tuple, names: dict) -&gt; bool:
+        &#34;&#34;&#34;
+        Checks whether the data and names have the same size
+
+        Args:
+            data: The data of the subtables
+            names: The names of the subtables and subtablesets
+
+        Returns:
+            True if they share the same size, False otherwise
+        &#34;&#34;&#34;
+        if len(data) != len(names):
+            return False
+        i = 0
+        for subdata in data:
+            name = list(names.items())[i]
+            if type(subdata) is tuple:
+                if type(name[1]) is dict:
+                    if not self.__verify_data_and_names_have_matching_shapes(subdata, name[1]):
+                        return False
+            i += 1
+        return True
+
+    def __verify_coherent_data_rows(self, data: tuple) -&gt; bool:
+        &#34;&#34;&#34;
+        Checks whether the data has a coherent amount of rows everywhere
+
+        Args:
+            data: The data of the subtables
+
+        Returns:
+            True if it does, False otherwise
+        &#34;&#34;&#34;
+        nrows = None
+        for subdata in data:
+            if type(subdata) is tuple:
+                if not self.__verify_coherent_data_rows(subdata):
+                    return False
+            elif nrows is None:
+                nrows = subdata.shape[0]
+            elif nrows != subdata.shape[0]:
+                return False
+        return True
+
+    def __verify_name_types_are_correct(self, names: dict) -&gt; bool:
+        &#34;&#34;&#34;
+        Checks whether the names is a dict of dicts or strings everywhere
+
+        Args:
+            names: The names of the subtables and subtablesets
+
+        Returns:
+            True if it does, False otherwise
+        &#34;&#34;&#34;
+        for name in names.items():
+            if type(name[1]) is dict:
+                if not self.__verify_name_types_are_correct(name[1]):
+                    return False
+            elif type(name[0]) is not str:
+                return False
+        return True
+
+    def initialise(self, data: tuple, names: dict, dtype: np.dtype = None, relations: dict = None, inputs: list = None, outputs: list = None):
+        &#34;&#34;&#34;
+        Initialise the TableSet with the structure set in the data parameter.
+        Names and data need to be of the same shape.
+
+        The program will use the key of the names dict as the name of the Table or TableSet.
+
+        It is possible to create sub TableSets by making nested dicts in the names variable and nested tuples in the
+        data variable.
+
+        Examples
+        -----------
+        &gt;&gt;&gt; TableSet(&#39;Name&#39;, Database(&#39;path&#39;)).initialise((np.array([[1,2,3]]), (np.array([[2,3,4]]))), {&#39;first_subtable&#39;:&#39;&#39;, &#39;second_subtable&#39;:{&#39;first_subtable&#39;:&#39;&#39;}})
+        Initiliases a TableSet in the database with the given data and names
+        &gt;&gt;&gt; TableSet(&#39;Name&#39;).initialise((np.array([[1,2,3]]), (np.array([[2,3,4]]), np.array([[3,4,5]]))), {&#39;first_subtable&#39;:&#39;&#39;, &#39;second_subtable&#39;:{&#39;first_subtable&#39;:&#39;&#39;, &#39;second_subtable&#39;:&#39;&#39;}}, relations={&#39;first_subtable&#39;:([], [&#39;second_subtable&#39;]), &#39;second_subtable&#39;:([&#39;first_subtable&#39;],[],{&#39;first_subtable&#39;:([],[&#39;second_subtable&#39;]), &#39;second_subtable&#39;:([&#39;first_subtable&#39;], [])})})
+        Initialises a TableSet in the database with the given data and names that has defined inputs and outputs
+
+        Args:
+            data: The data of the subtables
+            names: The names of the subtables and subtablesets
+            dtype (optional): Data type of the array
+            relations (optional): Relations between components of the data in terms of inputs and outputs. Example: `{ &#39;name&#39;: (inputs=list of names, outputs=list of names, child=child dict),  &#39;name2&#39;: (inputs=list of names, outputs=list of names, child=child dict), etc... }`
+            inputs (optional): Denotes the inputs for the data in this TableSet represented as a list of Table names. TableSet names have to be in the same TableSet or Database.
+            outputs (optional): Denotes the outputs for the data in this TableSet represented as a list of Table names. TableSet names have to be in the same TableSet or Database.
+        &#34;&#34;&#34;
+        if not __verify_data_types_are_correct__(data):
+            raise ValueError(&#39;data is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!&#39;)
+        if not self.__verify_name_types_are_correct(names):
+            raise ValueError(&#39;names is not a dict of nested dicts of strings or a dict of strings!&#39;)
+        if not self.__verify_data_and_names_have_matching_shapes(data, names):
+            raise ValueError(&#39;data and names do not have the same shape!&#39;)
+        if not self.__verify_coherent_data_rows(data):
+            raise ValueError(&#39;expected the rows of all np.ndarrays in the data variable to be of the same length!&#39;)
+        if not os.path.isdir(self.folder):
+            os.mkdir(self.folder, 0o755)
+        i = 0
+        self.__subtables = []
+        self.inputs = inputs
+        self.outputs = outputs
+        for item in data:
+            name = list(names.items())[i][0]
+            self.__subtables.append(name)
+            inputs = relations[name][0] if relations is not None and name in relations and len(relations[name]) &gt; 0 else None
+            outputs = relations[name][1] if relations is not None and name in relations and len(relations[name]) &gt; 1 else None
+            child = relations[name][2] if relations is not None and name in relations and len(relations[name]) &gt; 2 else None
+            if type(item) is tuple:
+                TableSet(name, self.database, self, self.verbose).initialise(item, list(names.items())[i][1], dtype,
+                                                                             child, inputs, outputs)
+            elif type(item) is np.ndarray:
+                Table(name, self.database, self).initialise(item, dtype, inputs, outputs)
+            else:
+                raise ValueError(&#39;Expected type&#39;)
+            i += 1
+        self.__update_properties__()
+
+    def __verify_ncols(self, data: tuple):
+        i = 0
+        for subdata in data:
+            subtable = self.get_subtable(i)
+            if type(subdata) is tuple:
+                if not subtable.__verify_ncols(subdata):
+                    return False
+            else:
+                if subtable.ncols != subdata.shape[1]:
+                    return False
+            i += 1
+        return True
+
+    def append_rows(self, data: tuple, skip_verification: bool = False):
+        &#34;&#34;&#34;
+        Add a new rows to the existing TableSet
+
+        Examples
+        -----------
+        &gt;&gt;&gt; TableSet(&#39;Name&#39;, Database(&#39;path&#39;)).append_rows((np.array([[1,2,3,3]]),))
+        Adds a single row to a TableSet with one subtable with 4 columns
+
+        Args:
+            data: The new rows as a (nested) tuple of np.ndarrays
+            skip_verification (optional, default=False) : If True the verification steps are skipped. This allows for faster processing and is used when this function calls itself.
+        &#34;&#34;&#34;
+        # Verify the data
+        if not skip_verification:
+            if not __verify_data_types_are_correct__(data):
+                raise ValueError(&#39;data is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!&#39;)
+            if not self.__verify_coherent_data_rows(data):
+                raise ValueError(&#39;expected the rows of all np.ndarrays in the data variable to be of the same length!&#39;)
+            if not self.__verify_ncols(data):
+                raise ValueError(&#39;make sure data.ncols is the same as the existing ncols&#39;)
+        i = 0
+        for subtable_key in self.subtables:
+            subtable = self.get_subtable(subtable_key)
+            if type(subtable) is TableSet:
+                subtable.append_rows(data[i], skip_verification=True)
+            else:
+                subtable.append_rows(data[i])
+            i += 1
+
+    @property
+    def shape(self) -&gt; (int, int):
+        &#34;&#34;&#34;Shape of the TableSet&#34;&#34;&#34;
+        return self.nrows, self.ncols
+
+    @property
+    def nrows(self) -&gt; int:
+        &#34;&#34;&#34;Amount of rows in this subtable&#34;&#34;&#34;
+        return self.get_subtable(0).nrows
+
+    @property
+    def ncols(self) -&gt; int:
+        &#34;&#34;&#34;Total amount of columns in this subtable&#34;&#34;&#34;
+        if self.__ncols is not None:
+            return self.__ncols
+        total = 0
+        for subtable in self.subtables:
+            total += self.get_subtable(subtable).ncols
+        self.__ncols = total
+        return total
+
+    @property
+    def folder(self) -&gt; str:
+        if self.table_set is not None:
+            return self.table_set.folder + self.name + &#39;/&#39;
+        return self.database.folder + self.name + &#39;/&#39;
+
+    @property
+    def subtables(self) -&gt; list:
+        &#34;&#34;&#34;The names of the subtables in this TableSet&#34;&#34;&#34;
+        if self.__subtables is None:
+            self.__calc_properties__()
+        return self.__subtables
+
+    @property
+    def recurrent_subtables(self) -&gt; dict:
+        &#34;&#34;&#34;Dictionary of names of subtables and subsubtables etc.&#34;&#34;&#34;
+        if self.__recurrent_subtables is not None:
+            return self.__recurrent_subtables
+        result = {}
+        for subtable in self.subtables:
+            subtable_instance = self.get_subtable(subtable)
+            if type(subtable_instance) is TableSet:
+                result[subtable] = subtable_instance.recurrent_subtables
+            else:
+                result[subtable] = subtable
+        self.__recurrent_subtables = result
+        return result
+
+    @property
+    def ncols_tuple(self) -&gt; tuple:
+        &#34;&#34;&#34;Amount of columns split up by subtable&#34;&#34;&#34;
+        if self.__ncols_tuple is not None:
+            return self.__ncols_tuple
+        ncols_tuple = []
+        for subtable in self.subtables:
+            subtable_instance = self.get_subtable(subtable)
+            if type(subtable_instance) is TableSet:
+                ncols_tuple.append(self.get_subtable(subtable).ncols_tuple)
+            else:
+                ncols_tuple.append(subtable_instance.ncols)
+        self.__ncols_tuple = tuple(ncols_tuple)
+        return self.__ncols_tuple
+
+    @property
+    def dtype(self) -&gt; np.dtype:
+        &#34;&#34;&#34;The datatype of the TableSet&#34;&#34;&#34;
+        if self.__dtype is None:
+            self.__calc_properties__()
+        return self.__dtype
+
+    def change_dtype(self, dtype: np.dtype):
+        &#34;&#34;&#34;
+        Changes the dtype of the TableSet
+
+        Args:
+            dtype: The desired dtype
+        &#34;&#34;&#34;
+        for subtable in tqdm(self.subtables, disable=(not self.verbose), leave=False):
+            self.get_subtable(subtable).change_dtype(dtype)
+
+    def __calc_properties__(self):
+        &#34;&#34;&#34;Calculates the properties of the table including the nrows and ncols&#34;&#34;&#34;
+        if not self.initialised:
+            raise TableNotInitialisedError
+        self.__subtables, self.inputs, self.outputs = self.__readfile__(self.__properties_file)
+        self.__dtype = self.get_subtable(0).dtype
+
+    def __update_properties__(self):
+        self.__writefile__(self.__properties_file, (self.__subtables, self.inputs, self.outputs), override=True)
+
+    @property
+    def initialised(self) -&gt; bool:
+        &#34;&#34;&#34;Indicates whether the TableSet was (correctly) initialised&#34;&#34;&#34;
+        properties_exist = os.path.isfile(self.folder + self.__properties_file)
+        if not properties_exist:
+            return False
+        try:
+            with open(self.folder + str(self.__properties_file), &#39;rb&#39;) as f:
+                subtables, inputs, outputs = pickle.load(f)
+        except EOFError:
+            return False
+        except TypeError:
+            return False
+        except ValueError:
+            try:
+                self.__subtables = pickle.load(f)
+                self.inputs, self.outputs = None, None
+                self.__update_properties__()
+                return self.initialised
+            except ValueError:
+                return False
+        if type(subtables) is not list:
+            return False
+        if inputs is not None and type(inputs) is not list:
+            return False
+        if outputs is not None and type(outputs) is not list:
+            return False
+        return True
+
+    def print_structure(self, tabs=0):
+        &#34;&#34;&#34;
+        Prints a map of the table structure
+
+        Args:
+            tabs: (Integer) Amount of tabs to print before the text
+        &#34;&#34;&#34;
+        raise NotImplementedError()
+
+    def get_subtable(self, key: Union[str, int]):
+        &#34;&#34;&#34;
+        Returns the `Table` or `TableSet` with the key
+
+        Args:
+            key: The key of the subtable as a string or integer
+        &#34;&#34;&#34;
+        if not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the TableSet before calling this function!&#34;)
+        if type(key) is not int and key not in self.subtables:
+            raise NoSuchTableError()
+        if type(key) is int:
+            key = self.subtables[key]
+        if Table(key, self.database, self).initialised:  # Subtable is a Table
+            return Table(key, self.database, self)
+        elif TableSet(key, self.database, self).initialised:  # Subtable is a TableSet
+            return TableSet(key, self.database, self)
+        raise NoSuchTableError(&#39;No subtable with this key was found to be initialised!&#39;)
+
+    def __readfile__(self, filename, override=False):
+        if not override and not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the TableSet before using it!&#34;)
+        with open(self.folder + str(filename), &#39;rb&#39;) as f:
+            return pickle.load(f)
+
+    def __writefile__(self, filename, value, override=False):
+        if not override and not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the TableSet before using it!&#34;)
+        with open(self.folder + str(filename), &#39;wb&#39;) as f:
+            pickle.dump(value, f)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="nn_analysis.storage.table_set.TableSet"><code class="flex name class">
+<span>class <span class="ident">TableSet</span></span>
+<span>(</span><span>name: str, database: <a title="nn_analysis.storage.database.Database" href="database.html#nn_analysis.storage.database.Database">Database</a>, table_set=None, verbose=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A set of <code>Table</code>s and or other <code><a title="nn_analysis.storage.table_set.TableSet" href="#nn_analysis.storage.table_set.TableSet">TableSet</a></code>s.
+The get, set, and delete functions work on the aggregated table data.
+To get a specific subtable you can use <code>get_subtable(key)</code></p>
+<h2 id="slicing">Slicing</h2>
+<p>TableSets can be accessed using slicing. Slicing in TableSets works similar to slicing in Numpy arrays.</p>
+<p>The <code><a title="nn_analysis.storage.table_set.TableSet" href="#nn_analysis.storage.table_set.TableSet">TableSet</a></code> slicing combines all subtables into one structure. When using slicing the underlying subtables are combined.</p>
+<p>Slicing support both get, set, and delete commands.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="python-repl">&gt;&gt;&gt; tableset[1,2]
+3 &lt;-- this is the element in the second row, in the third column of the &lt;code&gt;&lt;a title=&quot;nn_analysis.storage.table_set.TableSet&quot; href=&quot;#nn_analysis.storage.table_set.TableSet&quot;&gt;TableSet&lt;/a&gt;&lt;/code&gt;.
+&gt;&gt;&gt; tableset[1,2:4]
+Array([3, 4]) &lt;-- The second and third column of the second row.
+&gt;&gt;&gt; tableset[1:5]
+Array([[1,2,3,4],[2,3,4,5],[3,4,5,6],[4,5,6,7]]) &lt;-- The rows from the second row to the fifth row in a &lt;code&gt;&lt;a title=&quot;nn_analysis.storage.table_set.TableSet&quot; href=&quot;#nn_analysis.storage.table_set.TableSet&quot;&gt;TableSet&lt;/a&gt;&lt;/code&gt; with 4 columns.
+</code></pre>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Name of the <code><a title="nn_analysis.storage.table_set.TableSet" href="#nn_analysis.storage.table_set.TableSet">TableSet</a></code>.</dd>
+<dt><strong><code>database</code></strong></dt>
+<dd>The <code>database</code> the TableSet is in.</dd>
+<dt><strong><code>table_set</code></strong> :&ensp;<code>optional</code></dt>
+<dd>The TableSet this TableSet is a part of.</dd>
+<dt><strong><code>verbose</code></strong></dt>
+<dd>If true progress bars are shown during some operations</dd>
+</dl>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>Name of the TableSet.</dd>
+<dt><strong><code>database</code></strong></dt>
+<dd>The database the TableSet is in.</dd>
+<dt><strong><code>table_set</code></strong> :&ensp;<code>optional</code></dt>
+<dd>The TableSet this TableSet is a part of.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>optional</code>, default=<code>False</code></dt>
+<dd>If true progress bars are shown during some operations</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TableSet:
+    &#34;&#34;&#34;
+    A set of `Table`s and or other `TableSet`s.
+    The get, set, and delete functions work on the aggregated table data.
+    To get a specific subtable you can use `get_subtable(key)`
+
+    Slicing
+    -----------
+    TableSets can be accessed using slicing. Slicing in TableSets works similar to slicing in Numpy arrays.
+
+    The `TableSet` slicing combines all subtables into one structure. When using slicing the underlying subtables are combined.
+
+    Slicing support both get, set, and delete commands.
+
+    Examples
+    -----------
+    &gt;&gt;&gt; tableset[1,2]
+    3 &lt;-- this is the element in the second row, in the third column of the `TableSet`.
+    &gt;&gt;&gt; tableset[1,2:4]
+    Array([3, 4]) &lt;-- The second and third column of the second row.
+    &gt;&gt;&gt; tableset[1:5]
+    Array([[1,2,3,4],[2,3,4,5],[3,4,5,6],[4,5,6,7]]) &lt;-- The rows from the second row to the fifth row in a `TableSet` with 4 columns.
+
+    Attributes:
+        name: Name of the `TableSet`.
+        database: The `database` the TableSet is in.
+        table_set (optional): The TableSet this TableSet is a part of.
+        verbose: If true progress bars are shown during some operations
+
+    Args:
+        name: Name of the TableSet.
+        database: The database the TableSet is in.
+        table_set (optional): The TableSet this TableSet is a part of.
+        verbose (optional, default=False): If true progress bars are shown during some operations
+    &#34;&#34;&#34;
+
+    name: str
+    database: Database
+    verbose: bool
+
+    def __init__(self, name: str, database: Database, table_set=None, verbose=False):
+        self.name = name
+        self.database = database
+        self.table_set = table_set
+        self.__properties_file = &#39;properties&#39;
+        self.verbose = verbose
+        self.__subtables = None
+        self.__dtype = None
+        self.__ncols = None
+        self.__ncols_tuple = None
+        self.__recurrent_subtables = None
+        self.inputs = None
+        self.outputs = None
+
+    def __repr__(self):
+        return f&#34;Table(&#39;{self.name}&#39;, ({self.nrows}, {self.ncols}), &#39;{self.folder}&#39;)&#34;
+
+    def __getitem__(self, key):
+        rows, cols = __keytolist__(key, self.nrows)
+        results = []
+        for row in tqdm(rows, disable=(not self.verbose), leave=False):
+            try:
+                subtable_total = None
+                for subtables in self.subtables:
+                    if subtable_total is None:
+                        subtable_total = self.get_subtable(subtables)[row]
+                    else:
+                        subtable_total = np.concatenate((subtable_total, self.get_subtable(subtables)[row]))
+                if cols is None:
+                    results.append(subtable_total)
+                else:
+                    results.append(subtable_total[cols])
+            except OSError:
+                raise IndexError(f&#34;index {row} is out of bounds for axis 0 with size {self.nrows}&#34;)
+        results = np.array(results)
+        if results.shape[0] is 1:
+            return results[0]
+        return results
+
+    def __setitem__(self, key, value):
+        rows, cols = __keytolist__(key, self.nrows)
+
+        # Make sure the shape and types of the keys and the values is something we expect
+        single_value = False
+        len_value = 1
+        if type(value) is list:
+            value = np.array(value)
+            if value.ndim &gt; 1:
+                value = value.reshape(len(value), -1)
+        if type(value) is np.ndarray:
+            if value.ndim &gt; 1:
+                len_value = value.shape[1]
+            else:
+                len_value = value.shape[0]
+        if type(cols) is slice and cols.start is None and cols.step is None and cols.stop is None and type(
+                value) is np.ndarray:
+            cols = None
+            if type(value) is np.ndarray:
+                if len_value != self.ncols:
+                    raise ValueError(f&#39;Expected len(value)={self.ncols}, found {len(value)}&#39;)
+            else:
+                single_value = True
+        elif type(cols) is slice:
+            cols_len = len(__slicetolist__(cols, self.ncols))
+            if len_value != cols_len:
+                raise ValueError(f&#39;Expected len(value)={cols_len}, found {len(value)}&#39;)
+        elif type(cols) is list:
+            cols_len = len(cols)
+            if len_value != cols_len:
+                raise ValueError(f&#39;Expected len(value)={cols_len}, found {len(value)}&#39;)
+        else:
+            single_value = True
+            if len_value &gt; 1:
+                raise ValueError(f&#39;Expected len(value)=1, found len(value)={len_value}&#39;)
+
+        # Go through the subtables to delegate the values to the correct subtables
+        min_col = 0
+        for subtable in self.subtables:
+            subtable_instance = self.get_subtable(subtable)
+            max_col = min_col + subtable_instance.ncols-1
+            # If only one value is changed check if that column is in the subtable and update it accordingly
+            if single_value:
+                if min_col &lt;= cols &lt;= max_col:
+                    subtable_instance[rows[0], cols] = value
+            else:
+                # Select the columns that are in this subtable
+                cols_array = np.array(__slicetolist__(cols, self.ncols))
+                cols_array = cols_array[np.where(cols_array &gt;= min_col)]
+                cols_array = cols_array[np.where(cols_array &lt;= max_col)]
+                value_array = value
+                # Select just the values for the columns in this subtable
+                if value_array.ndim &gt; 1:
+                    value_array = value_array[:, np.where(cols_array &gt;= min_col)[0]]
+                    value_array = value_array[:, np.where(cols_array &lt;= max_col)[0]]
+                else:
+                    value_array = value_array[np.where(cols_array &gt;= min_col)[0]]
+                    value_array = value_array[np.where(cols_array &lt;= max_col)[0]]
+                # Make sure the columns start at the right place
+                cols_array = cols_array - min_col
+                # Make the columns a list and update the subtable with the values and columns that were just calculated
+                cols_list = cols_array.tolist()
+                if len(cols_list) &gt; 0:
+                    subtable_instance[rows, cols_list] = value_array
+            min_col += subtable_instance.ncols
+
+    def __delitem__(self, key):
+        for subtable in self.subtables:
+            del self.get_subtable(subtable)[key]
+
+    def __verify_data_and_names_have_matching_shapes(self, data: tuple, names: dict) -&gt; bool:
+        &#34;&#34;&#34;
+        Checks whether the data and names have the same size
+
+        Args:
+            data: The data of the subtables
+            names: The names of the subtables and subtablesets
+
+        Returns:
+            True if they share the same size, False otherwise
+        &#34;&#34;&#34;
+        if len(data) != len(names):
+            return False
+        i = 0
+        for subdata in data:
+            name = list(names.items())[i]
+            if type(subdata) is tuple:
+                if type(name[1]) is dict:
+                    if not self.__verify_data_and_names_have_matching_shapes(subdata, name[1]):
+                        return False
+            i += 1
+        return True
+
+    def __verify_coherent_data_rows(self, data: tuple) -&gt; bool:
+        &#34;&#34;&#34;
+        Checks whether the data has a coherent amount of rows everywhere
+
+        Args:
+            data: The data of the subtables
+
+        Returns:
+            True if it does, False otherwise
+        &#34;&#34;&#34;
+        nrows = None
+        for subdata in data:
+            if type(subdata) is tuple:
+                if not self.__verify_coherent_data_rows(subdata):
+                    return False
+            elif nrows is None:
+                nrows = subdata.shape[0]
+            elif nrows != subdata.shape[0]:
+                return False
+        return True
+
+    def __verify_name_types_are_correct(self, names: dict) -&gt; bool:
+        &#34;&#34;&#34;
+        Checks whether the names is a dict of dicts or strings everywhere
+
+        Args:
+            names: The names of the subtables and subtablesets
+
+        Returns:
+            True if it does, False otherwise
+        &#34;&#34;&#34;
+        for name in names.items():
+            if type(name[1]) is dict:
+                if not self.__verify_name_types_are_correct(name[1]):
+                    return False
+            elif type(name[0]) is not str:
+                return False
+        return True
+
+    def initialise(self, data: tuple, names: dict, dtype: np.dtype = None, relations: dict = None, inputs: list = None, outputs: list = None):
+        &#34;&#34;&#34;
+        Initialise the TableSet with the structure set in the data parameter.
+        Names and data need to be of the same shape.
+
+        The program will use the key of the names dict as the name of the Table or TableSet.
+
+        It is possible to create sub TableSets by making nested dicts in the names variable and nested tuples in the
+        data variable.
+
+        Examples
+        -----------
+        &gt;&gt;&gt; TableSet(&#39;Name&#39;, Database(&#39;path&#39;)).initialise((np.array([[1,2,3]]), (np.array([[2,3,4]]))), {&#39;first_subtable&#39;:&#39;&#39;, &#39;second_subtable&#39;:{&#39;first_subtable&#39;:&#39;&#39;}})
+        Initiliases a TableSet in the database with the given data and names
+        &gt;&gt;&gt; TableSet(&#39;Name&#39;).initialise((np.array([[1,2,3]]), (np.array([[2,3,4]]), np.array([[3,4,5]]))), {&#39;first_subtable&#39;:&#39;&#39;, &#39;second_subtable&#39;:{&#39;first_subtable&#39;:&#39;&#39;, &#39;second_subtable&#39;:&#39;&#39;}}, relations={&#39;first_subtable&#39;:([], [&#39;second_subtable&#39;]), &#39;second_subtable&#39;:([&#39;first_subtable&#39;],[],{&#39;first_subtable&#39;:([],[&#39;second_subtable&#39;]), &#39;second_subtable&#39;:([&#39;first_subtable&#39;], [])})})
+        Initialises a TableSet in the database with the given data and names that has defined inputs and outputs
+
+        Args:
+            data: The data of the subtables
+            names: The names of the subtables and subtablesets
+            dtype (optional): Data type of the array
+            relations (optional): Relations between components of the data in terms of inputs and outputs. Example: `{ &#39;name&#39;: (inputs=list of names, outputs=list of names, child=child dict),  &#39;name2&#39;: (inputs=list of names, outputs=list of names, child=child dict), etc... }`
+            inputs (optional): Denotes the inputs for the data in this TableSet represented as a list of Table names. TableSet names have to be in the same TableSet or Database.
+            outputs (optional): Denotes the outputs for the data in this TableSet represented as a list of Table names. TableSet names have to be in the same TableSet or Database.
+        &#34;&#34;&#34;
+        if not __verify_data_types_are_correct__(data):
+            raise ValueError(&#39;data is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!&#39;)
+        if not self.__verify_name_types_are_correct(names):
+            raise ValueError(&#39;names is not a dict of nested dicts of strings or a dict of strings!&#39;)
+        if not self.__verify_data_and_names_have_matching_shapes(data, names):
+            raise ValueError(&#39;data and names do not have the same shape!&#39;)
+        if not self.__verify_coherent_data_rows(data):
+            raise ValueError(&#39;expected the rows of all np.ndarrays in the data variable to be of the same length!&#39;)
+        if not os.path.isdir(self.folder):
+            os.mkdir(self.folder, 0o755)
+        i = 0
+        self.__subtables = []
+        self.inputs = inputs
+        self.outputs = outputs
+        for item in data:
+            name = list(names.items())[i][0]
+            self.__subtables.append(name)
+            inputs = relations[name][0] if relations is not None and name in relations and len(relations[name]) &gt; 0 else None
+            outputs = relations[name][1] if relations is not None and name in relations and len(relations[name]) &gt; 1 else None
+            child = relations[name][2] if relations is not None and name in relations and len(relations[name]) &gt; 2 else None
+            if type(item) is tuple:
+                TableSet(name, self.database, self, self.verbose).initialise(item, list(names.items())[i][1], dtype,
+                                                                             child, inputs, outputs)
+            elif type(item) is np.ndarray:
+                Table(name, self.database, self).initialise(item, dtype, inputs, outputs)
+            else:
+                raise ValueError(&#39;Expected type&#39;)
+            i += 1
+        self.__update_properties__()
+
+    def __verify_ncols(self, data: tuple):
+        i = 0
+        for subdata in data:
+            subtable = self.get_subtable(i)
+            if type(subdata) is tuple:
+                if not subtable.__verify_ncols(subdata):
+                    return False
+            else:
+                if subtable.ncols != subdata.shape[1]:
+                    return False
+            i += 1
+        return True
+
+    def append_rows(self, data: tuple, skip_verification: bool = False):
+        &#34;&#34;&#34;
+        Add a new rows to the existing TableSet
+
+        Examples
+        -----------
+        &gt;&gt;&gt; TableSet(&#39;Name&#39;, Database(&#39;path&#39;)).append_rows((np.array([[1,2,3,3]]),))
+        Adds a single row to a TableSet with one subtable with 4 columns
+
+        Args:
+            data: The new rows as a (nested) tuple of np.ndarrays
+            skip_verification (optional, default=False) : If True the verification steps are skipped. This allows for faster processing and is used when this function calls itself.
+        &#34;&#34;&#34;
+        # Verify the data
+        if not skip_verification:
+            if not __verify_data_types_are_correct__(data):
+                raise ValueError(&#39;data is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!&#39;)
+            if not self.__verify_coherent_data_rows(data):
+                raise ValueError(&#39;expected the rows of all np.ndarrays in the data variable to be of the same length!&#39;)
+            if not self.__verify_ncols(data):
+                raise ValueError(&#39;make sure data.ncols is the same as the existing ncols&#39;)
+        i = 0
+        for subtable_key in self.subtables:
+            subtable = self.get_subtable(subtable_key)
+            if type(subtable) is TableSet:
+                subtable.append_rows(data[i], skip_verification=True)
+            else:
+                subtable.append_rows(data[i])
+            i += 1
+
+    @property
+    def shape(self) -&gt; (int, int):
+        &#34;&#34;&#34;Shape of the TableSet&#34;&#34;&#34;
+        return self.nrows, self.ncols
+
+    @property
+    def nrows(self) -&gt; int:
+        &#34;&#34;&#34;Amount of rows in this subtable&#34;&#34;&#34;
+        return self.get_subtable(0).nrows
+
+    @property
+    def ncols(self) -&gt; int:
+        &#34;&#34;&#34;Total amount of columns in this subtable&#34;&#34;&#34;
+        if self.__ncols is not None:
+            return self.__ncols
+        total = 0
+        for subtable in self.subtables:
+            total += self.get_subtable(subtable).ncols
+        self.__ncols = total
+        return total
+
+    @property
+    def folder(self) -&gt; str:
+        if self.table_set is not None:
+            return self.table_set.folder + self.name + &#39;/&#39;
+        return self.database.folder + self.name + &#39;/&#39;
+
+    @property
+    def subtables(self) -&gt; list:
+        &#34;&#34;&#34;The names of the subtables in this TableSet&#34;&#34;&#34;
+        if self.__subtables is None:
+            self.__calc_properties__()
+        return self.__subtables
+
+    @property
+    def recurrent_subtables(self) -&gt; dict:
+        &#34;&#34;&#34;Dictionary of names of subtables and subsubtables etc.&#34;&#34;&#34;
+        if self.__recurrent_subtables is not None:
+            return self.__recurrent_subtables
+        result = {}
+        for subtable in self.subtables:
+            subtable_instance = self.get_subtable(subtable)
+            if type(subtable_instance) is TableSet:
+                result[subtable] = subtable_instance.recurrent_subtables
+            else:
+                result[subtable] = subtable
+        self.__recurrent_subtables = result
+        return result
+
+    @property
+    def ncols_tuple(self) -&gt; tuple:
+        &#34;&#34;&#34;Amount of columns split up by subtable&#34;&#34;&#34;
+        if self.__ncols_tuple is not None:
+            return self.__ncols_tuple
+        ncols_tuple = []
+        for subtable in self.subtables:
+            subtable_instance = self.get_subtable(subtable)
+            if type(subtable_instance) is TableSet:
+                ncols_tuple.append(self.get_subtable(subtable).ncols_tuple)
+            else:
+                ncols_tuple.append(subtable_instance.ncols)
+        self.__ncols_tuple = tuple(ncols_tuple)
+        return self.__ncols_tuple
+
+    @property
+    def dtype(self) -&gt; np.dtype:
+        &#34;&#34;&#34;The datatype of the TableSet&#34;&#34;&#34;
+        if self.__dtype is None:
+            self.__calc_properties__()
+        return self.__dtype
+
+    def change_dtype(self, dtype: np.dtype):
+        &#34;&#34;&#34;
+        Changes the dtype of the TableSet
+
+        Args:
+            dtype: The desired dtype
+        &#34;&#34;&#34;
+        for subtable in tqdm(self.subtables, disable=(not self.verbose), leave=False):
+            self.get_subtable(subtable).change_dtype(dtype)
+
+    def __calc_properties__(self):
+        &#34;&#34;&#34;Calculates the properties of the table including the nrows and ncols&#34;&#34;&#34;
+        if not self.initialised:
+            raise TableNotInitialisedError
+        self.__subtables, self.inputs, self.outputs = self.__readfile__(self.__properties_file)
+        self.__dtype = self.get_subtable(0).dtype
+
+    def __update_properties__(self):
+        self.__writefile__(self.__properties_file, (self.__subtables, self.inputs, self.outputs), override=True)
+
+    @property
+    def initialised(self) -&gt; bool:
+        &#34;&#34;&#34;Indicates whether the TableSet was (correctly) initialised&#34;&#34;&#34;
+        properties_exist = os.path.isfile(self.folder + self.__properties_file)
+        if not properties_exist:
+            return False
+        try:
+            with open(self.folder + str(self.__properties_file), &#39;rb&#39;) as f:
+                subtables, inputs, outputs = pickle.load(f)
+        except EOFError:
+            return False
+        except TypeError:
+            return False
+        except ValueError:
+            try:
+                self.__subtables = pickle.load(f)
+                self.inputs, self.outputs = None, None
+                self.__update_properties__()
+                return self.initialised
+            except ValueError:
+                return False
+        if type(subtables) is not list:
+            return False
+        if inputs is not None and type(inputs) is not list:
+            return False
+        if outputs is not None and type(outputs) is not list:
+            return False
+        return True
+
+    def print_structure(self, tabs=0):
+        &#34;&#34;&#34;
+        Prints a map of the table structure
+
+        Args:
+            tabs: (Integer) Amount of tabs to print before the text
+        &#34;&#34;&#34;
+        raise NotImplementedError()
+
+    def get_subtable(self, key: Union[str, int]):
+        &#34;&#34;&#34;
+        Returns the `Table` or `TableSet` with the key
+
+        Args:
+            key: The key of the subtable as a string or integer
+        &#34;&#34;&#34;
+        if not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the TableSet before calling this function!&#34;)
+        if type(key) is not int and key not in self.subtables:
+            raise NoSuchTableError()
+        if type(key) is int:
+            key = self.subtables[key]
+        if Table(key, self.database, self).initialised:  # Subtable is a Table
+            return Table(key, self.database, self)
+        elif TableSet(key, self.database, self).initialised:  # Subtable is a TableSet
+            return TableSet(key, self.database, self)
+        raise NoSuchTableError(&#39;No subtable with this key was found to be initialised!&#39;)
+
+    def __readfile__(self, filename, override=False):
+        if not override and not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the TableSet before using it!&#34;)
+        with open(self.folder + str(filename), &#39;rb&#39;) as f:
+            return pickle.load(f)
+
+    def __writefile__(self, filename, value, override=False):
+        if not override and not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the TableSet before using it!&#34;)
+        with open(self.folder + str(filename), &#39;wb&#39;) as f:
+            pickle.dump(value, f)</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="nn_analysis.storage.table_set.TableSet.database"><code class="name">var <span class="ident">database</span> : <a title="nn_analysis.storage.database.Database" href="database.html#nn_analysis.storage.database.Database">Database</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.verbose"><code class="name">var <span class="ident">verbose</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="nn_analysis.storage.table_set.TableSet.dtype"><code class="name">var <span class="ident">dtype</span> : numpy.dtype</code></dt>
+<dd>
+<div class="desc"><p>The datatype of the TableSet</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def dtype(self) -&gt; np.dtype:
+    &#34;&#34;&#34;The datatype of the TableSet&#34;&#34;&#34;
+    if self.__dtype is None:
+        self.__calc_properties__()
+    return self.__dtype</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.folder"><code class="name">var <span class="ident">folder</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def folder(self) -&gt; str:
+    if self.table_set is not None:
+        return self.table_set.folder + self.name + &#39;/&#39;
+    return self.database.folder + self.name + &#39;/&#39;</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.initialised"><code class="name">var <span class="ident">initialised</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Indicates whether the TableSet was (correctly) initialised</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def initialised(self) -&gt; bool:
+    &#34;&#34;&#34;Indicates whether the TableSet was (correctly) initialised&#34;&#34;&#34;
+    properties_exist = os.path.isfile(self.folder + self.__properties_file)
+    if not properties_exist:
+        return False
+    try:
+        with open(self.folder + str(self.__properties_file), &#39;rb&#39;) as f:
+            subtables, inputs, outputs = pickle.load(f)
+    except EOFError:
+        return False
+    except TypeError:
+        return False
+    except ValueError:
+        try:
+            self.__subtables = pickle.load(f)
+            self.inputs, self.outputs = None, None
+            self.__update_properties__()
+            return self.initialised
+        except ValueError:
+            return False
+    if type(subtables) is not list:
+        return False
+    if inputs is not None and type(inputs) is not list:
+        return False
+    if outputs is not None and type(outputs) is not list:
+        return False
+    return True</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.ncols"><code class="name">var <span class="ident">ncols</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Total amount of columns in this subtable</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def ncols(self) -&gt; int:
+    &#34;&#34;&#34;Total amount of columns in this subtable&#34;&#34;&#34;
+    if self.__ncols is not None:
+        return self.__ncols
+    total = 0
+    for subtable in self.subtables:
+        total += self.get_subtable(subtable).ncols
+    self.__ncols = total
+    return total</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.ncols_tuple"><code class="name">var <span class="ident">ncols_tuple</span> : tuple</code></dt>
+<dd>
+<div class="desc"><p>Amount of columns split up by subtable</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def ncols_tuple(self) -&gt; tuple:
+    &#34;&#34;&#34;Amount of columns split up by subtable&#34;&#34;&#34;
+    if self.__ncols_tuple is not None:
+        return self.__ncols_tuple
+    ncols_tuple = []
+    for subtable in self.subtables:
+        subtable_instance = self.get_subtable(subtable)
+        if type(subtable_instance) is TableSet:
+            ncols_tuple.append(self.get_subtable(subtable).ncols_tuple)
+        else:
+            ncols_tuple.append(subtable_instance.ncols)
+    self.__ncols_tuple = tuple(ncols_tuple)
+    return self.__ncols_tuple</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.nrows"><code class="name">var <span class="ident">nrows</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Amount of rows in this subtable</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def nrows(self) -&gt; int:
+    &#34;&#34;&#34;Amount of rows in this subtable&#34;&#34;&#34;
+    return self.get_subtable(0).nrows</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.recurrent_subtables"><code class="name">var <span class="ident">recurrent_subtables</span> : dict</code></dt>
+<dd>
+<div class="desc"><p>Dictionary of names of subtables and subsubtables etc.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def recurrent_subtables(self) -&gt; dict:
+    &#34;&#34;&#34;Dictionary of names of subtables and subsubtables etc.&#34;&#34;&#34;
+    if self.__recurrent_subtables is not None:
+        return self.__recurrent_subtables
+    result = {}
+    for subtable in self.subtables:
+        subtable_instance = self.get_subtable(subtable)
+        if type(subtable_instance) is TableSet:
+            result[subtable] = subtable_instance.recurrent_subtables
+        else:
+            result[subtable] = subtable
+    self.__recurrent_subtables = result
+    return result</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.shape"><code class="name">var <span class="ident">shape</span> : (<class 'int'>, <class 'int'>)</code></dt>
+<dd>
+<div class="desc"><p>Shape of the TableSet</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def shape(self) -&gt; (int, int):
+    &#34;&#34;&#34;Shape of the TableSet&#34;&#34;&#34;
+    return self.nrows, self.ncols</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.subtables"><code class="name">var <span class="ident">subtables</span> : list</code></dt>
+<dd>
+<div class="desc"><p>The names of the subtables in this TableSet</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def subtables(self) -&gt; list:
+    &#34;&#34;&#34;The names of the subtables in this TableSet&#34;&#34;&#34;
+    if self.__subtables is None:
+        self.__calc_properties__()
+    return self.__subtables</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="nn_analysis.storage.table_set.TableSet.append_rows"><code class="name flex">
+<span>def <span class="ident">append_rows</span></span>(<span>self, data: tuple, skip_verification: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add a new rows to the existing TableSet</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="python-repl">&gt;&gt;&gt; TableSet('Name', Database('path')).append_rows((np.array([[1,2,3,3]]),))
+Adds a single row to a TableSet with one subtable with 4 columns
+</code></pre>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The new rows as a (nested) tuple of np.ndarrays</dd>
+</dl>
+<p>skip_verification (optional, default=False) : If True the verification steps are skipped. This allows for faster processing and is used when this function calls itself.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def append_rows(self, data: tuple, skip_verification: bool = False):
+    &#34;&#34;&#34;
+    Add a new rows to the existing TableSet
+
+    Examples
+    -----------
+    &gt;&gt;&gt; TableSet(&#39;Name&#39;, Database(&#39;path&#39;)).append_rows((np.array([[1,2,3,3]]),))
+    Adds a single row to a TableSet with one subtable with 4 columns
+
+    Args:
+        data: The new rows as a (nested) tuple of np.ndarrays
+        skip_verification (optional, default=False) : If True the verification steps are skipped. This allows for faster processing and is used when this function calls itself.
+    &#34;&#34;&#34;
+    # Verify the data
+    if not skip_verification:
+        if not __verify_data_types_are_correct__(data):
+            raise ValueError(&#39;data is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!&#39;)
+        if not self.__verify_coherent_data_rows(data):
+            raise ValueError(&#39;expected the rows of all np.ndarrays in the data variable to be of the same length!&#39;)
+        if not self.__verify_ncols(data):
+            raise ValueError(&#39;make sure data.ncols is the same as the existing ncols&#39;)
+    i = 0
+    for subtable_key in self.subtables:
+        subtable = self.get_subtable(subtable_key)
+        if type(subtable) is TableSet:
+            subtable.append_rows(data[i], skip_verification=True)
+        else:
+            subtable.append_rows(data[i])
+        i += 1</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.change_dtype"><code class="name flex">
+<span>def <span class="ident">change_dtype</span></span>(<span>self, dtype: numpy.dtype)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Changes the dtype of the TableSet</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>dtype</code></strong></dt>
+<dd>The desired dtype</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def change_dtype(self, dtype: np.dtype):
+    &#34;&#34;&#34;
+    Changes the dtype of the TableSet
+
+    Args:
+        dtype: The desired dtype
+    &#34;&#34;&#34;
+    for subtable in tqdm(self.subtables, disable=(not self.verbose), leave=False):
+        self.get_subtable(subtable).change_dtype(dtype)</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.get_subtable"><code class="name flex">
+<span>def <span class="ident">get_subtable</span></span>(<span>self, key: Union[str, int])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the <code>Table</code> or <code><a title="nn_analysis.storage.table_set.TableSet" href="#nn_analysis.storage.table_set.TableSet">TableSet</a></code> with the key</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>key</code></strong></dt>
+<dd>The key of the subtable as a string or integer</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_subtable(self, key: Union[str, int]):
+    &#34;&#34;&#34;
+    Returns the `Table` or `TableSet` with the key
+
+    Args:
+        key: The key of the subtable as a string or integer
+    &#34;&#34;&#34;
+    if not self.initialised:
+        raise TableNotInitialisedError(&#34;Initialise the TableSet before calling this function!&#34;)
+    if type(key) is not int and key not in self.subtables:
+        raise NoSuchTableError()
+    if type(key) is int:
+        key = self.subtables[key]
+    if Table(key, self.database, self).initialised:  # Subtable is a Table
+        return Table(key, self.database, self)
+    elif TableSet(key, self.database, self).initialised:  # Subtable is a TableSet
+        return TableSet(key, self.database, self)
+    raise NoSuchTableError(&#39;No subtable with this key was found to be initialised!&#39;)</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.initialise"><code class="name flex">
+<span>def <span class="ident">initialise</span></span>(<span>self, data: tuple, names: dict, dtype: numpy.dtype = None, relations: dict = None, inputs: list = None, outputs: list = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initialise the TableSet with the structure set in the data parameter.
+Names and data need to be of the same shape.</p>
+<p>The program will use the key of the names dict as the name of the Table or TableSet.</p>
+<p>It is possible to create sub TableSets by making nested dicts in the names variable and nested tuples in the
+data variable.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="python-repl">&gt;&gt;&gt; TableSet('Name', Database('path')).initialise((np.array([[1,2,3]]), (np.array([[2,3,4]]))), {'first_subtable':'', 'second_subtable':{'first_subtable':''}})
+Initiliases a TableSet in the database with the given data and names
+&gt;&gt;&gt; TableSet('Name').initialise((np.array([[1,2,3]]), (np.array([[2,3,4]]), np.array([[3,4,5]]))), {'first_subtable':'', 'second_subtable':{'first_subtable':'', 'second_subtable':''}}, relations={'first_subtable':([], ['second_subtable']), 'second_subtable':(['first_subtable'],[],{'first_subtable':([],['second_subtable']), 'second_subtable':(['first_subtable'], [])})})
+Initialises a TableSet in the database with the given data and names that has defined inputs and outputs
+</code></pre>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The data of the subtables</dd>
+<dt><strong><code>names</code></strong></dt>
+<dd>The names of the subtables and subtablesets</dd>
+<dt><strong><code>dtype</code></strong> :&ensp;<code>optional</code></dt>
+<dd>Data type of the array</dd>
+<dt><strong><code>relations</code></strong> :&ensp;<code>optional</code></dt>
+<dd>Relations between components of the data in terms of inputs and outputs. Example: <code>{ 'name': (inputs=list of names, outputs=list of names, child=child dict),
+'name2': (inputs=list of names, outputs=list of names, child=child dict), etc... }</code></dd>
+<dt><strong><code>inputs</code></strong> :&ensp;<code>optional</code></dt>
+<dd>Denotes the inputs for the data in this TableSet represented as a list of Table names. TableSet names have to be in the same TableSet or Database.</dd>
+<dt><strong><code>outputs</code></strong> :&ensp;<code>optional</code></dt>
+<dd>Denotes the outputs for the data in this TableSet represented as a list of Table names. TableSet names have to be in the same TableSet or Database.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def initialise(self, data: tuple, names: dict, dtype: np.dtype = None, relations: dict = None, inputs: list = None, outputs: list = None):
+    &#34;&#34;&#34;
+    Initialise the TableSet with the structure set in the data parameter.
+    Names and data need to be of the same shape.
+
+    The program will use the key of the names dict as the name of the Table or TableSet.
+
+    It is possible to create sub TableSets by making nested dicts in the names variable and nested tuples in the
+    data variable.
+
+    Examples
+    -----------
+    &gt;&gt;&gt; TableSet(&#39;Name&#39;, Database(&#39;path&#39;)).initialise((np.array([[1,2,3]]), (np.array([[2,3,4]]))), {&#39;first_subtable&#39;:&#39;&#39;, &#39;second_subtable&#39;:{&#39;first_subtable&#39;:&#39;&#39;}})
+    Initiliases a TableSet in the database with the given data and names
+    &gt;&gt;&gt; TableSet(&#39;Name&#39;).initialise((np.array([[1,2,3]]), (np.array([[2,3,4]]), np.array([[3,4,5]]))), {&#39;first_subtable&#39;:&#39;&#39;, &#39;second_subtable&#39;:{&#39;first_subtable&#39;:&#39;&#39;, &#39;second_subtable&#39;:&#39;&#39;}}, relations={&#39;first_subtable&#39;:([], [&#39;second_subtable&#39;]), &#39;second_subtable&#39;:([&#39;first_subtable&#39;],[],{&#39;first_subtable&#39;:([],[&#39;second_subtable&#39;]), &#39;second_subtable&#39;:([&#39;first_subtable&#39;], [])})})
+    Initialises a TableSet in the database with the given data and names that has defined inputs and outputs
+
+    Args:
+        data: The data of the subtables
+        names: The names of the subtables and subtablesets
+        dtype (optional): Data type of the array
+        relations (optional): Relations between components of the data in terms of inputs and outputs. Example: `{ &#39;name&#39;: (inputs=list of names, outputs=list of names, child=child dict),  &#39;name2&#39;: (inputs=list of names, outputs=list of names, child=child dict), etc... }`
+        inputs (optional): Denotes the inputs for the data in this TableSet represented as a list of Table names. TableSet names have to be in the same TableSet or Database.
+        outputs (optional): Denotes the outputs for the data in this TableSet represented as a list of Table names. TableSet names have to be in the same TableSet or Database.
+    &#34;&#34;&#34;
+    if not __verify_data_types_are_correct__(data):
+        raise ValueError(&#39;data is not a tuple of nested tuples of np.ndarrays or a tuple of np.ndarrays!&#39;)
+    if not self.__verify_name_types_are_correct(names):
+        raise ValueError(&#39;names is not a dict of nested dicts of strings or a dict of strings!&#39;)
+    if not self.__verify_data_and_names_have_matching_shapes(data, names):
+        raise ValueError(&#39;data and names do not have the same shape!&#39;)
+    if not self.__verify_coherent_data_rows(data):
+        raise ValueError(&#39;expected the rows of all np.ndarrays in the data variable to be of the same length!&#39;)
+    if not os.path.isdir(self.folder):
+        os.mkdir(self.folder, 0o755)
+    i = 0
+    self.__subtables = []
+    self.inputs = inputs
+    self.outputs = outputs
+    for item in data:
+        name = list(names.items())[i][0]
+        self.__subtables.append(name)
+        inputs = relations[name][0] if relations is not None and name in relations and len(relations[name]) &gt; 0 else None
+        outputs = relations[name][1] if relations is not None and name in relations and len(relations[name]) &gt; 1 else None
+        child = relations[name][2] if relations is not None and name in relations and len(relations[name]) &gt; 2 else None
+        if type(item) is tuple:
+            TableSet(name, self.database, self, self.verbose).initialise(item, list(names.items())[i][1], dtype,
+                                                                         child, inputs, outputs)
+        elif type(item) is np.ndarray:
+            Table(name, self.database, self).initialise(item, dtype, inputs, outputs)
+        else:
+            raise ValueError(&#39;Expected type&#39;)
+        i += 1
+    self.__update_properties__()</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table_set.TableSet.print_structure"><code class="name flex">
+<span>def <span class="ident">print_structure</span></span>(<span>self, tabs=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Prints a map of the table structure</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tabs</code></strong></dt>
+<dd>(Integer) Amount of tabs to print before the text</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_structure(self, tabs=0):
+    &#34;&#34;&#34;
+    Prints a map of the table structure
+
+    Args:
+        tabs: (Integer) Amount of tabs to print before the text
+    &#34;&#34;&#34;
+    raise NotImplementedError()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="nn_analysis.storage" href="index.html">nn_analysis.storage</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="nn_analysis.storage.table_set.TableSet" href="#nn_analysis.storage.table_set.TableSet">TableSet</a></code></h4>
+<ul class="two-column">
+<li><code><a title="nn_analysis.storage.table_set.TableSet.append_rows" href="#nn_analysis.storage.table_set.TableSet.append_rows">append_rows</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.change_dtype" href="#nn_analysis.storage.table_set.TableSet.change_dtype">change_dtype</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.database" href="#nn_analysis.storage.table_set.TableSet.database">database</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.dtype" href="#nn_analysis.storage.table_set.TableSet.dtype">dtype</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.folder" href="#nn_analysis.storage.table_set.TableSet.folder">folder</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.get_subtable" href="#nn_analysis.storage.table_set.TableSet.get_subtable">get_subtable</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.initialise" href="#nn_analysis.storage.table_set.TableSet.initialise">initialise</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.initialised" href="#nn_analysis.storage.table_set.TableSet.initialised">initialised</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.name" href="#nn_analysis.storage.table_set.TableSet.name">name</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.ncols" href="#nn_analysis.storage.table_set.TableSet.ncols">ncols</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.ncols_tuple" href="#nn_analysis.storage.table_set.TableSet.ncols_tuple">ncols_tuple</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.nrows" href="#nn_analysis.storage.table_set.TableSet.nrows">nrows</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.print_structure" href="#nn_analysis.storage.table_set.TableSet.print_structure">print_structure</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.recurrent_subtables" href="#nn_analysis.storage.table_set.TableSet.recurrent_subtables">recurrent_subtables</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.shape" href="#nn_analysis.storage.table_set.TableSet.shape">shape</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.subtables" href="#nn_analysis.storage.table_set.TableSet.subtables">subtables</a></code></li>
+<li><code><a title="nn_analysis.storage.table_set.TableSet.verbose" href="#nn_analysis.storage.table_set.TableSet.verbose">verbose</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

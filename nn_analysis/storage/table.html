@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>nn_analysis.storage.table API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>nn_analysis.storage.table</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import os
+import pickle
+
+from tqdm import tqdm
+
+from .database import Database
+from .helpers import __keytolist__, __slicetolist__
+from .error import *
+import numpy as np
+
+
+class Table:
+    &#34;&#34;&#34;
+    Class containing the table structure.
+    The table stores each row in separate files on the machine to offload ram.
+    Since file structure are not well equipped to handle a (very) large amount of files,
+    do keep that in mind when initialising tables and transpose the data if necessary.
+
+    Tables store rows with other dimensions removed.
+
+    Slicing
+    -----------
+    Tables can be accessed using slicing. Slicing in Tables works similar to slicing in Numpy arrays.
+
+    Slicing support both get, set, and delete commands.
+
+    Examples
+    -----------
+    &gt;&gt;&gt; table[1,2]
+    3 &lt;-- this is the element in the second row, in the third column of the `Table`.
+    &gt;&gt;&gt; table[1,2:4]
+    Array([3, 4]) &lt;-- The second and third column of the second row.
+    &gt;&gt;&gt; table[1:5]
+    Array([[1,2,3,4],[2,3,4,5],[3,4,5,6],[4,5,6,7]]) &lt;-- The rows from the second row to the fifth row in a `Table` with 4 columns.
+
+
+    Args:
+        name: The name of the `Table`
+        database: The `Database` the Table resides in
+        table_set: The `TableSet` that is the parent of this `Table`
+    &#34;&#34;&#34;
+
+    __properties_file: str
+    name: str
+    database: Database
+    verbose: bool
+
+    def __init__(self, name: str, database: Database, table_set=None):
+        self.__properties_file: str = &#39;properties&#39;
+        self.name = name
+        self.database = database
+        self.table_set = table_set
+        self.verbose = False
+        self.__nrows = None
+        self.__ncols = None
+        self.__dtype = None
+        self.inputs = None
+        self.outputs = None
+
+    @property
+    def folder(self):
+        if self.table_set is not None:
+            return self.table_set.folder + self.name + &#39;/&#39;
+        return self.database.folder + self.name + &#39;/&#39;
+
+    @property
+    def shape(self) -&gt; tuple:
+        &#34;&#34;&#34;The shape of the table&#34;&#34;&#34;
+        return self.nrows, self.ncols
+
+    @property
+    def nrows(self) -&gt; int:
+        &#34;&#34;&#34;The number of rows in the table&#34;&#34;&#34;
+        if self.__nrows is None:
+            self.__calc_properties__()
+        return self.__nrows
+
+    @property
+    def ncols(self) -&gt; int:
+        &#34;&#34;&#34;The number of columns in the table&#34;&#34;&#34;
+        if self.__ncols is None:
+            self.__calc_properties__()
+        return self.__ncols
+
+    @property
+    def dtype(self) -&gt; np.dtype:
+        &#34;&#34;&#34;The datatype of the table&#34;&#34;&#34;
+        if self.__dtype is None:
+            self.__calc_properties__()
+        return self.__dtype
+
+    @property
+    def initialised(self) -&gt; bool:
+        &#34;&#34;&#34;Indicates whether the necessary files are initialised and whether the shapes are correct&#34;&#34;&#34;
+        properties_exist = os.path.isfile(self.folder + self.__properties_file)
+        if not properties_exist:
+            return False
+        try:
+            with open(self.folder + str(self.__properties_file), &#39;rb&#39;) as f:
+                nrows, ncols, inputs, outputs = pickle.load(f)
+                nrows = int(nrows)
+                ncols = int(ncols)
+        except EOFError:
+            return False
+        except TypeError:
+            return False
+        except ValueError:
+            try:
+                self.__nrows, self.__ncols = pickle.load(f)
+                self.__nrows = int(self.__nrows)
+                self.__ncols = int(self.__ncols)
+                self.inputs, self.outputs = None, None
+                self.__update_properties__()
+                return self.initialised
+            except ValueError:
+                return False
+        try:
+            last_row = self.__readfile__(nrows-1, override=True)
+        except FileNotFoundError:
+            return False
+        except EOFError:
+            return False
+        if type(last_row) is not np.ndarray:
+            return False
+        if inputs is not None and type(inputs) is not list:
+            return False
+        if outputs is not None and type(outputs) is not list:
+            return False
+        return last_row.size == ncols
+
+    def __calc_properties__(self):
+        &#34;&#34;&#34;Calculates the properties of the table including the nrows and ncols&#34;&#34;&#34;
+        self.__nrows, self.__ncols, self.inputs, self.outputs = self.__readfile__(self.__properties_file)
+        self.__nrows = int(self.__nrows)
+        self.__ncols = int(self.__ncols)
+        self.__dtype = self.__readfile__(&#39;0&#39;).dtype
+
+    def __update_properties__(self):
+        &#34;&#34;&#34;Updates the properties of the table including the nrows and ncols&#34;&#34;&#34;
+        self.__writefile__(self.__properties_file, (self.__nrows, self.__ncols, self.inputs, self.outputs), override=True)
+
+    def change_dtype(self, dtype: np.dtype):
+        &#34;&#34;&#34;
+        Changes the dtype of the table
+
+        Args:
+            dtype: The desired `np.dtype`
+        &#34;&#34;&#34;
+        for row in tqdm(range(0, self.nrows), disable=(not self.verbose), leave=False):
+            self.__writefile__(row, self.__readfile__(row).astype(dtype))
+
+    def initialise(self, data: np.ndarray, dtype: np.dtype = None, inputs: list = None, outputs: list = None):
+        &#34;&#34;&#34;
+        Initialises the table using the np.ndarray provided
+
+        Examples
+        ---------
+        &gt;&gt;&gt; Table(&#39;Name&#39;, Database(&#39;path&#39;)).initialise(np.array([[1,2,3,4],[2,3,4,5]]))
+        Creates a table with name &#39;Name&#39; and two rows of data Array([[1,2,3,4], [2,3,4,5]])
+
+        Args:
+            data: The array containing the data for the Table
+            dtype (optional): The dtype of the data, changes the data&#39;s dtype if they don&#39;t match
+            inputs (optional): Denotes the inputs for the data in this Table represented as a list of Table names. Table names have to be in the same TableSet or Database.
+            outputs (optional): Denotes the outputs for the data in this Table represented as a list of Table names. Table names have to be in the same TableSet or Database.
+        &#34;&#34;&#34;
+        if not os.path.isdir(self.folder):
+            os.mkdir(self.folder, 0o755)
+        # Make data 2 dimensional
+        data = data.reshape((data.shape[0], -1))
+        # Change dtype if necessary
+        if np.dtype is not None:
+            data = data.astype(dtype)
+        # Go through all the data with a progress bar
+        i = 0
+        for row in tqdm(data, disable=(not self.verbose), leave=False):
+            self.__writefile__(i, row, override=True)
+            i += 1
+        self.__nrows = data.shape[0]
+        self.__ncols = data.shape[1]
+        self.inputs = inputs
+        self.outputs = outputs
+        self.__update_properties__()
+
+    def append_rows(self, data: np.ndarray):
+        &#34;&#34;&#34;
+        Add a new row to the existing Table
+
+        Examples
+        ---------
+        &gt;&gt;&gt; Table(&#39;Name&#39;, Database(&#39;path&#39;)).append_rows(np.array([[10,11,12,13], [11, 12, 13, 14]]))
+        Adds rows Array([[10,11,12,13], [11, 12, 13, 14]]) to the existing table at path &#39;path&#39; with name &#39;Name&#39;.
+
+        Args:
+            data: The new rows as an np.ndarray
+        &#34;&#34;&#34;
+        reshaped_data = data.reshape(data.shape[0], -1).astype(self.dtype)
+        if reshaped_data.shape[1] != self.ncols:
+            raise ValueError(&#39;Expected data.shape[1] to match self.ncols!&#39;)
+        i = self.nrows
+        for row in reshaped_data:
+            self.__writefile__(i, row)
+            i += 1
+        self.__nrows += reshaped_data.shape[0]
+        self.__update_properties__()
+
+    def __repr__(self):
+        return f&#34;Table(&#39;{self.name}&#39;, {self.shape}, &#39;{self.folder}&#39;)&#34;
+
+    def __getitem__(self, key):
+        rows, cols = __keytolist__(key, self.nrows)
+        results = []
+        # Go through all rows that need to be fetched and display a progress bar
+        for row in tqdm(rows, disable=(not self.verbose), leave=False):
+            # Try to fetch the columns and add them to the results
+            try:
+                if cols is None:
+                    results.append(self.__readfile__(row))
+                else:
+                    results.append(np.array(self.__readfile__(row)[cols]))
+            except OSError:
+                raise IndexError(f&#34;index {row} is out of bounds for axis 0 with size {self.nrows}&#34;)
+        # Make the result an np.array again and return them as a list if there is more than one item, else return that item
+        results = np.array(results)
+        if results.shape[0] is 1:
+            return results[0]
+        return results
+
+    def __setitem__(self, key, value):
+        rows, cols = __keytolist__(key, self.nrows)
+        cols_is_slice = False
+        cols_len = 1
+        if type(cols) is slice and cols.start is None and cols.step is None and cols.stop is None and type(
+                value) is np.ndarray:
+            cols = None
+            expected_shape = (len(rows),)
+        elif type(cols) is slice or type(cols) is list:
+            cols_is_slice = True
+            cols_len = len(__slicetolist__(cols, self.ncols))
+            expected_shape = (len(rows), cols_len)
+        else:
+            expected_shape = (len(rows),)
+        i = 0
+        for row in rows:
+            if not os.path.isfile(self.folder + str(row)):
+                raise IndexError(f&#34;index {row} is out of bounds for axis 0 with size {self.nrows}&#34;)
+            if cols is None:
+                if type(value) is not np.ndarray:
+                    raise ValueError(f&#34;expected value of type np.ndarray, got {type(value)}&#34;)
+                if value.ndim == 1:
+                    if value.shape[0] != self.ncols:
+                        raise ShapeMismatchError(f&#34;expected {self.ncols} columns, found {value.shape[0]}&#34;)
+                    updated = value
+                elif value.ndim == 2:
+                    if value.shape[0] != len(rows):
+                        raise ShapeMismatchError(f&#34;expected {len(rows)} rows, got {value.shape[0]}&#34;)
+                    if value.shape[1] != self.ncols:
+                        raise ShapeMismatchError(f&#34;expected {self.ncols} columns, found {value.shape[1]}&#34;)
+                    updated = value[i]
+                else:
+                    raise ShapeMismatchError(f&#34;expected array of &lt;=2 dimensions, got {value.ndim}&#34;)
+            else:
+                if type(value) is np.ndarray:
+                    if value.ndim == 1 and cols_is_slice:
+                        if value.shape[0] != cols_len:
+                            raise ShapeMismatchError(f&#34;expected array of shape ({cols_len},), got {value.shape}&#34;)
+                        value_to_set = value
+                    elif value.ndim == 1 or value.ndim == 2:
+                        if value.shape != expected_shape:
+                            raise ShapeMismatchError(f&#34;expected array of shape {expected_shape}, got {value.shape}&#34;)
+                        value_to_set = value[i]
+                    else:
+                        raise ShapeMismatchError(f&#34;expected array of &lt;=2 dimensions, got {value.ndim}&#34;)
+                else:
+                    value_to_set = value
+                updated = self.__readfile__(row)
+                updated[cols] = value_to_set
+            self.__deletefile__(row)
+            self.__writefile__(row, updated, override=True)
+            i += 1
+
+    def __delitem__(self, key):
+        rows, cols = __keytolist__(key, self.nrows)
+        if cols is not None:
+            raise ValueError(&#34;Table does not support deleting columns&#34;)
+        old_nrows = self.nrows
+        for row in rows:
+            try:
+                self.__deletefile__(row)
+                self.__nrows -= 1
+            except OSError:
+                removed = 0
+                for key in range(0, old_nrows):
+                    if os.path.isfile(self.folder + str(key)):
+                        os.rename(self.folder + str(key), self.folder + str(key - removed))
+                    else:
+                        removed += 1
+                self.__update_properties__()
+                raise IndexError(f&#34;index {row} is out of bounds for axis 0 with size {self.nrows}&#34;)
+        removed = 0
+        for key in range(0, old_nrows):
+            if os.path.isfile(self.folder + str(key)):
+                os.rename(self.folder + str(key), self.folder + str(key - removed))
+            else:
+                removed += 1
+        self.__update_properties__()
+
+    def __readfile__(self, filename, override=False):
+        if not override and not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the table before using it!&#34;)
+        with open(self.folder + str(filename), &#39;rb&#39;) as f:
+            return pickle.load(f)
+
+    def __writefile__(self, filename, value, override=False):
+        if not override and not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the table before using it!&#34;)
+        with open(self.folder + str(filename), &#39;wb&#39;) as f:
+            pickle.dump(value, f)
+
+    def __deletefile__(self, file):
+        if not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the table before using it!&#34;)
+        os.remove(self.folder + str(file))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="nn_analysis.storage.table.Table"><code class="flex name class">
+<span>class <span class="ident">Table</span></span>
+<span>(</span><span>name: str, database: <a title="nn_analysis.storage.database.Database" href="database.html#nn_analysis.storage.database.Database">Database</a>, table_set=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class containing the table structure.
+The table stores each row in separate files on the machine to offload ram.
+Since file structure are not well equipped to handle a (very) large amount of files,
+do keep that in mind when initialising tables and transpose the data if necessary.</p>
+<p>Tables store rows with other dimensions removed.</p>
+<h2 id="slicing">Slicing</h2>
+<p>Tables can be accessed using slicing. Slicing in Tables works similar to slicing in Numpy arrays.</p>
+<p>Slicing support both get, set, and delete commands.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="python-repl">&gt;&gt;&gt; table[1,2]
+3 &lt;-- this is the element in the second row, in the third column of the &lt;code&gt;&lt;a title=&quot;nn_analysis.storage.table.Table&quot; href=&quot;#nn_analysis.storage.table.Table&quot;&gt;Table&lt;/a&gt;&lt;/code&gt;.
+&gt;&gt;&gt; table[1,2:4]
+Array([3, 4]) &lt;-- The second and third column of the second row.
+&gt;&gt;&gt; table[1:5]
+Array([[1,2,3,4],[2,3,4,5],[3,4,5,6],[4,5,6,7]]) &lt;-- The rows from the second row to the fifth row in a &lt;code&gt;&lt;a title=&quot;nn_analysis.storage.table.Table&quot; href=&quot;#nn_analysis.storage.table.Table&quot;&gt;Table&lt;/a&gt;&lt;/code&gt; with 4 columns.
+</code></pre>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong></dt>
+<dd>The name of the <code><a title="nn_analysis.storage.table.Table" href="#nn_analysis.storage.table.Table">Table</a></code></dd>
+<dt><strong><code>database</code></strong></dt>
+<dd>The <code>Database</code> the Table resides in</dd>
+<dt><strong><code>table_set</code></strong></dt>
+<dd>The <code>TableSet</code> that is the parent of this <code><a title="nn_analysis.storage.table.Table" href="#nn_analysis.storage.table.Table">Table</a></code></dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Table:
+    &#34;&#34;&#34;
+    Class containing the table structure.
+    The table stores each row in separate files on the machine to offload ram.
+    Since file structure are not well equipped to handle a (very) large amount of files,
+    do keep that in mind when initialising tables and transpose the data if necessary.
+
+    Tables store rows with other dimensions removed.
+
+    Slicing
+    -----------
+    Tables can be accessed using slicing. Slicing in Tables works similar to slicing in Numpy arrays.
+
+    Slicing support both get, set, and delete commands.
+
+    Examples
+    -----------
+    &gt;&gt;&gt; table[1,2]
+    3 &lt;-- this is the element in the second row, in the third column of the `Table`.
+    &gt;&gt;&gt; table[1,2:4]
+    Array([3, 4]) &lt;-- The second and third column of the second row.
+    &gt;&gt;&gt; table[1:5]
+    Array([[1,2,3,4],[2,3,4,5],[3,4,5,6],[4,5,6,7]]) &lt;-- The rows from the second row to the fifth row in a `Table` with 4 columns.
+
+
+    Args:
+        name: The name of the `Table`
+        database: The `Database` the Table resides in
+        table_set: The `TableSet` that is the parent of this `Table`
+    &#34;&#34;&#34;
+
+    __properties_file: str
+    name: str
+    database: Database
+    verbose: bool
+
+    def __init__(self, name: str, database: Database, table_set=None):
+        self.__properties_file: str = &#39;properties&#39;
+        self.name = name
+        self.database = database
+        self.table_set = table_set
+        self.verbose = False
+        self.__nrows = None
+        self.__ncols = None
+        self.__dtype = None
+        self.inputs = None
+        self.outputs = None
+
+    @property
+    def folder(self):
+        if self.table_set is not None:
+            return self.table_set.folder + self.name + &#39;/&#39;
+        return self.database.folder + self.name + &#39;/&#39;
+
+    @property
+    def shape(self) -&gt; tuple:
+        &#34;&#34;&#34;The shape of the table&#34;&#34;&#34;
+        return self.nrows, self.ncols
+
+    @property
+    def nrows(self) -&gt; int:
+        &#34;&#34;&#34;The number of rows in the table&#34;&#34;&#34;
+        if self.__nrows is None:
+            self.__calc_properties__()
+        return self.__nrows
+
+    @property
+    def ncols(self) -&gt; int:
+        &#34;&#34;&#34;The number of columns in the table&#34;&#34;&#34;
+        if self.__ncols is None:
+            self.__calc_properties__()
+        return self.__ncols
+
+    @property
+    def dtype(self) -&gt; np.dtype:
+        &#34;&#34;&#34;The datatype of the table&#34;&#34;&#34;
+        if self.__dtype is None:
+            self.__calc_properties__()
+        return self.__dtype
+
+    @property
+    def initialised(self) -&gt; bool:
+        &#34;&#34;&#34;Indicates whether the necessary files are initialised and whether the shapes are correct&#34;&#34;&#34;
+        properties_exist = os.path.isfile(self.folder + self.__properties_file)
+        if not properties_exist:
+            return False
+        try:
+            with open(self.folder + str(self.__properties_file), &#39;rb&#39;) as f:
+                nrows, ncols, inputs, outputs = pickle.load(f)
+                nrows = int(nrows)
+                ncols = int(ncols)
+        except EOFError:
+            return False
+        except TypeError:
+            return False
+        except ValueError:
+            try:
+                self.__nrows, self.__ncols = pickle.load(f)
+                self.__nrows = int(self.__nrows)
+                self.__ncols = int(self.__ncols)
+                self.inputs, self.outputs = None, None
+                self.__update_properties__()
+                return self.initialised
+            except ValueError:
+                return False
+        try:
+            last_row = self.__readfile__(nrows-1, override=True)
+        except FileNotFoundError:
+            return False
+        except EOFError:
+            return False
+        if type(last_row) is not np.ndarray:
+            return False
+        if inputs is not None and type(inputs) is not list:
+            return False
+        if outputs is not None and type(outputs) is not list:
+            return False
+        return last_row.size == ncols
+
+    def __calc_properties__(self):
+        &#34;&#34;&#34;Calculates the properties of the table including the nrows and ncols&#34;&#34;&#34;
+        self.__nrows, self.__ncols, self.inputs, self.outputs = self.__readfile__(self.__properties_file)
+        self.__nrows = int(self.__nrows)
+        self.__ncols = int(self.__ncols)
+        self.__dtype = self.__readfile__(&#39;0&#39;).dtype
+
+    def __update_properties__(self):
+        &#34;&#34;&#34;Updates the properties of the table including the nrows and ncols&#34;&#34;&#34;
+        self.__writefile__(self.__properties_file, (self.__nrows, self.__ncols, self.inputs, self.outputs), override=True)
+
+    def change_dtype(self, dtype: np.dtype):
+        &#34;&#34;&#34;
+        Changes the dtype of the table
+
+        Args:
+            dtype: The desired `np.dtype`
+        &#34;&#34;&#34;
+        for row in tqdm(range(0, self.nrows), disable=(not self.verbose), leave=False):
+            self.__writefile__(row, self.__readfile__(row).astype(dtype))
+
+    def initialise(self, data: np.ndarray, dtype: np.dtype = None, inputs: list = None, outputs: list = None):
+        &#34;&#34;&#34;
+        Initialises the table using the np.ndarray provided
+
+        Examples
+        ---------
+        &gt;&gt;&gt; Table(&#39;Name&#39;, Database(&#39;path&#39;)).initialise(np.array([[1,2,3,4],[2,3,4,5]]))
+        Creates a table with name &#39;Name&#39; and two rows of data Array([[1,2,3,4], [2,3,4,5]])
+
+        Args:
+            data: The array containing the data for the Table
+            dtype (optional): The dtype of the data, changes the data&#39;s dtype if they don&#39;t match
+            inputs (optional): Denotes the inputs for the data in this Table represented as a list of Table names. Table names have to be in the same TableSet or Database.
+            outputs (optional): Denotes the outputs for the data in this Table represented as a list of Table names. Table names have to be in the same TableSet or Database.
+        &#34;&#34;&#34;
+        if not os.path.isdir(self.folder):
+            os.mkdir(self.folder, 0o755)
+        # Make data 2 dimensional
+        data = data.reshape((data.shape[0], -1))
+        # Change dtype if necessary
+        if np.dtype is not None:
+            data = data.astype(dtype)
+        # Go through all the data with a progress bar
+        i = 0
+        for row in tqdm(data, disable=(not self.verbose), leave=False):
+            self.__writefile__(i, row, override=True)
+            i += 1
+        self.__nrows = data.shape[0]
+        self.__ncols = data.shape[1]
+        self.inputs = inputs
+        self.outputs = outputs
+        self.__update_properties__()
+
+    def append_rows(self, data: np.ndarray):
+        &#34;&#34;&#34;
+        Add a new row to the existing Table
+
+        Examples
+        ---------
+        &gt;&gt;&gt; Table(&#39;Name&#39;, Database(&#39;path&#39;)).append_rows(np.array([[10,11,12,13], [11, 12, 13, 14]]))
+        Adds rows Array([[10,11,12,13], [11, 12, 13, 14]]) to the existing table at path &#39;path&#39; with name &#39;Name&#39;.
+
+        Args:
+            data: The new rows as an np.ndarray
+        &#34;&#34;&#34;
+        reshaped_data = data.reshape(data.shape[0], -1).astype(self.dtype)
+        if reshaped_data.shape[1] != self.ncols:
+            raise ValueError(&#39;Expected data.shape[1] to match self.ncols!&#39;)
+        i = self.nrows
+        for row in reshaped_data:
+            self.__writefile__(i, row)
+            i += 1
+        self.__nrows += reshaped_data.shape[0]
+        self.__update_properties__()
+
+    def __repr__(self):
+        return f&#34;Table(&#39;{self.name}&#39;, {self.shape}, &#39;{self.folder}&#39;)&#34;
+
+    def __getitem__(self, key):
+        rows, cols = __keytolist__(key, self.nrows)
+        results = []
+        # Go through all rows that need to be fetched and display a progress bar
+        for row in tqdm(rows, disable=(not self.verbose), leave=False):
+            # Try to fetch the columns and add them to the results
+            try:
+                if cols is None:
+                    results.append(self.__readfile__(row))
+                else:
+                    results.append(np.array(self.__readfile__(row)[cols]))
+            except OSError:
+                raise IndexError(f&#34;index {row} is out of bounds for axis 0 with size {self.nrows}&#34;)
+        # Make the result an np.array again and return them as a list if there is more than one item, else return that item
+        results = np.array(results)
+        if results.shape[0] is 1:
+            return results[0]
+        return results
+
+    def __setitem__(self, key, value):
+        rows, cols = __keytolist__(key, self.nrows)
+        cols_is_slice = False
+        cols_len = 1
+        if type(cols) is slice and cols.start is None and cols.step is None and cols.stop is None and type(
+                value) is np.ndarray:
+            cols = None
+            expected_shape = (len(rows),)
+        elif type(cols) is slice or type(cols) is list:
+            cols_is_slice = True
+            cols_len = len(__slicetolist__(cols, self.ncols))
+            expected_shape = (len(rows), cols_len)
+        else:
+            expected_shape = (len(rows),)
+        i = 0
+        for row in rows:
+            if not os.path.isfile(self.folder + str(row)):
+                raise IndexError(f&#34;index {row} is out of bounds for axis 0 with size {self.nrows}&#34;)
+            if cols is None:
+                if type(value) is not np.ndarray:
+                    raise ValueError(f&#34;expected value of type np.ndarray, got {type(value)}&#34;)
+                if value.ndim == 1:
+                    if value.shape[0] != self.ncols:
+                        raise ShapeMismatchError(f&#34;expected {self.ncols} columns, found {value.shape[0]}&#34;)
+                    updated = value
+                elif value.ndim == 2:
+                    if value.shape[0] != len(rows):
+                        raise ShapeMismatchError(f&#34;expected {len(rows)} rows, got {value.shape[0]}&#34;)
+                    if value.shape[1] != self.ncols:
+                        raise ShapeMismatchError(f&#34;expected {self.ncols} columns, found {value.shape[1]}&#34;)
+                    updated = value[i]
+                else:
+                    raise ShapeMismatchError(f&#34;expected array of &lt;=2 dimensions, got {value.ndim}&#34;)
+            else:
+                if type(value) is np.ndarray:
+                    if value.ndim == 1 and cols_is_slice:
+                        if value.shape[0] != cols_len:
+                            raise ShapeMismatchError(f&#34;expected array of shape ({cols_len},), got {value.shape}&#34;)
+                        value_to_set = value
+                    elif value.ndim == 1 or value.ndim == 2:
+                        if value.shape != expected_shape:
+                            raise ShapeMismatchError(f&#34;expected array of shape {expected_shape}, got {value.shape}&#34;)
+                        value_to_set = value[i]
+                    else:
+                        raise ShapeMismatchError(f&#34;expected array of &lt;=2 dimensions, got {value.ndim}&#34;)
+                else:
+                    value_to_set = value
+                updated = self.__readfile__(row)
+                updated[cols] = value_to_set
+            self.__deletefile__(row)
+            self.__writefile__(row, updated, override=True)
+            i += 1
+
+    def __delitem__(self, key):
+        rows, cols = __keytolist__(key, self.nrows)
+        if cols is not None:
+            raise ValueError(&#34;Table does not support deleting columns&#34;)
+        old_nrows = self.nrows
+        for row in rows:
+            try:
+                self.__deletefile__(row)
+                self.__nrows -= 1
+            except OSError:
+                removed = 0
+                for key in range(0, old_nrows):
+                    if os.path.isfile(self.folder + str(key)):
+                        os.rename(self.folder + str(key), self.folder + str(key - removed))
+                    else:
+                        removed += 1
+                self.__update_properties__()
+                raise IndexError(f&#34;index {row} is out of bounds for axis 0 with size {self.nrows}&#34;)
+        removed = 0
+        for key in range(0, old_nrows):
+            if os.path.isfile(self.folder + str(key)):
+                os.rename(self.folder + str(key), self.folder + str(key - removed))
+            else:
+                removed += 1
+        self.__update_properties__()
+
+    def __readfile__(self, filename, override=False):
+        if not override and not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the table before using it!&#34;)
+        with open(self.folder + str(filename), &#39;rb&#39;) as f:
+            return pickle.load(f)
+
+    def __writefile__(self, filename, value, override=False):
+        if not override and not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the table before using it!&#34;)
+        with open(self.folder + str(filename), &#39;wb&#39;) as f:
+            pickle.dump(value, f)
+
+    def __deletefile__(self, file):
+        if not self.initialised:
+            raise TableNotInitialisedError(&#34;Initialise the table before using it!&#34;)
+        os.remove(self.folder + str(file))</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="nn_analysis.storage.table.Table.database"><code class="name">var <span class="ident">database</span> : <a title="nn_analysis.storage.database.Database" href="database.html#nn_analysis.storage.database.Database">Database</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nn_analysis.storage.table.Table.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="nn_analysis.storage.table.Table.verbose"><code class="name">var <span class="ident">verbose</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="nn_analysis.storage.table.Table.dtype"><code class="name">var <span class="ident">dtype</span> : numpy.dtype</code></dt>
+<dd>
+<div class="desc"><p>The datatype of the table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def dtype(self) -&gt; np.dtype:
+    &#34;&#34;&#34;The datatype of the table&#34;&#34;&#34;
+    if self.__dtype is None:
+        self.__calc_properties__()
+    return self.__dtype</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table.Table.folder"><code class="name">var <span class="ident">folder</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def folder(self):
+    if self.table_set is not None:
+        return self.table_set.folder + self.name + &#39;/&#39;
+    return self.database.folder + self.name + &#39;/&#39;</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table.Table.initialised"><code class="name">var <span class="ident">initialised</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Indicates whether the necessary files are initialised and whether the shapes are correct</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def initialised(self) -&gt; bool:
+    &#34;&#34;&#34;Indicates whether the necessary files are initialised and whether the shapes are correct&#34;&#34;&#34;
+    properties_exist = os.path.isfile(self.folder + self.__properties_file)
+    if not properties_exist:
+        return False
+    try:
+        with open(self.folder + str(self.__properties_file), &#39;rb&#39;) as f:
+            nrows, ncols, inputs, outputs = pickle.load(f)
+            nrows = int(nrows)
+            ncols = int(ncols)
+    except EOFError:
+        return False
+    except TypeError:
+        return False
+    except ValueError:
+        try:
+            self.__nrows, self.__ncols = pickle.load(f)
+            self.__nrows = int(self.__nrows)
+            self.__ncols = int(self.__ncols)
+            self.inputs, self.outputs = None, None
+            self.__update_properties__()
+            return self.initialised
+        except ValueError:
+            return False
+    try:
+        last_row = self.__readfile__(nrows-1, override=True)
+    except FileNotFoundError:
+        return False
+    except EOFError:
+        return False
+    if type(last_row) is not np.ndarray:
+        return False
+    if inputs is not None and type(inputs) is not list:
+        return False
+    if outputs is not None and type(outputs) is not list:
+        return False
+    return last_row.size == ncols</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table.Table.ncols"><code class="name">var <span class="ident">ncols</span> : int</code></dt>
+<dd>
+<div class="desc"><p>The number of columns in the table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def ncols(self) -&gt; int:
+    &#34;&#34;&#34;The number of columns in the table&#34;&#34;&#34;
+    if self.__ncols is None:
+        self.__calc_properties__()
+    return self.__ncols</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table.Table.nrows"><code class="name">var <span class="ident">nrows</span> : int</code></dt>
+<dd>
+<div class="desc"><p>The number of rows in the table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def nrows(self) -&gt; int:
+    &#34;&#34;&#34;The number of rows in the table&#34;&#34;&#34;
+    if self.__nrows is None:
+        self.__calc_properties__()
+    return self.__nrows</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table.Table.shape"><code class="name">var <span class="ident">shape</span> : tuple</code></dt>
+<dd>
+<div class="desc"><p>The shape of the table</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def shape(self) -&gt; tuple:
+    &#34;&#34;&#34;The shape of the table&#34;&#34;&#34;
+    return self.nrows, self.ncols</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="nn_analysis.storage.table.Table.append_rows"><code class="name flex">
+<span>def <span class="ident">append_rows</span></span>(<span>self, data: numpy.ndarray)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add a new row to the existing Table</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="python-repl">&gt;&gt;&gt; Table('Name', Database('path')).append_rows(np.array([[10,11,12,13], [11, 12, 13, 14]]))
+Adds rows Array([[10,11,12,13], [11, 12, 13, 14]]) to the existing table at path 'path' with name 'Name'.
+</code></pre>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The new rows as an np.ndarray</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def append_rows(self, data: np.ndarray):
+    &#34;&#34;&#34;
+    Add a new row to the existing Table
+
+    Examples
+    ---------
+    &gt;&gt;&gt; Table(&#39;Name&#39;, Database(&#39;path&#39;)).append_rows(np.array([[10,11,12,13], [11, 12, 13, 14]]))
+    Adds rows Array([[10,11,12,13], [11, 12, 13, 14]]) to the existing table at path &#39;path&#39; with name &#39;Name&#39;.
+
+    Args:
+        data: The new rows as an np.ndarray
+    &#34;&#34;&#34;
+    reshaped_data = data.reshape(data.shape[0], -1).astype(self.dtype)
+    if reshaped_data.shape[1] != self.ncols:
+        raise ValueError(&#39;Expected data.shape[1] to match self.ncols!&#39;)
+    i = self.nrows
+    for row in reshaped_data:
+        self.__writefile__(i, row)
+        i += 1
+    self.__nrows += reshaped_data.shape[0]
+    self.__update_properties__()</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table.Table.change_dtype"><code class="name flex">
+<span>def <span class="ident">change_dtype</span></span>(<span>self, dtype: numpy.dtype)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Changes the dtype of the table</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>dtype</code></strong></dt>
+<dd>The desired <code>np.dtype</code></dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def change_dtype(self, dtype: np.dtype):
+    &#34;&#34;&#34;
+    Changes the dtype of the table
+
+    Args:
+        dtype: The desired `np.dtype`
+    &#34;&#34;&#34;
+    for row in tqdm(range(0, self.nrows), disable=(not self.verbose), leave=False):
+        self.__writefile__(row, self.__readfile__(row).astype(dtype))</code></pre>
+</details>
+</dd>
+<dt id="nn_analysis.storage.table.Table.initialise"><code class="name flex">
+<span>def <span class="ident">initialise</span></span>(<span>self, data: numpy.ndarray, dtype: numpy.dtype = None, inputs: list = None, outputs: list = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initialises the table using the np.ndarray provided</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="python-repl">&gt;&gt;&gt; Table('Name', Database('path')).initialise(np.array([[1,2,3,4],[2,3,4,5]]))
+Creates a table with name 'Name' and two rows of data Array([[1,2,3,4], [2,3,4,5]])
+</code></pre>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>data</code></strong></dt>
+<dd>The array containing the data for the Table</dd>
+<dt><strong><code>dtype</code></strong> :&ensp;<code>optional</code></dt>
+<dd>The dtype of the data, changes the data's dtype if they don't match</dd>
+<dt><strong><code>inputs</code></strong> :&ensp;<code>optional</code></dt>
+<dd>Denotes the inputs for the data in this Table represented as a list of Table names. Table names have to be in the same TableSet or Database.</dd>
+<dt><strong><code>outputs</code></strong> :&ensp;<code>optional</code></dt>
+<dd>Denotes the outputs for the data in this Table represented as a list of Table names. Table names have to be in the same TableSet or Database.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def initialise(self, data: np.ndarray, dtype: np.dtype = None, inputs: list = None, outputs: list = None):
+    &#34;&#34;&#34;
+    Initialises the table using the np.ndarray provided
+
+    Examples
+    ---------
+    &gt;&gt;&gt; Table(&#39;Name&#39;, Database(&#39;path&#39;)).initialise(np.array([[1,2,3,4],[2,3,4,5]]))
+    Creates a table with name &#39;Name&#39; and two rows of data Array([[1,2,3,4], [2,3,4,5]])
+
+    Args:
+        data: The array containing the data for the Table
+        dtype (optional): The dtype of the data, changes the data&#39;s dtype if they don&#39;t match
+        inputs (optional): Denotes the inputs for the data in this Table represented as a list of Table names. Table names have to be in the same TableSet or Database.
+        outputs (optional): Denotes the outputs for the data in this Table represented as a list of Table names. Table names have to be in the same TableSet or Database.
+    &#34;&#34;&#34;
+    if not os.path.isdir(self.folder):
+        os.mkdir(self.folder, 0o755)
+    # Make data 2 dimensional
+    data = data.reshape((data.shape[0], -1))
+    # Change dtype if necessary
+    if np.dtype is not None:
+        data = data.astype(dtype)
+    # Go through all the data with a progress bar
+    i = 0
+    for row in tqdm(data, disable=(not self.verbose), leave=False):
+        self.__writefile__(i, row, override=True)
+        i += 1
+    self.__nrows = data.shape[0]
+    self.__ncols = data.shape[1]
+    self.inputs = inputs
+    self.outputs = outputs
+    self.__update_properties__()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="nn_analysis.storage" href="index.html">nn_analysis.storage</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="nn_analysis.storage.table.Table" href="#nn_analysis.storage.table.Table">Table</a></code></h4>
+<ul class="two-column">
+<li><code><a title="nn_analysis.storage.table.Table.append_rows" href="#nn_analysis.storage.table.Table.append_rows">append_rows</a></code></li>
+<li><code><a title="nn_analysis.storage.table.Table.change_dtype" href="#nn_analysis.storage.table.Table.change_dtype">change_dtype</a></code></li>
+<li><code><a title="nn_analysis.storage.table.Table.database" href="#nn_analysis.storage.table.Table.database">database</a></code></li>
+<li><code><a title="nn_analysis.storage.table.Table.dtype" href="#nn_analysis.storage.table.Table.dtype">dtype</a></code></li>
+<li><code><a title="nn_analysis.storage.table.Table.folder" href="#nn_analysis.storage.table.Table.folder">folder</a></code></li>
+<li><code><a title="nn_analysis.storage.table.Table.initialise" href="#nn_analysis.storage.table.Table.initialise">initialise</a></code></li>
+<li><code><a title="nn_analysis.storage.table.Table.initialised" href="#nn_analysis.storage.table.Table.initialised">initialised</a></code></li>
+<li><code><a title="nn_analysis.storage.table.Table.name" href="#nn_analysis.storage.table.Table.name">name</a></code></li>
+<li><code><a title="nn_analysis.storage.table.Table.ncols" href="#nn_analysis.storage.table.Table.ncols">ncols</a></code></li>
+<li><code><a title="nn_analysis.storage.table.Table.nrows" href="#nn_analysis.storage.table.Table.nrows">nrows</a></code></li>
+<li><code><a title="nn_analysis.storage.table.Table.shape" href="#nn_analysis.storage.table.Table.shape">shape</a></code></li>
+<li><code><a title="nn_analysis.storage.table.Table.verbose" href="#nn_analysis.storage.table.Table.verbose">verbose</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>
