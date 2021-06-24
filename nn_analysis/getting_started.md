@@ -118,3 +118,46 @@ Since the `results_tbl_set` contains all results, we need to still calculate whi
 For this the `FittingManager` has a `calculate_best_fits` function that takes the `candidate_function_parameters` and the `results_tbl_set` and stores the best fits in a new table.
 
     best_fit_results_tbl = fitting_manager.calculate_best_fits(results_tbl_set, candidate_function_parameters, table+'_best')
+
+### Plot the results
+You can choose many types of plots depending on the need in your project.
+Here we give an example of a plot that might be more commonly useful as well as an explanation of how to access the relevant data for your plots.
+
+Before we start plotting, it is good to understand how the results from the previous step look. 
+The best fits `TableSet` in the final step of the fitting procedure contains four rows.
+The rows contain the goodness of fit, preferred x position, preferred y position, and the preferred σ respectively.
+So, in order to retrieve the data for our plot we have to select the row with the type of data we want, and the column with the nodes in the network.
+
+Getting the part of the network that you want to look at is easy thanks to the `get_subtable` function in the `TableSet` class.
+In order to select just the first layer in a network all you need to do is `tableset.get_subtable(0)`.
+The returned value is a `Table` or `TableSet` that both support slicing in the same way, so that any subsequent functions can be called unaltered.
+For documentation about slicing in the `Table` or `TableSet` please see the documentation for those classes.
+
+Now you are probably wondering: How does this look in practice?
+Below is a bit of code that plots, for each layer, the field of vision (σ in the case of positional data).
+
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import LinearSegmentedColormap
+
+    for layer_subtable in best_fit_results_tbl.subtables:
+        goodness_of_fits, pref_x, pref_y, pref_s = best_fit_results_tbl.get_subtable(layer_subtable)[:]
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1, projection='scatter_density')
+        white_viridis = LinearSegmentedColormap.from_list('white_viridis', [
+            (0, '#ffffff'),
+            (1e-20, '#440053'),
+            (0.2, '#404388'),
+            (0.4, '#2a788e'),
+            (0.6, '#21a784'),
+            (0.8, '#78d151'),
+            (1, '#fde624'),
+        ], N=256)
+        density = ax.scatter_density(pref_s, goodness_of_fits, cmap=white_viridis)
+        fig.colorbar(density, label='Number of neurons per pixel')
+        ax.set_ylabel('Goodness of Fit')
+        ax.set_xlabel('Field of vision')
+        Plot.show(plt)
+
+As you can see, we go through all the subtables in the main `TableSet`. In PredNet these correspond to the layers.
+We then get the best fits for that layer using the `get_subtable` function.
+Finally, we plot the GoF against the σ value using a matplotlib scatter plot.

@@ -98,6 +98,8 @@ class Table:
         try:
             with open(self.folder + str(self.__properties_file), 'rb') as f:
                 nrows, ncols, inputs, outputs = pickle.load(f)
+                nrows = int(nrows)
+                ncols = int(ncols)
         except EOFError:
             return False
         except TypeError:
@@ -105,6 +107,8 @@ class Table:
         except ValueError:
             try:
                 self.__nrows, self.__ncols = pickle.load(f)
+                self.__nrows = int(self.__nrows)
+                self.__ncols = int(self.__ncols)
                 self.inputs, self.outputs = None, None
                 self.__update_properties__()
                 return self.initialised
