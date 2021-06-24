@@ -7,7 +7,7 @@ Analyse neural networks for feature tuning.
 
 [Documentation]
 
-[Documentation]: https://site.github.io/nn_analysis/doc/nn_analysis
+[Documentation]: https://jhoogendijk.github.io/indp-study/nn_analysis/
 
 Installation
 ------------
@@ -29,6 +29,6 @@ Features
 * Automatic storage of large tables on disk in understandable folder structures,
 * Easily [extendable] to other neural networks and stimuli.
 
-[extendable]: https://site.github.io/nn_analysis/doc/nn_analysis/#supported-docstring-formats
+[extendable]: https://jhoogendijk.github.io/indp-study/nn_analysis/#adding-new-neural-networks-to-the-code-analysis-system
 
 The above features are explained in more detail in nn_analyis' [documentation].
