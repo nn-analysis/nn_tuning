@@ -90,7 +90,7 @@ class FittingManager:
     def fit_response_function_on_table_set(self, responses: TableSet, table_set: str, stim_x: np.ndarray, stim_y: np.ndarray,
                                            candidate_function_parameters: np.ndarray,
                                            prediction_function: str = "np.exp(((stim_x - x) ** 2 + (stim_y - y) ** 2) / (-2 * s ** 2))",
-                                           stimulus: np.ndarray = None, parallel: bool = True, verbose: bool = False,
+                                           stimulus_description: np.ndarray = None, parallel: bool = True, verbose: bool = False,
                                            dtype: np.dtype = None, split_calculation: bool = True):
         """
         Creates a new TableSet based on the input TableSet.
@@ -118,7 +118,7 @@ class FittingManager:
             stim_y: The stim_y variable contains an array with, for every row in the responses, what y variables were activated at that point.
             candidate_function_parameters: A numpy array with, at each row, three variables for x, y, and sigma that will be evaluated by the function.
             prediction_function: The function that will generate the prediction. by default this is a simple gaussian function.
-            stimulus (optional): The stimulus variable is an np.ndarray with, at each row, an array with the list of stimuli that were activated at that point.
+            stimulus_description (optional): The stimulus variable is an np.ndarray with, at each row, an array with the list of stimuli that were activated at that point.
             parallel (optional, default=True): Boolean indicating whether the algorithm should run parallel. Parallel processing makes the algorithm a lot faster.
             verbose (optional, default=False): Boolean indicating whether the function prints progress to the console.
             dtype (optional): The data type to store the data in when storing the data in a table
@@ -173,7 +173,7 @@ class FittingManager:
                     # Run the fit_response_function
                     results = self.fit_response_function(subtable_instance[:].T, stim_x, stim_y,
                                                          candidate_function_parameters, prediction_function,
-                                                         stimulus=stimulus, parallel=parallel, verbose=verbose,
+                                                         stimulus_description=stimulus_description, parallel=parallel, verbose=verbose,
                                                          dtype=dtype)
                     # Save the result of each of those things to the table
                     self.storage_manager.save_result_table_set((results,), table_set, responses.recurrent_subtables,
@@ -183,7 +183,7 @@ class FittingManager:
         def run_response_function_all_at_once(responses_in_function: TableSet):
             results = self.fit_response_function(responses_in_function[:].T, stim_x, stim_y,
                                                  candidate_function_parameters, prediction_function,
-                                                 stimulus=stimulus, parallel=parallel, verbose=verbose,
+                                                 stimulus_description=stimulus_description, parallel=parallel, verbose=verbose,
                                                  dtype=dtype)
             self.storage_manager.save_result_table_set((results,), table_set, responses.recurrent_subtables,
                                                        col_start=0)
@@ -198,7 +198,7 @@ class FittingManager:
     def fit_response_function(responses: np.ndarray, stim_x: np.ndarray, stim_y: np.ndarray,
                               candidate_function_parameters: np.ndarray,
                               prediction_function: str = "np.exp(((stim_x - x) ** 2 + (stim_y - y) ** 2) / (-2 * s ** 2))",
-                              stimulus: np.ndarray = None,
+                              stimulus_description: np.ndarray = None,
                               parallel: bool = True, verbose: bool = False,
                               dtype: np.dtype = None) -> np.ndarray:
         """
@@ -229,7 +229,7 @@ class FittingManager:
             stim_y: The stim_y variable contains an array with, for every row in the responses, what y variables were activated at that point.
             candidate_function_parameters: A numpy array with, at each row, three variables for x, y, and sigma that will be evaluated by the function.
             prediction_function: The function that will generate the prediction. by default this is a simple gaussian function.
-            stimulus (optional): The stimulus variable is an np.ndarray with, at each row, an array with the list of stimuli that were activated at that point.
+            stimulus_description (optional): The stimulus variable is an np.ndarray with, at each row, an array with the list of stimuli that were activated at that point.
             parallel (optional, default=True): Boolean indicating whether the algorithm should run parallel. Parallel processing makes the algorithm a lot faster.
             verbose (optional, default=False): Boolean indicating whether the function prints progress to the console.
             dtype (optional): The data type to store the data in when storing the data in a table
@@ -239,8 +239,8 @@ class FittingManager:
         """
 
         # If the stimulus is None, assume that each feature was shown once and one at the time represented by an identity matrix
-        if stimulus is None:
-            stimulus = np.eye(len(stim_x))
+        if stimulus_description is None:
+            stimulus_description = np.eye(len(stim_x))
 
         var_resp = None
         o = None
@@ -254,7 +254,7 @@ class FittingManager:
         for row in tqdm(range(0, candidate_function_parameters.shape[0]), disable=(not verbose), leave=False):
             x, y, s = candidate_function_parameters[row]
             evaluated_prediction_function = eval(prediction_function)
-            prediction = (stimulus @ evaluated_prediction_function)[..., np.newaxis]
+            prediction = (stimulus_description @ evaluated_prediction_function)[..., np.newaxis]
             if parallel:
                 _x = np.concatenate((prediction, o), axis=1)
                 scale = np.linalg.pinv(_x) @ responses_T
