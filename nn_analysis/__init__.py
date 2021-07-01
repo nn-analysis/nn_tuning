@@ -12,5 +12,5 @@ from .output_manager import *
 from .plot import *
 
 from .networks import *
-from .input_generator import *
+from .stimulus_generator import *
 from .statistics_helper import *

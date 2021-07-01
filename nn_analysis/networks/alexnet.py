@@ -51,7 +51,7 @@ class AlexNet(Network):
         """
         def hook_wrapper(name: str):
             def hook(_, __, output):
-                self.__raw_output[name] = output.detach().numpy()
+                self.__raw_output[name] = output.cpu().detach().numpy()
 
             return hook
         for submodel_name, submodel in self.model.named_modules():
@@ -78,6 +78,6 @@ class AlexNet(Network):
 
         # Run the model without gradients (since we're not training and the network is not recurrent)
         with torch.no_grad():
-            self.model.float()(input_tensor)
+            self.model.float()(input_tensor.float())
 
         return list(self.__raw_output.values()), self.labels

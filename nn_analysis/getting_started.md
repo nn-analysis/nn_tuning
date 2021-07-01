@@ -49,8 +49,8 @@ It is also possible to set a verbose flag for the input generator. By default, t
 
     verbose = True
     input_shape = (1,3,128,160)
-    prf_input_generator = PRFInputGenerator(1, 'prf_input', storage_manager, verbose=verbose)
-    prf_input_manager = InputManager(TableSet('prf_input', database), input_shape, prf_input_generator)
+    prf_stimulus_generator = PRFStimulusGenerator(1, 'prf_input', storage_manager, verbose=verbose)
+    prf_input_manager = InputManager(TableSet('prf_input', database), input_shape, prf_stimulus_generator)
 
 We then initialise the network. In this case I am using the prednet network as an example. The `json_file` and `weight_file` variables are strings with the location of those files.
 The presentation variable determines the way stimuli are presented to the network. This way it is possible to get intermediates from the recurrent process rather than just the final result.
@@ -85,7 +85,7 @@ The `stimulus` variable represents which features we stimulated in each stimulus
 So the size of the `stimulus` variable is always the amount of stimuli that were presented x the size of `stim_x`
 
     stim_x, stim_y = fitting_manager.get_identity_stim_variables(*shape)
-    stimulus = prf_input_generator.get_stimulus(shape)
+    stimulus = prf_stimulus_generator.get_stimulus(shape)
 
 Next we need to initialise the parameter set. This is the set of parameters that will be tested by the fitting manager.
 To do this it is possible to use the `init_parameter_set` function from the `FittingManager`. 

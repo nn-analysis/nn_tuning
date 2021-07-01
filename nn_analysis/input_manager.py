@@ -3,7 +3,7 @@ from typing import Union
 import numpy as np
 
 from .storage import TableSet, Table
-from .input_generator import InputGenerator
+from .stimulus_generator import StimulusGenerator
 
 
 class InputManager:
@@ -15,14 +15,14 @@ class InputManager:
     Args:
         table: (`Table` or `TableSet`)  The table the input generator stores it's data to.
         shape: (tuple) A tuple of the shape of the input so it can be transformed to that.
-        input_generator: (`InputGenerator`) An InputGenerator that can generate input.
+        stimulus_generator: (`StimulusGenerator`) An StimulusGenerator that can generate input.
     """
 
-    def __init__(self, table: Union[Table, TableSet], shape: tuple, input_generator: InputGenerator = None):
+    def __init__(self, table: Union[Table, TableSet], shape: tuple, stimulus_generator: StimulusGenerator = None):
         self._table = table
         self._shape = shape
-        if input_generator is not None and (not self._table.initialised):
-            input_generator.generate(shape)
+        if stimulus_generator is not None and (not self._table.initialised):
+            stimulus_generator.generate(shape)
 
     @staticmethod
     def __prod(val):
@@ -31,9 +31,9 @@ class InputManager:
 
         Examples
         ----------
-        >>> InputManager._InputManager__prod((1,2,3,4,5))
+        >>> __prod((1,2,3,4,5))
         120
-        >>> InputManager._InputManager__prod((8, 12, 5))
+        >>> __prod((8, 12, 5))
         480
 
         Args:

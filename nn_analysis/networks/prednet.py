@@ -116,9 +116,9 @@ class Prednet(Network):
                     # Pad with zeros
                     reshaped_iterative_input_array = input_array[:, 0:j].reshape((input_array.shape[0], len(list(range(0, j))), input_array.shape[2], input_array.shape[3], input_array.shape[4])).astype(np.float32)
                     padded_reshaped_iterative_input_array = np.zeros(input_array.shape)
-                    padded_reshaped_iterative_input_array[:] = 255/2
+                    padded_reshaped_iterative_input_array[:] = 0
                     padded_reshaped_iterative_input_array = padded_reshaped_iterative_input_array.reshape((-1,))
-                    padded_reshaped_iterative_input_array[:reshaped_iterative_input_array.size] = reshaped_iterative_input_array.reshape((-1,))
+                    padded_reshaped_iterative_input_array[reshaped_iterative_input_array.size:] = reshaped_iterative_input_array.reshape((-1,))
                     padded_reshaped_iterative_input_array = padded_reshaped_iterative_input_array.reshape(input_array.shape)
                     # Run PredNet
                     raw_step_outputs = self.__call_prednet(prednet, padded_reshaped_iterative_input_array)

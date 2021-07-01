@@ -16,13 +16,13 @@ import math
 from ..plot import Plot
 
 from ..storage import StorageManager
-from .two_d_input_generator import TwoDInputGenerator
+from .two_d_stimulus_generator import TwoDStimulusGenerator
 
 
-class NumerosityInputGenerator(TwoDInputGenerator):
+class NumerosityStimulusGenerator(TwoDStimulusGenerator):
     """Class containing function pertaining to the generation of stimuli encoding for numerosity
 
-    This class is a subclass of the `TwoDInputGenerator` and is responsible for implementing the generation and storage
+    This class is a subclass of the `TwoDStimulusGenerator` and is responsible for implementing the generation and storage
     of two dimensional numerosity stimuli and the plotting of said stimuli.
 
     Multiple stimuli are generated for each numerosity for one or multiple different calculation functions.
@@ -37,6 +37,30 @@ class NumerosityInputGenerator(TwoDInputGenerator):
         nvars: (int) The number of random images that are generated for each numerosity-calculation function pair.
         nrange: (int, int) The range (min, max) of numerosities stimuli will be generated for.
     """
+
+    @property
+    def stim_x(self):
+        return np.ones(self.nrange[1] - self.nrange[0])
+
+    @property
+    def stim_y(self):
+        return np.zeros(self.stim_x.size)
+
+    @property
+    def stimulus_description(self) -> np.ndarray:
+        """
+        Generates the stimulus description for use in the `FittingManager`
+
+        Returns:
+            np.ndarray containing the stimulus variable to be used by the FittingManager.
+        """
+        result = []
+        for i in range(*self.nrange):
+            result_for_this_numerosity = np.zeros((self.nrange[1]-self.nrange[0]))
+            result_for_this_numerosity[i] = 1
+            for j in range(self.nvars):
+                result.append(result_for_this_numerosity)
+        return np.array(result)
 
     def __init__(self, nvars: int, nrange: (int, int), table: str, storage_manager: StorageManager,
                  verbose: bool = False, calc_functions: Optional[List[str]] = None):
@@ -207,8 +231,8 @@ class NumerosityInputGenerator(TwoDInputGenerator):
             else:
                 recheckDist = 1.4
 
-        dotGroup = NumerosityInputGenerator.__new_dot_pattern(ndots, width, height, dotSize, recheckDist)
-        return NumerosityInputGenerator.__draw_image(width, height, dotGroup, dotSize, plt_image, plt_title)
+        dotGroup = NumerosityStimulusGenerator.__new_dot_pattern(ndots, width, height, dotSize, recheckDist)
+        return NumerosityStimulusGenerator.__draw_image(width, height, dotGroup, dotSize, plt_image, plt_title)
 
     @staticmethod
     def __new_dot_pattern(ndots: int, width: int, height: int, dot_size: float, recheck_dist):

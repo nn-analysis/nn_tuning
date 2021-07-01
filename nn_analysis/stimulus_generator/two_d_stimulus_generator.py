@@ -2,18 +2,18 @@ from abc import ABC
 
 import numpy as np
 
-from .input_generator import InputGenerator
+from .stimulus_generator import StimulusGenerator
 
 
-class TwoDInputGenerator(InputGenerator, ABC):
+class TwoDStimulusGenerator(StimulusGenerator, ABC):
     """
-    Abstract class with useful functions for `InputGenerator`s that makes it so you do not need to worry about the
+    Abstract class with useful functions for `StimulusGenerator`s that makes it so you do not need to worry about the
     reshaping of rows in an individual stimulus and can focus on the 2d input image.
 
     To implement this class, call the _generate_row function from the generate function and implement the _get_2d function.
     The _get_2d function handles the creation of 2d stimuli while the _generate_row function handles creating the right shapes around the stimuli.
 
-    For an example of a class that implement this class see `PRFInputGenerator`
+    For an example of a class that implement this class see `PRFStimulusGenerator`
     """
 
     def _get_2d(self, shape: (int, int), index: int) -> np.ndarray:

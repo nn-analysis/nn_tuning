@@ -11,10 +11,10 @@ except ImportError:
     plt = None
 from ..plot import Plot
 from ..storage import StorageManager, Table, TableSet
-from .two_d_input_generator import TwoDInputGenerator
+from .two_d_stimulus_generator import TwoDStimulusGenerator
 
 
-class PRFInputGenerator(TwoDInputGenerator):
+class PRFStimulusGenerator(TwoDStimulusGenerator):
     """
     Class that generates pRF stimuli for visual field position in a moving bar.
 
@@ -26,12 +26,29 @@ class PRFInputGenerator(TwoDInputGenerator):
         verbose (optional, default=False): Whether the class should print its progress to the console.
     """
 
-    def __init__(self, stride: int, table: str, storage_manager: StorageManager, block_size: int = 5,
+    @property
+    def stim_y(self):
+        stim_y = []
+        for x in range(1, self.shape[0] + 1):
+            for y in range(1, self.shape[1] + 1):
+                stim_y.append(y)
+        return np.array(stim_y)
+
+    @property
+    def stim_x(self):
+        stim_x = []
+        for x in range(1, self.shape[0] + 1):
+            for y in range(1, self.shape[1] + 1):
+                stim_x.append(x)
+        return np.array(stim_x)
+
+    def __init__(self, stride: int, shape: (int, int), table: str, storage_manager: StorageManager, block_size: int = 5,
                  verbose: bool = False):
         self.__stride = stride
         self.__table = table
         self.__storage_manager = storage_manager
         self.__verbose = verbose
+        self.shape = shape
         self.__block_size = block_size
 
     def _get_2d(self, shape: (int, int), index: int) -> np.ndarray:
@@ -105,21 +122,18 @@ class PRFInputGenerator(TwoDInputGenerator):
                                                                append_rows=True)
         return tbl
 
-    @staticmethod
-    def get_stimulus(shape: (int, int)) -> np.ndarray:
+    @property
+    def stimulus_description(self) -> np.ndarray:
         """
-        Generates the stimulus for the pRF data to be used by the `FittingManager`.
+        Generates the stimulus description for the pRF data to be used by the `FittingManager`.
         The shape indicates the shape of the 2d images.
-
-        Args:
-            shape: (int, int) Shape of the 2d images.
 
         Returns:
             np.ndarray containing the stimulus variable to be used by the FittingManager.
         """
-        results = np.zeros((shape[0] + shape[1] + 2, *shape))
-        size_x = shape[1]
-        size_y = shape[0]
+        results = np.zeros((self.shape[0] + self.shape[1] + 2, *self.shape))
+        size_x = self.shape[1]
+        size_y = self.shape[0]
         for i in range(0, size_x + 1):
             if i < 5:
                 start = 0
@@ -150,7 +164,7 @@ class PRFInputGenerator(TwoDInputGenerator):
 
         Examples
         ----------
-        >>> PRFInputGenerator().plot_image((128, 160), 10, 'Title')
+        >>> PRFStimulusGenerator().plot_image((128, 160), 10, 'Title')
         Plots an image with a size 160x128 at index 10 with title 'Title'.
 
         Args:

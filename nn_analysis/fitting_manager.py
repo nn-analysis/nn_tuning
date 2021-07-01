@@ -19,33 +19,6 @@ class FittingManager:
     def __init__(self, storage_manager: StorageManager):
         self.storage_manager = storage_manager
 
-    @staticmethod
-    def get_identity_stim_variables(size_x, size_y) -> (np.ndarray, np.ndarray):
-        """
-        Generates the stimulus variables for when every combination of x and y is a valid position.
-
-        Examples
-        --------
-        >>> FittingManager.get_identity_stim_variables(3, 4)
-        (array([1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3]), array([1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4]))
-        >>> FittingManager.get_identity_stim_variables(3, 2)
-        (array([1, 1, 2, 2, 3, 3]), array([1, 2, 1, 2, 1, 2]))
-
-        Args:
-            size_x: The size of x.
-            size_y: The size of y.
-
-        Returns:
-            The stimulus variables for x and y.
-        """
-        stim_x = []
-        stim_y = []
-        for x in range(1, size_x + 1):
-            for y in range(1, size_y + 1):
-                stim_x.append(x)
-                stim_y.append(y)
-        return np.array(stim_x), np.array(stim_y)
-
     def calculate_best_fits(self, results: Union[Table, TableSet, np.ndarray], candidate_function_parameters,
                             table: str = None):
         """
@@ -176,8 +149,8 @@ class FittingManager:
         step = 500
         for row in tqdm(range(0, nrows, step)):
             new_nrows = step
-            if row * step + step > nrows:
-                new_nrows = nrows - row * step
+            if row + step > nrows:
+                new_nrows = nrows - row
             new_table_set = self.storage_manager.save_result_table_set(new_table_initialisation_data, table_set,
                                                                        responses.recurrent_subtables,
                                                                        new_nrows, ncols, append_rows=True)
