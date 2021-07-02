@@ -19,6 +19,7 @@ rm -r "$BUILDROOT" 2>/dev/null || true
 pushd "$DOCROOT/.." >/dev/null
 
 pdoc3 --html \
+     -d google \
      --output-dir "$BUILDROOT" \
      nn_analysis
 popd >/dev/null

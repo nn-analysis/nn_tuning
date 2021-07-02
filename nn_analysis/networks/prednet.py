@@ -111,33 +111,38 @@ class Prednet(Network):
         with tf.compat.v1.Session() as sess:
             if self.presentation is 'iterative':
                 iterator = range(1, input_array.shape[1]+1)
-                summed_batch_output = None
+                combined_batch_output = None
                 for j in iterator:
                     # Pad with zeros
                     reshaped_iterative_input_array = input_array[:, 0:j].reshape((input_array.shape[0], len(list(range(0, j))), input_array.shape[2], input_array.shape[3], input_array.shape[4])).astype(np.float32)
-                    padded_reshaped_iterative_input_array = np.zeros(input_array.shape)
-                    padded_reshaped_iterative_input_array[:] = 0
-                    padded_reshaped_iterative_input_array = padded_reshaped_iterative_input_array.reshape((-1,))
-                    padded_reshaped_iterative_input_array[reshaped_iterative_input_array.size:] = reshaped_iterative_input_array.reshape((-1,))
-                    padded_reshaped_iterative_input_array = padded_reshaped_iterative_input_array.reshape(input_array.shape)
                     # Run PredNet
-                    raw_step_outputs = self.__call_prednet(prednet, padded_reshaped_iterative_input_array)
+                    raw_step_outputs = self.__call_prednet(prednet, reshaped_iterative_input_array, True)
                     this_batch_output = self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs), sess)
-                    if summed_batch_output is None:
-                        summed_batch_output = this_batch_output
+                    if combined_batch_output is None:
+                        combined_batch_output = this_batch_output
                     else:
-                        summed_batch_output = self.__sum_structure(summed_batch_output, this_batch_output)
-                return self.__divide_structure_by(summed_batch_output, input_array.shape[1])
+                        if self.take_mean_of_measures:
+                            combined_batch_output = self.__sum_structure(combined_batch_output, this_batch_output)
+                        else:
+                            combined_batch_output = self.__concat_in_structure(combined_batch_output, this_batch_output)
+                if self.take_mean_of_measures:
+                    return self.extract_numpy_array(self.__divide_structure_by(combined_batch_output, input_array.shape[1]))
+                else:
+                    return self.extract_numpy_array(combined_batch_output, input_array.shape[1])
             elif self.presentation is 'single_pass':
                 batch_input = input_array[:]
                 batch_input_tensor = tf.convert_to_tensor(batch_input, np.float32)
                 raw_step_outputs = self.__call_prednet(prednet, batch_input_tensor)
+                if self.take_mean_of_measures:
+                    extracted_step_outputs = self.__extract_from_step_output(raw_step_outputs)
+                    combined_step_outputs = tf.math.reduce_sum(extracted_step_outputs, 1)
+                    return self.extract_numpy_array(self.__divide_structure_by(combined_step_outputs, input_array.shape[1]))
                 return self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs), sess)
             else:
                 raise ValueError(f'Expected presentation to be either iterative or single_pass, found {self.presentation}')
 
     @staticmethod
-    def __call_prednet(prednet, stimulus) -> dict:
+    def __call_prednet(prednet, stimulus, last_frame_only: bool = False) -> dict:
         # initialise an output structure for all the results based on the layer and subtype
         #   Layer type --> Layer
         outputs = {'R': [], 'Ahat': [], 'A': [], 'E': []}
@@ -150,7 +155,10 @@ class Prednet(Network):
                 prednet.output_layer_type = output_mode[:-1]
                 prednet.output_layer_num = int(output_mode[-1])
                 # run prednet
-                outputs[layer_type].append(prednet.call(tf.convert_to_tensor(stimulus, np.float32)))
+                if last_frame_only:
+                    outputs[layer_type].append(prednet.call(tf.convert_to_tensor(stimulus, np.float32))[:, -1])
+                else:
+                    outputs[layer_type].append(prednet.call(tf.convert_to_tensor(stimulus, np.float32)))
         # after the loop return the result
         outputs = {'R': outputs['R'], 'Â': outputs['Ahat'], 'A': outputs['A'], 'E': outputs['E']}
         return outputs
@@ -239,6 +247,39 @@ class Prednet(Network):
         # Return if this is a leaf
         if type_x is np.ndarray:
             return x + y
+        # Otherwise, fill in the x variable according to the type it was before
+        if type_x is dict:
+            for key, value in x.items():
+                x[key] = self.__sum_structure(x[key], y[key])
+        if type_x is list:
+            for i in range(len(x)):
+                x[i] = self.__sum_structure(x[i], y[i])
+        if type_x is tuple:
+            # Make a list, tuples cannot be changed
+            new_x = []
+            for i in range(len(x)):
+                new_x.append(self.__sum_structure(x[i], y[i]))
+            return new_x
+        return x
+
+    def __concat_in_structure(self, x: Union[dict, list, tuple, np.ndarray], y: Union[dict, list, tuple, np.ndarray]) \
+                                -> Union[dict, list, tuple, np.ndarray]:
+        """
+        Define a concatenation function for Union[dict, list, tuple]
+
+        Args:
+            x: The first input structure
+            y: The second input structure
+
+        Returns:
+            A concatenated dict, list, tuple or np.ndarray
+        """
+        # use x as output structure, x is destroyed
+        # check the type of structure
+        type_x = type(x)
+        # Return if this is a leaf
+        if type_x is np.ndarray:
+            return tf.concat([x, y], 1)
         # Otherwise, fill in the x variable according to the type it was before
         if type_x is dict:
             for key, value in x.items():
