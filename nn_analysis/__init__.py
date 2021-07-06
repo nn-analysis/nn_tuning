@@ -4,6 +4,7 @@
 .. include:: ./doc_neural_network.md
 .. include:: ./doc_stimulus_set.md
 """
+__docformat__ = "google"
 
 from .storage import *
 from .fitting_manager import FittingManager
