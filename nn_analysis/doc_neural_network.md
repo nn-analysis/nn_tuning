@@ -10,7 +10,7 @@ In practice, for most hierarchical networks, this all means setting up a model i
 ### PyTorch models
 For PyTorch models it is possible to load the model using the functions in the submodules in `torchvision.models` and then registering hooks for the layers in that model using the following function. This function also fills a labels variable that you can use as a names variable when returning output in the `run` function. Run this function after setting up the model in the `__init__` function. For an example of this method in use please see the AlexNet class.
 
-```
+```python
 def __register_hooks(self):
     """
     Function that registers hooks to save results from the network model in the run function.
@@ -32,7 +32,7 @@ Note that this does not work well for recurrent models. There you would need to 
 ### TensorFlow models
 For TensorFlow you will need a slightly different function but with much of the same idea. In the case of TensorFlow, the way to do this generally is to create a second model with the weights of the previous network. This new model has layers that are enclosed in a new type of layer that is accessible by hooks in a similar way to PyTorch models. The enclosed layer is shown below.
 
-```
+```python
 import tensorflow as tf
 from typing import List, Callable, Optional
 
@@ -56,12 +56,12 @@ class LayerWithHooks(tf.keras.layers.Layer):
   def register_hook(
       self, 
       hook: Callable[[tf.Tensor, tf.Tensor], Optional[tf.Tensor]]) -> None:
-    self._hooks.append(hook)`
+    self._hooks.append(hook)
 ```
 
 The method that registers those hooks is slightly more difficult than the one from PyTorch. An example of a method registering hooks is shown in the code below. In contrast to the default way of doing this in PyTorch, TensorFlow cannot automatically register hooks to each layer. Rather, this code has to be altered based on the network to add each layer in that network to the second model. The second model is the model that should eventually be called in the `run` function.
 
-```
+```python
 def __register_hooks(self):
     """
     Function that registers hooks to save results from the network model in the run function.
