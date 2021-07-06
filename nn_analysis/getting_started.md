@@ -60,7 +60,7 @@ By default the network uses an iterative presentation and takes the mean from al
 
 We then define an output manager using the network, storage manager, and the input manager.
 
-    output_manager = OutputManager(network, storage_manager, prf_nd_input_manager)
+    output_manager = OutputManager(network, storage_manager, prf_input_manager)
 
 Now we can present the stimuli to the network batch wise. This step can take some time.
 The resume parameter makes the network resume in case the program is halted intermediately.
@@ -89,7 +89,7 @@ So the size of the `stimulus` variable is always the amount of stimuli that were
 
 Next we need to initialise the parameter set. This is the set of parameters that will be tested by the fitting manager.
 To do this it is possible to use the `init_parameter_set` function from the `FittingManager`. 
-This function requires a step size for each function parameter (x, y, and sigma) as well as the maximum value for each of those.
+This function requires a step size for each function parameter (x, y, and sigma: i.e. preferred x position, preferred y position and receptive field size or tuning function extent) as well as the maximum value for each of those.
 Finally, the function has an optional parameter for if the sigma should be linearised. This is useful when you want to use a logarithmic tuning function. 
 In this case we don't, so we left it False.
 
@@ -114,7 +114,7 @@ This parameter is a string that is evaluated in the function. In this code you h
                                                                          verbose=True,
                                                                          dtype=np.dtype('float16'))
 
-Since the `results_tbl_set` contains all results, we need to still calculate which function had the best fit for each node in the network.
+Since the `results_tbl_set` contains the results for every tested parameter combination, we need to still determine which parameter combination gave the best fit for each node in the network.
 For this the `FittingManager` has a `calculate_best_fits` function that takes the `candidate_function_parameters` and the `results_tbl_set` and stores the best fits in a new table.
 
     best_fit_results_tbl = fitting_manager.calculate_best_fits(results_tbl_set, candidate_function_parameters, table+'_best')
@@ -125,7 +125,7 @@ Here we give an example of a plot that might be more commonly useful as well as 
 
 Before we start plotting, it is good to understand how the results from the previous step look. 
 The best fits `TableSet` in the final step of the fitting procedure contains four rows.
-The rows contain the goodness of fit, preferred x position, preferred y position, and the preferred σ respectively.
+The rows contain the goodness of fit, preferred x position, preferred y position, and the sigma (receptive field size) respectively.
 So, in order to retrieve the data for our plot we have to select the row with the type of data we want, and the column with the nodes in the network.
 
 Getting the part of the network that you want to look at is easy thanks to the `get_subtable` function in the `TableSet` class.
@@ -134,7 +134,7 @@ The returned value is a `Table` or `TableSet` that both support slicing in the s
 For documentation about slicing in the `Table` or `TableSet` please see the documentation for those classes.
 
 Now you are probably wondering: How does this look in practice?
-Below is a bit of code that plots, for each layer, the field of vision (σ in the case of positional data).
+Below is a bit of code that plots, for each layer, the receptive field size (sigma in the case of positional data).
 
     import matplotlib.pyplot as plt
     from matplotlib.colors import LinearSegmentedColormap
@@ -155,9 +155,9 @@ Below is a bit of code that plots, for each layer, the field of vision (σ in th
         density = ax.scatter_density(pref_s, goodness_of_fits, cmap=white_viridis)
         fig.colorbar(density, label='Number of neurons per pixel')
         ax.set_ylabel('Goodness of Fit')
-        ax.set_xlabel('Field of vision')
+        ax.set_xlabel('Receptive field size')
         Plot.show(plt)
 
 As you can see, we go through all the subtables in the main `TableSet`. In PredNet these correspond to the layers.
 We then get the best fits for that layer using the `get_subtable` function.
-Finally, we plot the GoF against the σ value using a matplotlib scatter plot.
+Finally, we plot the goodness of fit against the sigma value using a matplotlib scatter plot.
