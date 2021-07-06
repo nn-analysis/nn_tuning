@@ -3,12 +3,12 @@ When running your own experiments, you will likely want to design a stimulus set
 To do so, you have to implement the `StimulusGenerator` class.
 
 The `StimulusGenerator` has one function and three properties you have to implement: `generate()`, `stimulus_description`, `stim_x`, and `stim_y`.
-`generate()` has one parameter `shape`. This parameter is the shape of the eventual complete output. 
+`generate()` has one parameter `shape`. This parameter is the shape of the eventual complete output image or movie (i.e. the input to the network). 
 Any other variables you might want to use in your stimulus have to be in the `__init__()` method. 
 `generate()` does not return the output but only saves the stimuli in a `Table`/`TableSet`.
 How you implement the generation of the stimuli is entirely up to you. 
 
-The variables `stimulus_description`, `stim_x`, and `stim_y` describe the stimuli in terms of the features in those stimuli and are used in the FittingManager.
+The variables `stimulus_description`, `stim_x`, and `stim_y` describe the stimuli in terms of the features in those stimuli and are used in the FittingManager. These variables must be output for fitting the response function, and are distinct from the images presented to the network.
 `stimulus_description` is a matrix with, for each generated stimulus, a vector containing the features that were activated. 
 These vectors are of the same length as `stim_x` and `stim_y` and the values in the vector correspond to the location in these variables.
 The `stim_x` and `stim_y` contain all possible combinations of feature x and feature y in the stimulus.
