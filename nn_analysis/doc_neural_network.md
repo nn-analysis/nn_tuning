@@ -22,7 +22,7 @@ def __register_hooks(self):
     """
     def hook_wrapper(name: str):
         def hook(_, __, output):
-            self.__raw_output[name] = output.detach().numpy()
+            self.__raw_output[name] = output.cpu().detach().numpy()
 
         return hook
     for submodel_name, submodel in self.model.named_modules():
