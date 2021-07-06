@@ -16,7 +16,10 @@ except ImportError:
 import numpy as np
 
 from .network import Network
-from prednet import PredNet
+try:
+    from prednet import PredNet
+except ImportError:
+    PredNet = None
 
 
 class Prednet(Network):
