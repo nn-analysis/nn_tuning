@@ -7,7 +7,7 @@ Analyse neural networks for feature tuning.
 
 [Documentation]
 
-[Documentation]: https://jhoogendijk.github.io/indp-study/
+[Documentation]: https://jhoogendijk.github.io/indp-study/nn_analysis.html
 
 Installation
 ------------
