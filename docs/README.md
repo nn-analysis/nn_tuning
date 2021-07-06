@@ -1,6 +1,6 @@
 # Documentation
 Build the documentation by running
 
-    $ ./build
+    $ ./build.sh
 
 Docs will appear in the _./build_ directory.

@@ -58,8 +58,11 @@ prf_stimulus_generator = PRFStimulusGenerator(1, 'prf_input', storage_manager, v
 prf_input_manager = InputManager(TableSet('prf_input', database), input_shape, prf_stimulus_generator)
 ```
 
-We then initialise the network. In this case I am using the prednet network as an example. The `json_file` and `weight_file` variables are strings with the location of those files.
-The presentation variable determines the way stimuli are presented to the network. This way it is possible to get intermediates from the recurrent process rather than just the final result.
+We then initialise the network. 
+In this case I am using the prednet network as an example. 
+The `json_file` and `weight_file` variables are strings with the location of those files. (You can get these files [here](https://www.dropbox.com/s/rpwlnn6j39jjme4/kitti_data.zip?dl=0))
+The presentation variable determines the way stimuli are presented to the network. 
+This way it is possible to get intermediates from the recurrent process rather than just the final result.
 By default the network uses an iterative presentation and takes the mean from all the recorded iterative activations as an output.
 
 ```python
@@ -125,8 +128,10 @@ fitting_results_table = f"{table}_fitting_results"
 Finally, we can run the actual fitting procedure. By default, this function splits the calculation of the results into separate parts to not overload the memory or CPU.
 The resulting `TableSet` is returned by the function. 
 
-By default, this function uses a gaussian tuning function. To use a different tuning function you can provide the `prediction_function` parameter.
-This parameter is a string that is evaluated in the function. In this code you have the `stim_x` and `stim_y` variable as well as the `x`, `y`, and `sigma` for the function from the function parameter set.
+By default, this function uses a gaussian tuning function (`"np.exp(((stim_x - x) ** 2 + (stim_y - y) ** 2) / (-2 * s ** 2))"`). 
+To use a different tuning function you can provide the `prediction_function` parameter.
+This parameter is a string that is evaluated in the function. 
+In this code you have the `stim_x` and `stim_y` variable as well as the `x`, `y`, and `sigma` for the function from the function parameter set.
 
 ```python
 results_tbl_set = fitting_manager.fit_response_function_on_table_set(responses_table_set, fitting_results_table,

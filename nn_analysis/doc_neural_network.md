@@ -8,7 +8,12 @@ Variables specific to the network can be added to the initialisation function of
 In practice, for most hierarchical networks, this all means setting up a model in the `__init__` function and running the input through that model in the `run` function. For pre-trained hierarchical PyTorch and TensorFlow/Keras models this means that it is possible to use a fairly standardised approach to building a new network class since recording activations has standardised functions.
 
 ### PyTorch models
-For PyTorch models it is possible to load the model using the functions in the submodules in `torchvision.models` and then registering hooks for the layers in that model using the following function. This function also fills a labels variable that you can use as a names variable when returning output in the `run` function. Run this function after setting up the model in the `__init__` function. For an example of this method in use please see the AlexNet class.
+For PyTorch models it is possible to load the model using the functions in the submodules in `torchvision.models` and then registering hooks for the layers in that model using the following function. 
+Hooks are functions that are performed at a certain timepoint in a process. 
+In the case of PyTorch, the hooks are called when a layer is called, allowing us to store the intermediate results.
+This function also fills a labels variable that you can use as a names variable when returning output in the `run` function. 
+Run this function after setting up the model in the `__init__` function. 
+For an example of this method in use please see the AlexNet class.
 
 ```python
 def __register_hooks(self):
@@ -27,10 +32,14 @@ def __register_hooks(self):
 ```
 
 
-Note that this does not work well for recurrent models. There you would need to build your own implementation specific to that network.
+Note that this does not work well for recurrent models. 
+There you would need to build your own implementation specific to that network.
 
 ### TensorFlow models
-For TensorFlow you will need a slightly different function but with much of the same idea. In the case of TensorFlow, the way to do this generally is to create a second model with the weights of the previous network. This new model has layers that are enclosed in a new type of layer that is accessible by hooks in a similar way to PyTorch models. The enclosed layer is shown below.
+For TensorFlow you will need a slightly different function but with much of the same idea. 
+In the case of TensorFlow, the way to do this generally is to create a second model with the weights of the previous network. 
+This new model has layers that are enclosed in a new type of layer that is accessible by hooks in a similar way to PyTorch models. 
+The enclosed layer is shown below.
 
 ```python
 import tensorflow as tf
