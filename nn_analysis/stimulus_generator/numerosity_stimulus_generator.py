@@ -40,7 +40,7 @@ class NumerosityStimulusGenerator(TwoDStimulusGenerator):
 
     @property
     def stim_x(self):
-        return np.ones(self.nrange[1] - self.nrange[0])
+        return np.arange(self.nrange[0], self.nrange[1], dtype=np.int)
 
     @property
     def stim_y(self):
@@ -58,8 +58,9 @@ class NumerosityStimulusGenerator(TwoDStimulusGenerator):
         for i in range(*self.nrange):
             result_for_this_numerosity = np.zeros((self.nrange[1]-self.nrange[0]))
             result_for_this_numerosity[i] = 1
-            for j in range(self.nvars):
-                result.append(result_for_this_numerosity)
+            for q in range(len(self.__calc_functions)):
+                for j in range(self.nvars):
+                    result.append(result_for_this_numerosity)
         return np.array(result)
 
     def __init__(self, nvars: int, nrange: (int, int), table: str, storage_manager: StorageManager,
