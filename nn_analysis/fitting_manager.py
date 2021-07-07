@@ -259,9 +259,7 @@ class FittingManager:
                 _x = np.concatenate((prediction, o), axis=1)
                 scale = np.linalg.pinv(_x) @ responses_T
                 variance_unexplained = np.var(responses_T - _x @ scale, axis=0)
-                goodness_of_fit = 1 - (variance_unexplained / var_resp)  # This is the inverted portion of the variance that is unexplained
-                goodness_of_fit[np.isnan(goodness_of_fit)] = 0
-                goodness_of_fit[goodness_of_fit == -np.inf] = 0
+                goodness_of_fit = 1 - np.divide(variance_unexplained, var_resp, where=var_resp > 0)  # This is the inverted portion of the variance that is unexplained
                 goodness_of_fits[row] = goodness_of_fit
             else:
                 for response in range(0, responses.shape[0]):
