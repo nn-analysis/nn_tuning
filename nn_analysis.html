@@ -36,7 +36,6 @@
     <li><a href="#getting-the-activations">Getting the activations</a></li>
     <li><a href="#fitting-activations-to-a-tuning-function">Fitting activations to a tuning function</a></li>
     <li><a href="#plot-the-results">Plot the results</a></li>
-    <li><a href="#module-diagram">Module diagram</a></li>
   </ul></li>
   <li><a href="#adding-new-neural-networks-to-the-code-analysis-system">Adding new neural networks to the code analysis system</a>
   <ul>
@@ -44,6 +43,7 @@
     <li><a href="#tensorflow-models">TensorFlow models</a></li>
   </ul></li>
   <li><a href="#implement-your-own-stimulus-generator">Implement your own stimulus generator</a></li>
+  <li><a href="#module-diagram">Module diagram</a></li>
 </ul>
 
 
@@ -276,21 +276,12 @@ Below is a bit of code that plots, for each layer, the receptive field size (sig
     <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">density</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Number of neurons per pixel&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Goodness of Fit&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Receptive field size&#39;</span><span class="p">)</span>
-    <span class="n">Plot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">plt</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div>
 
 <p>As you can see, we go through all the subtables in the main <code>TableSet</code>. In PredNet these correspond to the layers.
 We then get the best fits for that layer using the <code>get_subtable</code> function.
 Finally, we plot the goodness of fit against the sigma value using a matplotlib scatter plot.</p>
-
-<h3 id="module-diagram">Module diagram</h3>
-
-<p>The following figure shows the relations between submodules. 
-Closed arrows represent that a module uses another module somewhere in its functions. 
-Open arrows represent inheritance.
-To lookup the modules, you can click through them in the sidebar.</p>
-
-<p><img src="/indp-study/images/module_diagram.png" alt="Module diagram" /></p>
 
 <h2 id="adding-new-neural-networks-to-the-code-analysis-system">Adding new neural networks to the code analysis system</h2>
 
@@ -435,6 +426,15 @@ For an example of how to do this you can look at the <code>PRFStimulusGenerator<
                                                            <span class="n">append_rows</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tbl</span>
 </code></pre></div>
+
+<h2 id="module-diagram">Module diagram</h2>
+
+<p>The following figure shows the relations between submodules.
+Closed arrows represent that a module uses another module somewhere in its functions.
+Open arrows represent inheritance.
+To lookup the modules, you can click through them in the sidebar.</p>
+
+<p><img src="/indp-study/images/module_diagram.png" alt="Module diagram" /></p>
 </div>
 
                         <details>
@@ -444,6 +444,7 @@ For an example of how to do this you can look at the <code>PRFStimulusGenerator<
 <span class="sd">.. include:: ./getting_started.md</span>
 <span class="sd">.. include:: ./doc_neural_network.md</span>
 <span class="sd">.. include:: ./doc_stimulus_set.md</span>
+<span class="sd">.. include:: ./doc_module_diagram.md</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="n">__docformat__</span> <span class="o">=</span> <span class="s2">&quot;google&quot;</span>
 
