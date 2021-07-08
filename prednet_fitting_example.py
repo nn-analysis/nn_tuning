@@ -27,14 +27,18 @@ database = Database("/path/to/database/folder")  # Database where data will be s
 storage_manager = StorageManager(database)
 
 # The input generator generates input, the input manager makes sure that the network gets the correct input
-prf_input_generator = PRFInputGenerator(1, 'prf_input', storage_manager, verbose=verbose)
-prf_nd_input_manager = InputManager(TableSet('prf_input', database), network_input_shape, prf_input_generator)
+prf_stimulus_generator = PRFStimulusGenerator(1, network_input_shape[-2:], 'prf_input', storage_manager, verbose=verbose)
+prf_input_manager = InputManager(TableSet('prf_input', database), network_input_shape, prf_stimulus_generator)
+
+# Place the stimulus generator and input managers in general variables, replace these to use a different stimulus generator/input manager
+stimulus_generator = prf_stimulus_generator
+input_manager = prf_input_manager
 
 # Initialise the network with the weight files
 network = Prednet(json_file, weights_file, presentation='iterative')
 
 # Create the output manager
-output_manager = OutputManager(network, storage_manager, prf_nd_input_manager)
+output_manager = OutputManager(network, storage_manager, input_manager)
 
 # The prednet code in the prednet folder was altered to allow you to disable the recurrent connections
 network.feedforward_only = False
@@ -60,17 +64,17 @@ fitting_manager = FittingManager(storage_manager)
 # so in the case of position data stim_x and stim_y are of size 128*160 and represent every point in the input image for image position data
 # if the data you are testing is one dimensional you can initialise the stim_y to a list of zeros of the same size as stim_x
 # so in the case of numerosity stim_x would be a list from 0 to 20, and stim_y would be a list of 20 zeros
-# the stimulus variable represents which stimulus stimulated which of those representations
+# the stimulus_description variable represents which stimulus stimulated which of those representations
 # so the size of the stimulus is always the amount of stimuli that were presented x the size of stim_x
 shape = (128, 160)
-stim_x, stim_y = fitting_manager.get_identity_stim_variables(*shape)
-stimulus = prf_input_generator.get_stimulus(shape)
+stim_x, stim_y = stimulus_generator.stim_x, stimulus_generator.stim_y
+stimulus_description = stimulus_generator.stimulus_description
 
-# The step size and the sigma step size and the max sigma are meant to limit the amount of positions you test
+# The step sizes and max and min values are meant to limit the amount of positions you test
 # In the case of image position the candidate function parameter set can get very large if it isn't at a fairly low resolution
-step = 8
-max_sigma = 8
-sigma_step = 0.2
+step_sizes = (8, 8, 0.2)
+max_values = (*shape, 9)
+min_values = (0, 0, 0.2)
 
 # If you want the tested function to be a lognormal rather than a gaussian function you can enable this feature
 log = False
@@ -78,18 +82,17 @@ log = False
 # In order to quickly access the best estimates from the entire table you dan use the calculate best fits function
 # For that you first need all the candidate function parameters that were tested
 # You can generate those from the fitting manager
-candidate_function_parameters = FittingManager.init_parameter_set((step, step, sigma_step), (*shape, max_sigma),
-                                                                  (1, 1, 0.2), linearise_s=log)
+candidate_function_parameters = FittingManager.init_parameter_set(step_sizes, max_values, min_values, log=log)
 
 # Name of the table to store the results of th fit_response_function in
-fitting_results_table = f"{table}_estimates_step{step}_sigma-step{sigma_step}"
+fitting_results_table = f"{table}_estimates_step{step_sizes[0]}_sigma-step{step_sizes[2]}"
 
 # Run The fitting on the entire dataset.
 # By default this function splits the calculation of the results into separate parts to not overload the memory or CPU.
 # The resulting TableSet is returned by the function.
 results_tbl_set = fitting_manager.fit_response_function_on_table_set(responses_table_set, fitting_results_table,
                                                                      stim_x, stim_y, candidate_function_parameters,
-                                                                     stimulus=stimulus,
+                                                                     stimulus_description=stimulus_description,
                                                                      verbose=True,
                                                                      dtype=np.dtype('float16'))
 
