@@ -36,6 +36,7 @@
     <li><a href="#getting-the-activations">Getting the activations</a></li>
     <li><a href="#fitting-activations-to-a-tuning-function">Fitting activations to a tuning function</a></li>
     <li><a href="#plot-the-results">Plot the results</a></li>
+    <li><a href="#module-diagram">Module diagram</a></li>
   </ul></li>
   <li><a href="#adding-new-neural-networks-to-the-code-analysis-system">Adding new neural networks to the code analysis system</a>
   <ul>
@@ -282,7 +283,14 @@ Below is a bit of code that plots, for each layer, the receptive field size (sig
 We then get the best fits for that layer using the <code>get_subtable</code> function.
 Finally, we plot the goodness of fit against the sigma value using a matplotlib scatter plot.</p>
 
-<p><img src="/module_diagram.png" alt="Module diagram" /></p>
+<h3 id="module-diagram">Module diagram</h3>
+
+<p>The following figure shows the relations between submodules. 
+Closed arrows represent that a module uses another module somewhere in its functions. 
+Open arrows represent inheritance.
+To lookup the modules, you can click through them in the sidebar.</p>
+
+<p><img src="/indp-study/images/module_diagram.png" alt="Module diagram" /></p>
 
 <h2 id="adding-new-neural-networks-to-the-code-analysis-system">Adding new neural networks to the code analysis system</h2>
 
@@ -443,7 +451,6 @@ For an example of how to do this you can look at the <code>PRFStimulusGenerator<
 <span class="kn">from</span> <span class="nn">.fitting_manager</span> <span class="kn">import</span> <span class="n">FittingManager</span>
 <span class="kn">from</span> <span class="nn">.input_manager</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.output_manager</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.plot</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="kn">from</span> <span class="nn">.networks</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.stimulus_generator</span> <span class="kn">import</span> <span class="o">*</span>
