@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw
 
 from tqdm import tqdm
 import math
-from ..plot import Plot
+import nn_analysis.plot as plot
 
 from ..storage import StorageManager
 from .two_d_stimulus_generator import TwoDStimulusGenerator
@@ -328,12 +328,12 @@ class NumerosityStimulusGenerator(TwoDStimulusGenerator):
         image = np.array(image)
         if plt_image and not no_plotting:
             plt.imshow(image, origin='lower')
-            if Plot.save_fig:
-                Plot.title = plt_title
+            if plot.save_fig:
+                plot.title = plt_title
             else:
                 plt.title(plt_title)
-            Plot.show(plt)
-            Plot.title = None
+            plot.show(plt)
+            plot.title = None
         elif plt_image and no_plotting:
             print('Matplotlib not found. Skipping image plotting.')
 

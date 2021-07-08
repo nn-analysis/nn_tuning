@@ -9,7 +9,7 @@ try:
 except ImportError:
     no_plotting = True
     plt = None
-from ..plot import Plot
+import nn_analysis.plot as plot
 from ..storage import StorageManager, Table, TableSet
 from .two_d_stimulus_generator import TwoDStimulusGenerator
 
@@ -176,9 +176,9 @@ class PRFStimulusGenerator(TwoDStimulusGenerator):
             raise ImportError('Plotting requires the matplotlib package. Please install the package and try again.')
         result = self._get_2d(shape, index).reshape(shape)
         plt.imshow(result, cmap='gray', vmin=0, vmax=1, origin='lower')
-        if Plot.save_fig:
-            Plot.title = title
+        if plot.save_fig:
+            plot.title = title
         else:
             plt.title(title)
-        Plot.show(plt)
-        Plot.title = None
+        plot.show(plt)
+        plot.title = None
