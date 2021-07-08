@@ -186,7 +186,7 @@ for layer_subtable in best_fit_results_tbl.subtables:
     fig.colorbar(density, label='Number of neurons per pixel')
     ax.set_ylabel('Goodness of Fit')
     ax.set_xlabel('Receptive field size')
-    Plot.show(plt)
+    plt.show()
 ```
 
 As you can see, we go through all the subtables in the main `TableSet`. In PredNet these correspond to the layers.

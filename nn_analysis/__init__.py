@@ -3,6 +3,7 @@
 .. include:: ./getting_started.md
 .. include:: ./doc_neural_network.md
 .. include:: ./doc_stimulus_set.md
+.. include:: ./doc_module_diagram.md
 """
 __docformat__ = "google"
 
