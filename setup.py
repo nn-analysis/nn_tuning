@@ -19,7 +19,7 @@ setup(
     author_email="j.hoogendijk@uu.nl",
     license="GNU LGPLv3",
     classifiers=[
-        "License :: OSI Approved :: GNU LGPLv3 License",
+        "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
