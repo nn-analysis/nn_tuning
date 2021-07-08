@@ -9,7 +9,7 @@ with open(os.path.join(HERE, "README.md")) as fid:
     README = fid.read()
 
 setup(
-    name="nn_analysis",
+    name="nn_analysis-prednet",
     version="1.0.0",
     description="Analyse the tuning functions of neurons in artificial neural networks",
     long_description=README,
@@ -27,10 +27,10 @@ setup(
     packages=find_packages(exclude=("tests", "prednet_fitting_example")),
     include_package_data=False,
     install_requires=[
-        "numpy", "tqdm", "Pillow"
+        "numpy", "tqdm", "Pillow", "tensorflow-gpu==1.14.0"
     ],
     project_urls={
         'Documentation': 'https://nn-analysis.github.io/nn_analysis/nn_analysis.html',
     },
-    python_requires=">=3.6",
+    python_requires=">=3.6, <3.7",
 )
