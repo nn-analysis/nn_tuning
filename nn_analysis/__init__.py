@@ -10,7 +10,6 @@ from .storage import *
 from .fitting_manager import FittingManager
 from .input_manager import *
 from .output_manager import *
-from .plot import *
 
 from .networks import *
 from .stimulus_generator import *
