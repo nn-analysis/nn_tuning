@@ -83,7 +83,7 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">no_plotting</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">plt</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="kn">from</span> <span class="nn">..plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+<span class="kn">import</span> <span class="nn">nn_analysis.plot</span> <span class="k">as</span> <span class="nn">plot</span>
 <span class="kn">from</span> <span class="nn">..storage</span> <span class="kn">import</span> <span class="n">StorageManager</span><span class="p">,</span> <span class="n">Table</span><span class="p">,</span> <span class="n">TableSet</span>
 <span class="kn">from</span> <span class="nn">.two_d_stimulus_generator</span> <span class="kn">import</span> <span class="n">TwoDStimulusGenerator</span>
 
@@ -250,12 +250,12 @@
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;Plotting requires the matplotlib package. Please install the package and try again.&#39;</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_2d</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">Plot</span><span class="o">.</span><span class="n">save_fig</span><span class="p">:</span>
-            <span class="n">Plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="k">if</span> <span class="n">plot</span><span class="o">.</span><span class="n">save_fig</span><span class="p">:</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
-        <span class="n">Plot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">plt</span><span class="p">)</span>
-        <span class="n">Plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">plt</span><span class="p">)</span>
+        <span class="n">plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 
         </details>
@@ -434,12 +434,12 @@
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;Plotting requires the matplotlib package. Please install the package and try again.&#39;</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_2d</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">Plot</span><span class="o">.</span><span class="n">save_fig</span><span class="p">:</span>
-            <span class="n">Plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="k">if</span> <span class="n">plot</span><span class="o">.</span><span class="n">save_fig</span><span class="p">:</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
-        <span class="n">Plot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">plt</span><span class="p">)</span>
-        <span class="n">Plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">plt</span><span class="p">)</span>
+        <span class="n">plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 
         </details>
@@ -607,12 +607,12 @@ The shape indicates the shape of the 2d images.</p>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;Plotting requires the matplotlib package. Please install the package and try again.&#39;</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_2d</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">Plot</span><span class="o">.</span><span class="n">save_fig</span><span class="p">:</span>
-            <span class="n">Plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="k">if</span> <span class="n">plot</span><span class="o">.</span><span class="n">save_fig</span><span class="p">:</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
-        <span class="n">Plot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">plt</span><span class="p">)</span>
-        <span class="n">Plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">plt</span><span class="p">)</span>
+        <span class="n">plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 
         </details>

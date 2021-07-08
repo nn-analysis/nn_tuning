@@ -84,7 +84,7 @@
 
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">..plot</span> <span class="kn">import</span> <span class="n">Plot</span>
+<span class="kn">import</span> <span class="nn">nn_analysis.plot</span> <span class="k">as</span> <span class="nn">plot</span>
 
 <span class="kn">from</span> <span class="nn">..storage</span> <span class="kn">import</span> <span class="n">StorageManager</span>
 <span class="kn">from</span> <span class="nn">.two_d_stimulus_generator</span> <span class="kn">import</span> <span class="n">TwoDStimulusGenerator</span>
@@ -111,7 +111,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">stim_x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">stim_y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -129,8 +129,9 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">):</span>
             <span class="n">result_for_this_numerosity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
             <span class="n">result_for_this_numerosity</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvars</span><span class="p">):</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result_for_this_numerosity</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__calc_functions</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvars</span><span class="p">):</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result_for_this_numerosity</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nvars</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nrange</span><span class="p">:</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="n">table</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">storage_manager</span><span class="p">:</span> <span class="n">StorageManager</span><span class="p">,</span>
@@ -398,12 +399,12 @@
         <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">plt_image</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">no_plotting</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">Plot</span><span class="o">.</span><span class="n">save_fig</span><span class="p">:</span>
-                <span class="n">Plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">plt_title</span>
+            <span class="k">if</span> <span class="n">plot</span><span class="o">.</span><span class="n">save_fig</span><span class="p">:</span>
+                <span class="n">plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">plt_title</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plt_title</span><span class="p">)</span>
-            <span class="n">Plot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">plt</span><span class="p">)</span>
-            <span class="n">Plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">plt</span><span class="p">)</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="n">plt_image</span> <span class="ow">and</span> <span class="n">no_plotting</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Matplotlib not found. Skipping image plotting.&#39;</span><span class="p">)</span>
 
@@ -445,7 +446,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">stim_x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">stim_y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -463,8 +464,9 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">):</span>
             <span class="n">result_for_this_numerosity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">nrange</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
             <span class="n">result_for_this_numerosity</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvars</span><span class="p">):</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result_for_this_numerosity</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__calc_functions</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nvars</span><span class="p">):</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result_for_this_numerosity</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nvars</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nrange</span><span class="p">:</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="n">table</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">storage_manager</span><span class="p">:</span> <span class="n">StorageManager</span><span class="p">,</span>
@@ -732,12 +734,12 @@
         <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">plt_image</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">no_plotting</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">Plot</span><span class="o">.</span><span class="n">save_fig</span><span class="p">:</span>
-                <span class="n">Plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">plt_title</span>
+            <span class="k">if</span> <span class="n">plot</span><span class="o">.</span><span class="n">save_fig</span><span class="p">:</span>
+                <span class="n">plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">plt_title</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">plt_title</span><span class="p">)</span>
-            <span class="n">Plot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">plt</span><span class="p">)</span>
-            <span class="n">Plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">plt</span><span class="p">)</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="n">plt_image</span> <span class="ow">and</span> <span class="n">no_plotting</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Matplotlib not found. Skipping image plotting.&#39;</span><span class="p">)</span>
 
