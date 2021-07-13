@@ -22,11 +22,11 @@ To install PyTorch use the following `pip` command:
 
 To install tensorflow use the following `pip` command:
 
-    $ pip install tensorflow.
+    $ pip install tensorflow
 
 The PredNet specific environment can also be installed by using the prednet variant of the package in `pip` using the following `pip` command.
 
-    $ pip install nn_analysis-prednet
+    $ pip install nn_tuning-prednet
 
 ## Getting started
 To get started first import the package and the inputs and networks you want to use.
