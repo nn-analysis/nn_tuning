@@ -6,7 +6,7 @@
 .. include:: ./doc_module_diagram.md
 """
 __docformat__ = "google"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 from .storage import *
 from .fitting_manager import FittingManager
