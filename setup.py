@@ -9,12 +9,12 @@ with open(os.path.join(HERE, "README.md")) as fid:
     README = fid.read()
 
 setup(
-    name="nn_analysis-prednet",
+    name="nn_tuning-prednet",
     version="1.0.0",
     description="Analyse the tuning functions of neurons in artificial neural networks",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/nn-analysis/nn_analysis",
+    url="https://github.com/nn-analysis/nn_tuning",
     author="Jesca Hoogendijk",
     author_email="j.hoogendijk@uu.nl",
     license="GNU LGPLv3",
@@ -30,7 +30,7 @@ setup(
         "numpy", "tqdm", "Pillow", "tensorflow-gpu==1.14.0"
     ],
     project_urls={
-        'Documentation': 'https://nn-analysis.github.io/nn_analysis/nn_analysis.html',
+        'Documentation': 'https://nn-analysis.github.io/nn_tuning/nn_tuning.html',
     },
     python_requires=">=3.6, <3.7",
 )

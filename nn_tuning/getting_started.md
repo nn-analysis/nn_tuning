@@ -1,7 +1,7 @@
-## Installing and configuring nn_analysis
+## Installing and configuring nn_tuning
 Install nn_analysis using the following `pip` command. This requires python > 3.6.
 
-    $ pip install nn_analysis
+    $ pip install nn_tuning
 
 If you wish to use the plotting functions in any of the classes, you need to install Matplotlib. To do so you can use the following command:
 
@@ -9,7 +9,7 @@ If you wish to use the plotting functions in any of the classes, you need to ins
 
 Depending on the type of neural network you want to analyse you will need to install PyTorch or TensorFlow.
 The required packages per network are listed in the table below.
-When importing the network class, if the required pacakages are not installed, the error should also let you know what packages it expects.
+When importing the network class, if the required packages are not installed, the error should also let you know what packages it expects.
 
 |Network|Package|Version|
 |---|---|---|
@@ -32,8 +32,8 @@ The PredNet specific environment can also be installed by using the prednet vari
 To get started first import the package and the inputs and networks you want to use.
 
 ```python
-from nn_analysis import *
-from nn_analysis.networks.prednet import Prednet
+from nn_tuning import *
+from nn_tuning.networks.prednet import Prednet
 ```
 
 Define a table and a database to store the results in and initialise the storage manager.

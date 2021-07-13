@@ -9,7 +9,7 @@ try:
 except ImportError:
     no_plotting = True
     plt = None
-import nn_analysis.plot as plot
+import nn_tuning.plot as plot
 from ..storage import StorageManager, Table, TableSet
 from .two_d_stimulus_generator import TwoDStimulusGenerator
 
