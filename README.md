@@ -1,4 +1,4 @@
-Neural Network Analysis Toolkit
+Neural Network Tuning Analysis Toolkit
 ====
 
 Analyse neural networks for feature tuning.

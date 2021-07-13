@@ -9,7 +9,7 @@ with open(os.path.join(HERE, "README.md")) as fid:
     README = fid.read()
 
 setup(
-    name="nn_analysis",
+    name="nn_tuning",
     version="1.0.0",
     description="Analyse the tuning functions of neurons in artificial neural networks",
     long_description=README,

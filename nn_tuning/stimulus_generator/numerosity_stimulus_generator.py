@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw
 
 from tqdm import tqdm
 import math
-import nn_analysis.plot as plot
+import nn_tuning.plot as plot
 
 from ..storage import StorageManager
 from .two_d_stimulus_generator import TwoDStimulusGenerator

@@ -116,7 +116,7 @@ class Prednet(Network):
                 iterator = range(1, input_array.shape[1]+1)
                 combined_batch_output = None
                 for j in iterator:
-                    # Pad with zeros
+                    # Select the channels
                     reshaped_iterative_input_array = input_array[:, 0:j].reshape((input_array.shape[0], len(list(range(0, j))), input_array.shape[2], input_array.shape[3], input_array.shape[4])).astype(np.float32)
                     # Run PredNet
                     raw_step_outputs = self.__call_prednet(prednet, reshaped_iterative_input_array, True)

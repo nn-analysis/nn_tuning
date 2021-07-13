@@ -19,4 +19,4 @@ rm -r "$BUILDROOT" 2>/dev/null || true
 pushd "$DOCROOT/.." >/dev/null
 
 pdoc -d google -o "$BUILDROOT" \
-     nn_analysis
+     nn_tuning

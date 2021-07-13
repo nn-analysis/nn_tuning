@@ -66,7 +66,7 @@ class TableSet:
         self.outputs = None
 
     def __repr__(self):
-        return f"Table('{self.name}', ({self.nrows}, {self.ncols}), '{self.folder}')"
+        return f"TableSet('{self.name}', ({self.nrows}, {self.ncols}), '{self.folder}')"
 
     def __getitem__(self, key):
         rows, cols = __keytolist__(key, self.nrows)
