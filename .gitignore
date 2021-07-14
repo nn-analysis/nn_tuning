@@ -4,3 +4,5 @@ __pycache__
 todo
 venv
 build
+dist
+nn_tuning.egg-info
