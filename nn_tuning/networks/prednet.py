@@ -22,6 +22,22 @@ except ImportError:
     PredNet = None
 
 
+def _sum(x, y):
+    return x + y
+
+
+def _divide(x, y):
+    return x / y
+
+
+def _concat(x, y):
+    return tf.concat([x, y], 1)
+
+
+def _tf_reduce_sum(x, _):
+    return tf.math.reduce_sum(x, 1)
+
+
 class Prednet(Network):
     """
     `Network` that accesses the PredNet models, presenting it stimuli and returning the activations in an interpretable way.
@@ -125,11 +141,11 @@ class Prednet(Network):
                         combined_batch_output = this_batch_output
                     else:
                         if self.take_mean_of_measures:
-                            combined_batch_output = self.__sum_structure(combined_batch_output, this_batch_output)
+                            combined_batch_output = self.__perform_function_in_structure(combined_batch_output, this_batch_output, _sum)
                         else:
-                            combined_batch_output = self.__concat_in_structure(combined_batch_output, this_batch_output)
+                            combined_batch_output = self.__perform_function_in_structure(combined_batch_output, this_batch_output, _concat)
                 if self.take_mean_of_measures:
-                    return self.extract_numpy_array(self.__divide_structure_by(combined_batch_output, input_array.shape[1]))
+                    return self.extract_numpy_array(self.__perform_function_in_structure(combined_batch_output, input_array.shape[1], _divide))
                 else:
                     return self.extract_numpy_array(combined_batch_output, input_array.shape[1])
             elif self.presentation is 'single_pass':
@@ -138,8 +154,8 @@ class Prednet(Network):
                 raw_step_outputs = self.__call_prednet(prednet, batch_input_tensor)
                 if self.take_mean_of_measures:
                     extracted_step_outputs = self.__extract_from_step_output(raw_step_outputs)
-                    combined_step_outputs = tf.math.reduce_sum(extracted_step_outputs, 1)
-                    return self.extract_numpy_array(self.__divide_structure_by(combined_step_outputs, input_array.shape[1]))
+                    combined_step_outputs = self.__perform_function_in_structure(extracted_step_outputs, extracted_step_outputs, _tf_reduce_sum)
+                    return self.extract_numpy_array(self.__perform_function_in_structure(combined_step_outputs, input_array.shape[1], _divide))
                 return self.extract_numpy_array(self.__extract_from_step_output(raw_step_outputs), sess)
             else:
                 raise ValueError(f'Expected presentation to be either iterative or single_pass, found {self.presentation}')
@@ -232,14 +248,14 @@ class Prednet(Network):
             input_list[i] = self.__list_to_tuple_recursively(input_list[i])
         return tuple(input_list)
 
-    def __sum_structure(self, x: Union[dict, list, tuple, np.ndarray], y: Union[dict, list, tuple, np.ndarray]) \
-            -> Union[dict, list, tuple, np.ndarray]:
+    def __perform_function_in_structure(self, x: Union[dict, list, tuple, np.ndarray], y: Union[dict, list, tuple, np.ndarray], closure) -> Union[dict, list, tuple, np.ndarray]:
         """
-        Define a sum function for Union[dict, list, tuple]
+        Run a closure in a structure of Union[dict, list, tuple]
 
         Args:
             x: The first input structure
             y: The second input structure
+            closure: Function to run on the leafs in the structure
 
         Returns:
             A summed dict, list, tuple or np.ndarray
@@ -249,85 +265,19 @@ class Prednet(Network):
         type_x = type(x)
         # Return if this is a leaf
         if type_x is np.ndarray:
-            return x + y
+            return closure(x, y)
         # Otherwise, fill in the x variable according to the type it was before
         if type_x is dict:
             for key, value in x.items():
-                x[key] = self.__sum_structure(x[key], y[key])
+                x[key] = self.__perform_function_in_structure(x[key], y[key], closure)
         if type_x is list:
             for i in range(len(x)):
-                x[i] = self.__sum_structure(x[i], y[i])
+                x[i] = self.__perform_function_in_structure(x[i], y[i], closure)
         if type_x is tuple:
             # Make a list, tuples cannot be changed
             new_x = []
             for i in range(len(x)):
-                new_x.append(self.__sum_structure(x[i], y[i]))
-            return new_x
-        return x
-
-    def __concat_in_structure(self, x: Union[dict, list, tuple, np.ndarray], y: Union[dict, list, tuple, np.ndarray]) \
-                                -> Union[dict, list, tuple, np.ndarray]:
-        """
-        Define a concatenation function for Union[dict, list, tuple]
-
-        Args:
-            x: The first input structure
-            y: The second input structure
-
-        Returns:
-            A concatenated dict, list, tuple or np.ndarray
-        """
-        # use x as output structure, x is destroyed
-        # check the type of structure
-        type_x = type(x)
-        # Return if this is a leaf
-        if type_x is np.ndarray:
-            return tf.concat([x, y], 1)
-        # Otherwise, fill in the x variable according to the type it was before
-        if type_x is dict:
-            for key, value in x.items():
-                x[key] = self.__sum_structure(x[key], y[key])
-        if type_x is list:
-            for i in range(len(x)):
-                x[i] = self.__sum_structure(x[i], y[i])
-        if type_x is tuple:
-            # Make a list, tuples cannot be changed
-            new_x = []
-            for i in range(len(x)):
-                new_x.append(self.__sum_structure(x[i], y[i]))
-            return new_x
-        return x
-
-    def __divide_structure_by(self, x: Union[dict, list, tuple, np.ndarray], division: float) \
-            -> Union[dict, list, tuple, np.ndarray]:
-        """
-        Define a function to divide values of a nested structure by a float
-
-        Args:
-            x: The input structure
-            division: The float to divide the items in the structure with
-
-        Returns:
-            A divided dict, list, tuple or np.ndarray
-        """
-        # use x as output structure, x is destroyed
-        # check the type of structure
-        type_x = type(x)
-        # Return if this is a leaf
-        if type_x is np.ndarray:
-            return x / division
-        # Otherwise, fill in the x variable according to the type it was before
-        if type_x is dict:
-            for key, value in x.items():
-                x[key] = self.__divide_structure_by(x[key], division)
-        if type_x is list:
-            for i in range(len(x)):
-                x[i] = self.__divide_structure_by(x[i], division)
-        if type_x is tuple:
-            # Make a list, tuples cannot be changed
-            new_x = []
-            for i in range(len(x)):
-                new_x.append(self.__divide_structure_by(x[i], division))
+                new_x.append(self.__perform_function_in_structure(x[i], y[i], closure))
             return new_x
         return x
 
