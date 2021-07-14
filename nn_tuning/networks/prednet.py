@@ -260,6 +260,11 @@ class Prednet(Network):
         Returns:
             A summed dict, list, tuple or np.ndarray
         """
+        def get_from_y_using_key(key):
+            if type(y) is int or type(y) is float or y is None:
+                return y
+            else:
+                return y[key]
         # use x as output structure, x is destroyed
         # check the type of structure
         type_x = type(x)
@@ -269,15 +274,15 @@ class Prednet(Network):
         # Otherwise, fill in the x variable according to the type it was before
         if type_x is dict:
             for key, value in x.items():
-                x[key] = self.__perform_function_in_structure(x[key], y[key], closure)
+                x[key] = self.__perform_function_in_structure(x[key], get_from_y_using_key(key), closure)
         if type_x is list:
             for i in range(len(x)):
-                x[i] = self.__perform_function_in_structure(x[i], y[i], closure)
+                x[i] = self.__perform_function_in_structure(x[i], get_from_y_using_key(i), closure)
         if type_x is tuple:
             # Make a list, tuples cannot be changed
             new_x = []
             for i in range(len(x)):
-                new_x.append(self.__perform_function_in_structure(x[i], y[i], closure))
+                new_x.append(self.__perform_function_in_structure(x[i], get_from_y_using_key(i), closure))
             return new_x
         return x
 
