@@ -10,7 +10,7 @@ with open(os.path.join(HERE, "README.md")) as fid:
 
 setup(
     name="nn_tuning-prednet",
-    version="1.0.1",
+    version="1.0.2",
     description="Analyse the tuning functions of neurons in artificial neural networks",
     long_description=README,
     long_description_content_type="text/markdown",
