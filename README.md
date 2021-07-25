@@ -12,7 +12,7 @@ Analyse neural networks for feature tuning.
 Installation
 ------------
 
-    $ pip install nn_analysis
+    $ pip install nn_tuning
 
 Depending on your use you might need to install several other packages.
 
