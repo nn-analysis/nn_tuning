@@ -25,7 +25,7 @@ class StorageManager:
 
     def save_result_table_set(self, results: tuple, name: str, table_labels: dict, nrows: int = None,
                               ncols: tuple = None, row_start: int = 0, col_start: int = 0,
-                              append_rows: bool = False) -> TableSet:
+                              append_rows: bool = False, dtype: np.dtype = None) -> TableSet:
         """
         Function that saves a `TableSet` with the results.
         Results do not have to be complete. If the result is incomplete provide the nrows or ncols parameters.
@@ -56,6 +56,7 @@ class StorageManager:
             row_start (optional, default=0): Int of the row where the results start. This parameter is used if nrows does not match the amount of rows in the results.
             col_start (optional, default=0): Int of the column where the results start. This parameter is used if ncols does not match the amount of columns in the results.
             append_rows (optional, default=False): If true, when the `TableSet` is already initialised the results will be appended as rows to the existing `TableSet`
+            dtype (optional): data type of the new tableset. This changes the data type of the results array if the given parameter is different from its data type.
 
         Returns:
             `TableSet` containing the results
@@ -79,7 +80,7 @@ class StorageManager:
                 table_set[row_start:combined_results.shape[0]+row_start,
                           col_start:combined_results.shape[1]+col_start] = combined_results
         else:
-            table_set.initialise(padded_results, table_labels)
+            table_set.initialise(padded_results, table_labels, dtype=dtype)
         return table_set
 
     def open_table(self, name: str):

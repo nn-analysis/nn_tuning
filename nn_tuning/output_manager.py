@@ -28,7 +28,8 @@ class OutputManager:
         self.storage_manager = storage_manager
         self.input_manager = input_manager
 
-    def run(self, table: str, batch_size: int, override: bool = True, resume: bool = False, verbose: bool = False):
+    def run(self, table: str, batch_size: int, override: bool = True, resume: bool = False, verbose: bool = False,
+            dtype: np.dtype = None):
         """
         Function runs a batch through a `Network`
 
@@ -39,10 +40,11 @@ class OutputManager:
 
         Args:
             table: `Table` to save data to
-            batch_size: (int) Size of the batches to input into the network
-            override (optional, default=True): (bool) determines whether the table gets extended or overridden (default=False)
-            resume (optional, default=False): (bool) resume at last batch on failure
-            verbose (optional, default=False): (bool) outputs the current batch and total percentage done
+            batch_size: (int) Size of the batches to input into the network.
+            override (optional, default=True): (bool) determines whether the table gets extended or overridden (default=False).
+            resume (optional, default=False): (bool) resume at last batch on failure.
+            verbose (optional, default=False): (bool) outputs the current batch and total percentage done.
+            dtype (optional): data type of the new tableset. This changes the data type of the results array if the given parameter is different from its data type.
         """
         batch = 0
         if override and not resume:
@@ -63,5 +65,6 @@ class OutputManager:
             self.network.current_batch = batch
             network_input = self.input_manager.get(batch, batch_size)
             network_output, network_output_labels = self.network.run(network_input)
-            self.storage_manager.save_result_table_set(network_output, table, network_output_labels, append_rows=True)
+            self.storage_manager.save_result_table_set(network_output, table, network_output_labels,
+                                                       append_rows=True, dtype=dtype)
             batch += 1

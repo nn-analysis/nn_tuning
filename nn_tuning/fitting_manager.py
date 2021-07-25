@@ -37,7 +37,7 @@ class FittingManager:
         """
         best_predicted = np.zeros((results.shape[1], 4))
         results_ndarray = results[:]
-        best_r2s = np.nanmax(results_ndarray[:], axis=0)
+        best_r2s = np.nanmax(results_ndarray[:], axis=0, dtype=results.dtype)
         for i in range(results_ndarray.shape[1]):
             best_r2 = best_r2s[i]
             best_index = np.where(results_ndarray[:, i] == best_r2)[0][0]
@@ -49,7 +49,7 @@ class FittingManager:
         if table is not None:
             if type(results) is TableSet:
                 table_labels = results.recurrent_subtables
-                return self.storage_manager.save_result_table_set(self.__unpack_tuple_according_to_labels(best_predicted, results),
+                return self.storage_manager.save_result_table_set(self.__unpack_tuple_according_to_labels(best_predicted.T, results),
                                                                   table, table_labels)
             else:
                 return self.__save__(table, best_predicted, False, 0, dtype)
