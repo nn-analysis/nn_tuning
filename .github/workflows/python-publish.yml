@@ -1,4 +1,5 @@
 # This workflow will upload a Python Package using Twine when a release is created
+# It builds and uploads documentation automatically afterwards using pdoc
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
 # This workflow uses actions that are not certified by GitHub.
@@ -27,6 +28,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install build
+        pip install pdoc
     - name: Build package
       run: python -m build
     - name: Publish package
@@ -34,3 +36,11 @@ jobs:
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+    - name: Build documentation using pdoc
+      run: |
+        pdoc -d google -o ./build ./nn_tuning
+    - name: Deploy documentation to GitHub Pages 🚀
+      uses: JamesIves/github-pages-deploy-action@4.1.4
+      with:
+        branch: github_pages # The branch the action should deploy to.
+        folder: build # The folder the action should deploy.
