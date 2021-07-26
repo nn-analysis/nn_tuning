@@ -20,7 +20,7 @@ class FittingManager:
         self.storage_manager = storage_manager
 
     def calculate_best_fits(self, results: Union[Table, TableSet, np.ndarray], candidate_function_parameters,
-                            table: str = None):
+                            table: str = None, dtype: np.dtype = None):
         """
         Use already generated results in a Table, TableSet, or np.ndarray to get the best fits from those sets.
         Saves those best_fits to the table.
@@ -30,14 +30,17 @@ class FittingManager:
         Args:
             results: `Table`, `TableSet`, np.ndarray with results.
             candidate_function_parameters: The set with candidate function parameters
-            table: Table to save the best fits to.
+            table (optional): Table to save the best fits to.
+            dtype (optional): data type of the new tableset. This changes the data type of the results array if the given parameter is different from its data type.
 
         Returns:
             Array with the resulting best_fits. If a table name has been provided, a TableSet with the best fits.
         """
         best_predicted = np.zeros((results.shape[1], 4))
         results_ndarray = results[:]
-        best_r2s = np.nanmax(results_ndarray[:], axis=0, dtype=results.dtype)
+        best_r2s = np.nanmax(results_ndarray[:], axis=0)
+        if dtype is None:
+            dtype = results.dtype
         for i in range(results_ndarray.shape[1]):
             best_r2 = best_r2s[i]
             best_index = np.where(results_ndarray[:, i] == best_r2)[0][0]
@@ -50,7 +53,7 @@ class FittingManager:
             if type(results) is TableSet:
                 table_labels = results.recurrent_subtables
                 return self.storage_manager.save_result_table_set(self.__unpack_tuple_according_to_labels(best_predicted.T, results),
-                                                                  table, table_labels)
+                                                                  table, table_labels, dtype=dtype)
             else:
                 return self.__save__(table, best_predicted, False, 0, dtype)
         return best_predicted
@@ -283,7 +286,7 @@ class FittingManager:
             return
         if override:
             self.storage_manager.remove_table(table)
-        return self.storage_manager.save_result_table_set((results.astype(dtype),), table, {table: table}, col_start=col_start)
+        return self.storage_manager.save_result_table_set((results,), table, {table: table}, col_start=col_start, dtype=dtype)
 
     @staticmethod
     def generate_fake_responses(variables, stim_x, stim_y, stimulus) -> np.ndarray:
